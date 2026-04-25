@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 
 const navLinks = [
-  { label: 'Lợi ích', href: '#benefits' },
-  { label: 'Xem trước', href: '#visuals' },
-  { label: 'Đánh giá', href: '#testimonials' },
-  { label: 'Tải ebook', href: '#download' },
+  { label: 'Phòng Trưng Bày', href: '#galleries' },
+  { label: 'Dòng Thời Gian', href: '#timeline' },
+  { label: 'Hiện Vật', href: '#specimens' },
+  { label: 'Tour Ảo', href: '#virtual-tour' },
+  { label: 'Đặt Vé', href: '#dang-ky' },
 ];
 
 const menuItemVariants = {
@@ -49,9 +50,9 @@ const Navbar = ({ onLoginClick }) => {
         transition={{ duration: 0.6, ease: 'easeOut' }}
         style={{
           background: scrolled
-            ? 'rgba(10, 8, 4, 0.92)'
+            ? 'rgba(10, 8, 4, 0.95)'
             : 'transparent',
-          backdropFilter: scrolled ? 'blur(20px)' : 'none',
+          backdropFilter: scrolled ? 'blur(24px)' : 'none',
           borderBottom: scrolled ? '1px solid rgba(245, 158, 11, 0.12)' : 'none',
           transition: 'all 0.4s ease',
         }}
@@ -60,28 +61,37 @@ const Navbar = ({ onLoginClick }) => {
           {/* Logo */}
           <motion.a
             href="#"
-            className="flex items-center gap-2.5 no-underline"
+            className="flex items-center gap-3 no-underline"
             whileHover={{ scale: 1.03 }}
           >
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-base"
-              style={{ background: 'linear-gradient(135deg, #f59e0b, #92400e)' }}>
-              🦴
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-base font-bold"
+              style={{ background: 'linear-gradient(135deg, #f59e0b, #92400e)', boxShadow: '0 0 16px rgba(245,158,11,0.3)' }}
+            >
+              🏛️
             </div>
-            <span className="font-serif text-xl font-bold"
-              style={{ fontFamily: 'Playfair Display, serif', color: '#fbbf24' }}>
-              DinoArchive
-            </span>
+            <div className="flex flex-col">
+              <span
+                className="font-serif text-lg font-bold leading-none"
+                style={{ fontFamily: 'Playfair Display, serif', color: '#fbbf24' }}
+              >
+                Bảo Tàng Khủng Long
+              </span>
+              <span className="text-xs leading-none" style={{ color: 'rgba(245,158,11,0.5)', letterSpacing: '0.1em' }}>
+                PALEONTOLOGY MUSEUM
+              </span>
+            </div>
           </motion.a>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             {navLinks.map((link, i) => (
               <motion.a
                 key={link.href}
                 href={link.href}
                 onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                className="text-sm font-medium no-underline transition-colors cursor-pointer"
-                style={{ color: 'rgba(245,240,232,0.7)' }}
+                className="text-xs font-medium no-underline transition-colors cursor-pointer tracking-wider uppercase"
+                style={{ color: 'rgba(245,240,232,0.65)' }}
                 whileHover={{ color: '#f59e0b' }}
                 custom={i}
                 variants={menuItemVariants}
@@ -111,7 +121,7 @@ const Navbar = ({ onLoginClick }) => {
             ) : (
               <motion.button
                 onClick={onLoginClick}
-                className="btn-amber-outline"
+                className="btn-amber-outline text-xs py-2 px-4"
                 id="nav-login-btn"
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
@@ -120,14 +130,14 @@ const Navbar = ({ onLoginClick }) => {
               </motion.button>
             )}
             <motion.a
-              href="#download"
-              onClick={(e) => { e.preventDefault(); handleNavClick('#download'); }}
+              href="#dang-ky"
+              onClick={(e) => { e.preventDefault(); handleNavClick('#dang-ky'); }}
               className="btn-amber-primary text-xs py-2.5 px-5"
               id="nav-cta-btn"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
             >
-              Tải Ebook
+              🎟️ Đặt Vé Tham Quan
             </motion.a>
           </div>
 
@@ -161,8 +171,8 @@ const Navbar = ({ onLoginClick }) => {
           <motion.div
             className="fixed inset-0 z-30 md:hidden pt-20"
             style={{
-              background: 'rgba(10, 8, 4, 0.97)',
-              backdropFilter: 'blur(20px)',
+              background: 'rgba(10, 8, 4, 0.98)',
+              backdropFilter: 'blur(24px)',
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -174,7 +184,7 @@ const Navbar = ({ onLoginClick }) => {
                   key={link.href}
                   href={link.href}
                   onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                  className="text-2xl font-serif font-semibold no-underline"
+                  className="text-xl font-serif font-semibold no-underline"
                   style={{ fontFamily: 'Playfair Display, serif', color: 'rgba(245,240,232,0.9)' }}
                   custom={i}
                   variants={menuItemVariants}
@@ -204,9 +214,9 @@ const Navbar = ({ onLoginClick }) => {
                     Đăng nhập
                   </button>
                 )}
-                <a href="#download" onClick={(e) => { e.preventDefault(); handleNavClick('#download'); }}
+                <a href="#dang-ky" onClick={(e) => { e.preventDefault(); handleNavClick('#dang-ky'); }}
                   className="btn-amber-primary text-center">
-                  Tải Ebook Miễn Phí
+                  🎟️ Đặt Vé Tham Quan
                 </a>
               </motion.div>
             </div>

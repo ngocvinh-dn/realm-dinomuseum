@@ -138,7 +138,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                     <h2 className="font-serif text-2xl font-bold text-amber-400" style={{ fontFamily: 'Playfair Display, serif' }}>
                       {tab === TAB_LOGIN ? 'Chào mừng trở lại' : 'Tạo tài khoản'}
                     </h2>
-                    <p className="text-sm mt-1" style={{ color: 'rgba(245,240,232,0.5)' }}>DinoArchive</p>
+                    <p className="text-sm mt-1" style={{ color: 'rgba(245,240,232,0.5)' }}>Bảo Tàng Khủng Long</p>
                   </div>
                   <button
                     onClick={onClose}

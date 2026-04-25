@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { Star, Award, Shield, BookMarked } from 'lucide-react';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { Star, Award, Shield, Globe } from 'lucide-react';
 
 const testimonials = [
   {
@@ -8,34 +9,43 @@ const testimonials = [
     role: 'Kỹ sư phần mềm, 31 tuổi',
     avatar: '🦖',
     rating: 5,
-    text: 'Đây là tài liệu tiếng Việt đầu tiên về khủng long mà tôi thực sự hài lòng. Thông tin chính xác, nguồn rõ ràng, hình ảnh minh họa cực đẹp. Không thể tin là miễn phí!',
+    text: 'Trải nghiệm bảo tàng ảo tuyệt vời! Lần đầu tiên tôi được "bước vào" không gian trưng bày khủng long mà không cần đến nước ngoài. Thông tin cực kỳ chính xác và phong phú.',
   },
   {
     name: 'Nguyễn Thị Lan Anh',
     role: 'Giáo viên sinh học, 28 tuổi',
     avatar: '🦕',
     rating: 5,
-    text: 'Tôi đã tìm kiếm tài liệu như thế này suốt 3 năm. Phần về địa tầng và phân loại học cực kỳ chi tiết, giúp tôi bổ sung rất nhiều vào bài giảng của mình.',
+    text: 'Tôi đã dùng nội dung trong bảo tàng để bổ sung bài giảng. Dòng thời gian địa chất và phần phân loại học cực kỳ chi tiết, hữu ích cho cả học sinh lẫn giáo viên.',
   },
   {
     name: 'Phạm Hoàng Đức',
     role: 'Sinh viên cổ sinh vật học, 24 tuổi',
     avatar: '🔬',
     rating: 5,
-    text: 'Là sinh viên chuyên ngành, tôi rất ngạc nhiên với độ chính xác của bộ tài liệu này. Thậm chí còn cập nhật cả các nghiên cứu mới nhất năm 2025-2026!',
-  },                                
+    text: 'Là sinh viên chuyên ngành, tôi rất ấn tượng với độ chính xác khoa học. Phòng Theropoda đặc biệt xuất sắc — thông số từng loài đều được cập nhật theo nghiên cứu mới nhất.',
+  },
 ];
 
 const badges = [
-  { icon: Award, label: 'Dựa trên tài liệu học thuật' },
-  { icon: Shield, label: 'Thông tin được kiểm chứng' },
-  { icon: BookMarked, label: 'Cập nhật thường xuyên' },
+  { icon: Award, label: 'Kiến thức được kiểm chứng khoa học' },
+  { icon: Shield, label: 'Bảo tàng ảo VN đầu tiên' },
+  { icon: Globe, label: 'Cập nhật liên tục 2026' },
 ];
 
-function AnimatedCounter({ target, suffix = '' }) {
+function AnimatedCounter({ target, suffix = '', decimals = 0 }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setInView(true); },
+      { threshold: 0.5 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!inView) return;
@@ -46,16 +56,16 @@ function AnimatedCounter({ target, suffix = '' }) {
     let step = 0;
     const timer = setInterval(() => {
       step++;
-      current = Math.min(Math.round(increment * step), target);
+      current = Math.min(parseFloat((increment * step).toFixed(decimals)), target);
       setCount(current);
       if (step >= steps) clearInterval(timer);
     }, duration / steps);
     return () => clearInterval(timer);
-  }, [inView, target]);
+  }, [inView, target, decimals]);
 
   return (
     <span ref={ref}>
-      {count.toLocaleString('vi-VN')}{suffix}
+      {decimals > 0 ? count.toFixed(decimals) : count.toLocaleString('vi-VN')}{suffix}
     </span>
   );
 }
@@ -82,17 +92,16 @@ const SocialProof = () => {
           transition={{ duration: 0.7 }}
         >
           {[
-            { target: 12847, suffix: '+', label: 'Người đã tải ebook' },
-            { target: 4.9, suffix: '/5', label: 'Đánh giá trung bình' },
-            { target: 280, suffix: ' trang', label: 'Nội dung chuyên sâu' },
+            { target: 12000, suffix: '+', label: 'Lượt tham quan ảo', decimals: 0 },
+            { target: 4.9, suffix: '/5', label: 'Đánh giá trung bình', decimals: 1 },
+            { target: 275, suffix: '+', label: 'Hiện vật số hóa', decimals: 0 },
           ].map((item, i) => (
             <div key={i} className="text-center">
-              <div className="font-serif text-4xl md:text-5xl font-bold mb-2"
-                style={{ fontFamily: 'Playfair Display, serif', color: '#fbbf24' }}>
-                {i === 1
-                  ? <>{item.target.toFixed(1)}{item.suffix}</>
-                  : <AnimatedCounter target={item.target} suffix={item.suffix} />
-                }
+              <div
+                className="font-serif text-4xl md:text-5xl font-bold mb-2"
+                style={{ fontFamily: 'Playfair Display, serif', color: '#fbbf24' }}
+              >
+                <AnimatedCounter target={item.target} suffix={item.suffix} decimals={item.decimals} />
               </div>
               <div className="text-sm" style={{ color: 'rgba(245,240,232,0.5)' }}>{item.label}</div>
             </div>
@@ -108,12 +117,11 @@ const SocialProof = () => {
         >
           <div className="section-divider" />
           <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b' }}>
-            Đánh giá từ độc giả
+            Khách Tham Quan Nói Gì
           </p>
-          <h2 className="font-serif text-3xl md:text-5xl"
-            style={{ fontFamily: 'Playfair Display, serif' }}>
-            Được yêu thích bởi{' '}
-            <span className="text-gradient-amber">cộng đồng</span>
+          <h2 className="font-serif text-3xl md:text-5xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+            Được Yêu Thích Bởi{' '}
+            <span className="text-gradient-amber">Cộng Đồng</span>
           </h2>
         </motion.div>
 
@@ -137,16 +145,22 @@ const SocialProof = () => {
               </div>
 
               {/* Quote */}
-              <blockquote className="text-sm leading-relaxed flex-1 italic"
-                style={{ color: 'rgba(245,240,232,0.7)', fontFamily: 'Lora, serif' }}>
+              <blockquote
+                className="text-sm leading-relaxed flex-1 italic"
+                style={{ color: 'rgba(245,240,232,0.7)', fontFamily: 'Lora, serif' }}
+              >
                 "{t.text}"
               </blockquote>
 
               {/* Author */}
-              <div className="flex items-center gap-3 pt-3"
-                style={{ borderTop: '1px solid rgba(245,158,11,0.12)' }}>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl flex-shrink-0"
-                  style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>
+              <div
+                className="flex items-center gap-3 pt-3"
+                style={{ borderTop: '1px solid rgba(245,158,11,0.12)' }}
+              >
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-xl flex-shrink-0"
+                  style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}
+                >
                   {t.avatar}
                 </div>
                 <div>
@@ -169,13 +183,15 @@ const SocialProof = () => {
           {badges.map((badge, i) => {
             const Icon = badge.icon;
             return (
-              <div key={i}
+              <div
+                key={i}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm"
                 style={{
                   background: 'rgba(245,158,11,0.07)',
                   border: '1px solid rgba(245,158,11,0.18)',
                   color: 'rgba(245,240,232,0.7)',
-                }}>
+                }}
+              >
                 <Icon size={14} color="#f59e0b" strokeWidth={2} />
                 {badge.label}
               </div>

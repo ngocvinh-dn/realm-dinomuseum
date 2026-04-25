@@ -3,12 +3,16 @@ import { motion } from 'framer-motion';
 
 const FinalCTA = ({ onLoginClick }) => {
 
+  const scrollToTicket = () => {
+    document.querySelector('#dang-ky')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section
       className="section-pad relative overflow-hidden"
       style={{ background: 'linear-gradient(180deg, #110e08 0%, #1a1208 100%)' }}
     >
-      {/* fossil lines */}
+      {/* Vertical light beams */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/4 w-px h-full opacity-10"
           style={{ background: 'linear-gradient(to bottom, transparent, #f59e0b, transparent)' }} />
@@ -27,24 +31,20 @@ const FinalCTA = ({ onLoginClick }) => {
         >
           {/* Big headline */}
           <p className="text-xs font-semibold tracking-widest uppercase mb-6" style={{ color: 'rgba(245,158,11,0.6)' }}>
-            Lần cuối cùng
+            Một Bảo Tàng. Vô Hạn Khám Phá.
           </p>
-          <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-tight mb-6"
+          <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-tight mb-8"
             style={{ fontFamily: 'Playfair Display, serif' }}>
-            Một thế giới
+            Bộ Xương Khổng Lồ
             <br />
-            <span className="text-gradient-gold">66 triệu năm</span>
+            <span className="text-gradient-gold">Đang Chờ Bạn</span>
             <br />
-            đang chờ bạn.
+            Trong Bóng Tối.
           </h2>
-          {/* <p className="text-base mb-12 max-w-lg mx-auto" style={{ color: 'rgba(245,240,232,0.5)', lineHeight: '1.8' }}>
-            Tài liệu tiếng Việt duy nhất về cổ sinh vật học ở mức độ chuyên sâu này.
-            Miễn phí. Tải về ngay. Không có điều kiện.
-          </p>                                   */}
 
           {/* CTA button - large */}
           <motion.button
-            onClick={onLoginClick}
+            onClick={scrollToTicket}
             id="final-cta-btn"
             className="btn-amber-primary text-base px-12 py-5"
             style={{ fontSize: '1rem' }}
@@ -53,12 +53,17 @@ const FinalCTA = ({ onLoginClick }) => {
             animate={{ boxShadow: ['0 4px 20px rgba(245,158,11,0.35)', '0 8px 40px rgba(245,158,11,0.55)', '0 4px 20px rgba(245,158,11,0.35)'] }}
             transition={{ boxShadow: { repeat: Infinity, duration: 2.5, ease: 'easeInOut' } }}
           >
-            🦕 Khám Phá Thế Giới Khủng Long
+            🏛️ Vào Bảo Tàng Ngay — Miễn Phí
           </motion.button>
 
           {/* Reassurance */}
           <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
-            {['✓ Không cần thẻ tín dụng', '✓ Tải về vĩnh viễn', '✓ Bảo mật tuyệt đối'].map((item, i) => (
+            {[
+              '✓ Không cần VR headset',
+              '✓ Không thanh toán',
+              '✓ Bảo mật tuyệt đối',
+              '✓ Link tour ngay lập tức',
+            ].map((item, i) => (
               <span key={i} className="text-xs" style={{ color: 'rgba(245,240,232,0.4)' }}>
                 {item}
               </span>
