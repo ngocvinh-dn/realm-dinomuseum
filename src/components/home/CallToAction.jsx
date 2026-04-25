@@ -1,16 +1,53 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
-const CallToAction = () => {
+const CallToAction = ({ onLoginClick }) => {
+
   return (
-    <section className="h-screen w-full flex items-center justify-center text-center px-4 bg-gradient-to-t from-[#0a0a0a] to-transparent">
-      <div>
-        <h2 className="text-5xl md:text-7xl font-serif mb-8">Một thế giới mới <br/> đang chờ đón</h2>
-        <p className="text-gray-400 max-w-xl mx-auto mb-10 text-lg">
-          Bí ẩn lớn nhất của lịch sử Trái Đất. Cảm nhận sức mạnh nguyên thủy thông qua bộ sưu tập 3D của chúng tôi.
-        </p>
-        <button className="px-8 py-4 bg-green-500 text-black font-bold tracking-widest uppercase rounded-full hover:bg-green-400 transition-colors">
-          Khám phá Ngay
-        </button>
+    <section
+      className="section-pad relative overflow-hidden text-center"
+      style={{ background: '#0a0804' }}
+    >
+      {/* Ambient */}
+      <div className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(245,158,11,0.05) 0%, transparent 65%)' }} />
+
+      <div className="relative max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          <div className="text-5xl mb-6">🦖</div>
+          <h2 className="font-serif text-3xl md:text-5xl leading-tight mb-5"
+            style={{ fontFamily: 'Playfair Display, serif' }}>
+            Kiến thức không chờ đợi.
+            <br />
+            <span className="text-gradient-amber italic">Bạn thì sao?</span>
+          </h2>
+          <p className="text-base mb-10 max-w-xl mx-auto" style={{ color: 'rgba(245,240,232,0.55)', fontFamily: 'Lora, serif', fontStyle: 'italic' }}>
+            Hơn 12,000 người đã bắt đầu hành trình khám phá thế giới khủng long cùng DinoArchive.
+            Đừng để kiến thức bỏ lỡ bạn.
+          </p>
+
+          <motion.button
+            onClick={onLoginClick}
+            id="mid-cta-btn"
+            className="btn-amber-primary"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            🦖 Khám Phá Thế Giới Khủng Long
+          </motion.button>
+
+          {/* Divider */}
+          <div className="mt-16 flex items-center gap-6">
+            <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(245,158,11,0.2))' }} />
+            <span className="text-xs tracking-widest uppercase" style={{ color: 'rgba(245,158,11,0.4)' }}>✦ DinoArchive ✦</span>
+            <div className="flex-1 h-px" style={{ background: 'linear-gradient(to left, transparent, rgba(245,158,11,0.2))' }} />
+          </div>
+        </motion.div>
       </div>
     </section>
   );

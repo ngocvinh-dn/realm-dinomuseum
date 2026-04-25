@@ -1,31 +1,38 @@
-import React, { Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
-import Dino from '../components/home/Dino'; // Gọi đúng file Dino.jsx
+import React, { useState } from 'react';
+import Navbar from '../components/layout/Navbar';
 import HeroSection from '../components/home/HeroSection';
-import FeaturesList from '../components/home/FeaturesList';
+import BenefitsSection from '../components/home/FeaturesList';
+import VisualsSection from '../components/home/VisualsSection';
+import SocialProof from '../components/home/SocialProof';
+import LeadForm from '../components/home/LeadForm';
 import CallToAction from '../components/home/CallToAction';
+import FinalCTA from '../components/home/FinalCTA';
 import Footer from '../components/home/Footer';
+import AuthModal from '../components/auth/AuthModal';
 
 const Home = () => {
-  return (
-    <div className="relative w-full bg-black text-white selection:bg-green-500 selection:text-black">
-      {/* Background 3D cố định phía sau */}
-      <div className="fixed top-0 left-0 w-full h-screen z-0 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-          {/* Suspense giúp React không bị crash trong lúc chờ file .glb tải lên */}
-          <Suspense fallback={null}>
-            <Dino />
-          </Suspense>
-        </Canvas>
-      </div>
+  const [authOpen, setAuthOpen] = useState(false);
 
-      {/* Nội dung HTML cuộn đè lên trên (Z-index cao hơn) */}
-      <div className="relative z-10">
+  return (
+    <div className="relative w-full grain-overlay" style={{ background: '#0a0804', color: '#f5f0e8' }}>
+      {/* Auth Modal */}
+      <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
+
+      {/* Navbar */}
+      <Navbar onLoginClick={() => setAuthOpen(true)} />
+
+      {/* Page sections */}
+      <main>
         <HeroSection />
-        <FeaturesList />
-        <CallToAction />
-        <Footer />
-      </div>
+        <BenefitsSection />
+        <VisualsSection />
+        <SocialProof />
+        <LeadForm />
+        <CallToAction onLoginClick={() => setAuthOpen(true)} />
+        <FinalCTA onLoginClick={() => setAuthOpen(true)} />
+      </main>
+
+      <Footer />
     </div>
   );
 };
