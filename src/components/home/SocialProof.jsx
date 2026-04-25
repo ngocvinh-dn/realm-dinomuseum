@@ -23,7 +23,7 @@ const testimonials = [
     avatar: '🔬',
     rating: 5,
     text: 'Là sinh viên chuyên ngành, tôi rất ngạc nhiên với độ chính xác của bộ tài liệu này. Thậm chí còn cập nhật cả các nghiên cứu mới nhất năm 2025-2026!',
-  },
+  },                                
 ];
 
 const badges = [

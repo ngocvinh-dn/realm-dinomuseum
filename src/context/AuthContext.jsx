@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     });
 
-    // Listen for auth state changes
+    // Listen for auth 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });

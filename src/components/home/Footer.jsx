@@ -60,9 +60,9 @@ const Footer = () => {
 
         {/* Bottom tagline */}
         <div className="mt-8 text-center">
-          <p className="text-xs italic" style={{ color: 'rgba(245,240,232,0.15)', fontFamily: 'Lora, serif' }}>
+          {/* <p className="text-xs italic" style={{ color: 'rgba(245,240,232,0.15)', fontFamily: 'Lora, serif' }}>
             "Những sinh vật vĩ đại nhất từng bước đi trên Trái Đất — nay được ghi lại bằng tiếng Việt."
-          </p>
+          </p> */}
         </div>
       </div>
     </footer>

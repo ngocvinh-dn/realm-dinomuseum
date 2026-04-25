@@ -89,7 +89,7 @@ const BenefitsSection = () => {
                     className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
                     style={{ background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.2)' }}
                   >
-                    <Icon size={22} color="#f59e0b" strokeWidth={1.5} />
+                    <Icon size={22} color="#25af19ff" strokeWidth={2.0} />
                   </div>
 
                   <div>
