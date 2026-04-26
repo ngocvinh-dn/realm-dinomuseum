@@ -4,18 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 const rooms = [
   {
     id: 'entrance',
-    name: 'Sảnh Chính',
+    name: 'Main Hall',
     emoji: '🏛️',
-    desc: 'Điểm khởi đầu hành trình — bộ xương T-Rex khổng lồ, cao 4m, được chiếu sáng bằng spotlight từ trần vòm.',
+    desc: 'The starting point of your journey — a giant 4m T-Rex skeleton, lit by spotlights from the vaulted ceiling.',
     artifacts: 12,
     style: { top: '42%', left: '38%', width: '24%', height: '18%' },
     isEntrance: true,
   },
   {
     id: 'mesozoic',
-    name: 'Đại Trung Sinh',
+    name: 'Mesozoic Era',
     emoji: '🌿',
-    desc: 'Phòng lớn nhất — hành trình 180 triệu năm từ Triassic đến Cretaceous cuối.',
+    desc: 'The largest room — a journey through 180 million years from Triassic to late Cretaceous.',
     artifacts: 150,
     style: { top: '5%', left: '5%', width: '30%', height: '35%' },
   },
@@ -23,28 +23,29 @@ const rooms = [
     id: 'theropoda',
     name: 'Theropoda Hall',
     emoji: '🦖',
-    desc: 'Hành lang săn mồi — Velociraptor, Allosaurus, Spinosaurus trong ánh đèn đỏ đặc trưng.',
+    desc: 'The predator corridor — Velociraptor, Allosaurus, and Spinosaurus under distinctive red lighting.',
     artifacts: 48,
     style: { top: '5%', left: '65%', width: '30%', height: '35%' },
   },
   {
     id: 'extinction',
-    name: 'Tuyệt Chủng',
+    name: 'Mass Extinction',
     emoji: '☄️',
-    desc: 'Phòng sự kiện K-Pg — mô hình tiểu hành tinh, crater và bằng chứng về "ngày tàn".',
+    desc: 'The K-Pg event room — asteroid models, impact craters, and evidence of "the last day".',
     artifacts: 35,
     style: { top: '65%', left: '5%', width: '30%', height: '30%' },
   },
   {
     id: 'vietnam',
-    name: 'Hóa Thạch VN',
+    name: 'VN Fossils',
     emoji: '🇻🇳',
-    desc: 'Phòng đặc biệt — toàn bộ phát hiện cổ sinh vật học trên lãnh thổ Việt Nam.',
+    desc: 'Special exhibit — all paleontological discoveries found on Vietnamese territory.',
     artifacts: 23,
     style: { top: '65%', left: '65%', width: '30%', height: '30%' },
   },
 ];
 
+// Component sơ đồ bảo tàng — hiển thị floor plan và thông tin từng phòng
 const MuseumMap = () => {
   const [activeRoom, setActiveRoom] = useState(null);
 
@@ -52,10 +53,10 @@ const MuseumMap = () => {
     <section
       id="museum-map"
       className="section-pad relative overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #0a0804 0%, #110e08 100%)' }}
+      style={{ background: 'linear-gradient(180deg, var(--theme-bg) 0%, var(--theme-bg-alt) 100%)' }}
     >
       <div className="relative max-w-5xl mx-auto">
-        {/* Section header */}
+        {/* Tiêu đề section Sơ Đồ Bảo Tàng */}
         <motion.div
           className="mb-12 text-center"
           initial={{ opacity: 0, y: 30 }}
@@ -65,19 +66,19 @@ const MuseumMap = () => {
         >
           <div className="section-divider mx-auto" style={{ margin: '0 auto 1.5rem' }} />
           <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b' }}>
-            Sơ Đồ Bảo Tàng
+            Museum Floor Plan
           </p>
-          <h2 className="font-serif text-4xl md:text-5xl leading-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Khám Phá{' '}
+          <h2 className="font-serif text-4xl md:text-5xl leading-tight" style={{ fontFamily: 'Playfair Display, serif', color: 'var(--theme-text)' }}>
+            Explore the{' '}
             <span className="text-gradient-amber">Floor Plan</span>
           </h2>
-          <p className="mt-3 text-sm" style={{ color: 'rgba(245,240,232,0.4)' }}>
-            Click vào phòng để xem chi tiết
+          <p className="mt-3 text-sm" style={{ color: 'var(--theme-text-muted)' }}>
+            Click a room to view details
           </p>
         </motion.div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Map */}
+          {/* Sơ đồ floor plan dạng bản đồ */}
           <motion.div
             className="w-full lg:w-3/5"
             initial={{ opacity: 0, x: -30 }}
@@ -95,7 +96,7 @@ const MuseumMap = () => {
               }}
             >
               <div className="absolute inset-0 p-4">
-                {/* Grid lines */}
+                {/* Lưới kẻ ngang — nền sơ đồ */}
                 {Array.from({ length: 5 }).map((_, i) => (
                   <div key={`h${i}`} className="absolute w-full h-px" style={{ top: `${20 * i}%`, background: 'rgba(245,158,11,0.04)' }} />
                 ))}
@@ -103,7 +104,7 @@ const MuseumMap = () => {
                   <div key={`v${i}`} className="absolute h-full w-px" style={{ left: `${20 * i}%`, background: 'rgba(245,158,11,0.04)' }} />
                 ))}
 
-                {/* Corridor */}
+                {/* Hành lang giữa các phòng */}
                 <div
                   className="absolute"
                   style={{
@@ -123,7 +124,7 @@ const MuseumMap = () => {
                   CORRIDOR
                 </span>
 
-                {/* Rooms */}
+                {/* Các phòng trưng bày trên sơ đồ */}
                 {rooms.map((room) => (
                   <button
                     key={room.id}
@@ -146,7 +147,7 @@ const MuseumMap = () => {
                       </span>
                     </div>
 
-                    {/* Active glow */}
+                    {/* Hiệu ứng phát sáng khi phòng đang được chọn */}
                     {activeRoom?.id === room.id && (
                       <motion.div
                         className="absolute inset-0 rounded-md"
@@ -159,7 +160,7 @@ const MuseumMap = () => {
                   </button>
                 ))}
 
-                {/* Entrance arrow */}
+                {/* Mũi tên chỉ lối vào */}
                 <div className="absolute" style={{ bottom: '2%', left: '45%', transform: 'translateX(-50%)' }}>
                   <div className="flex flex-col items-center gap-0.5">
                     <div style={{ color: 'rgba(245,158,11,0.5)', fontSize: '10px' }}>▼</div>
@@ -167,7 +168,7 @@ const MuseumMap = () => {
                   </div>
                 </div>
 
-                {/* Map label */}
+                {/* Nhãn tầng 1 */}
                 <div
                   className="absolute top-2 right-2 px-2 py-1 rounded text-xs"
                   style={{ background: 'rgba(10,8,4,0.8)', color: 'rgba(245,158,11,0.5)', fontSize: '9px', letterSpacing: '0.1em' }}
@@ -178,11 +179,11 @@ const MuseumMap = () => {
             </div>
 
             <p className="mt-3 text-xs text-center" style={{ color: 'rgba(245,240,232,0.3)' }}>
-              Sơ đồ minh họa • Không theo tỷ lệ thực
+              Illustrative floor plan • Not to scale
             </p>
           </motion.div>
 
-          {/* Room detail panel */}
+          {/* Panel thông tin chi tiết phòng đang chọn */}
           <motion.div
             className="w-full lg:w-2/5"
             initial={{ opacity: 0, x: 30 }}
@@ -218,23 +219,26 @@ const MuseumMap = () => {
                       style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}
                     >
                       <div className="text-xl font-bold font-serif" style={{ color: '#fbbf24' }}>{activeRoom.artifacts}</div>
-                      <div className="text-xs" style={{ color: 'rgba(245,240,232,0.4)' }}>Hiện vật</div>
+                      <div className="text-xs" style={{ color: 'rgba(245,240,232,0.4)' }}>Artifacts</div>
                     </div>
                     {activeRoom.isEntrance && (
                       <div
                         className="px-3 py-1.5 rounded-full text-xs font-bold"
                         style={{ background: 'rgba(245,158,11,0.15)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.3)' }}
                       >
-                        📍 Bạn ở đây
+                        📍 You are here
                       </div>
                     )}
                   </div>
 
                   <button
                     className="btn-amber-primary text-xs py-3 px-5 w-full"
-                    onClick={() => document.querySelector('#dang-ky')?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => {
+                      const t = document.querySelector('#dang-ky');
+                      if (t) window.__lenis ? window.__lenis.scrollTo(t, { offset: -80, duration: 1.4 }) : t.scrollIntoView({ behavior: 'smooth' });
+                    }}
                   >
-                    🎟️ Vào Tham Quan Phòng Này
+                    Enter This Exhibition Hall
                   </button>
                 </motion.div>
               ) : (
@@ -248,7 +252,7 @@ const MuseumMap = () => {
                 >
                   <span className="text-5xl mb-4 opacity-30">🗺️</span>
                   <p className="text-sm" style={{ color: 'rgba(245,240,232,0.35)', fontStyle: 'italic' }}>
-                    Click vào bất kỳ phòng nào trên sơ đồ để xem thông tin chi tiết
+                    Click any room on the map to view detailed information
                   </p>
                   <div className="flex flex-wrap gap-2 mt-6 justify-center">
                     {rooms.map((r) => (

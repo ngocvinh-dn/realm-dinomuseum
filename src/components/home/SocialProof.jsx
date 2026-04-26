@@ -2,42 +2,47 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { Star, Award, Shield, Globe } from 'lucide-react';
+import { useParallax } from '../../hooks/useParallax';
 
+// Visitor testimonial data
 const testimonials = [
   {
-    name: 'Trần Minh Khoa',
-    role: 'Kỹ sư phần mềm, 31 tuổi',
+    name: 'Kevin T.',
+    role: 'Software Engineer, 31',
     avatar: '🦖',
     rating: 5,
-    text: 'Trải nghiệm bảo tàng ảo tuyệt vời! Lần đầu tiên tôi được "bước vào" không gian trưng bày khủng long mà không cần đến nước ngoài. Thông tin cực kỳ chính xác và phong phú.',
+    text: 'An incredible virtual museum experience! For the first time I could "walk through" a dinosaur exhibition without leaving the country. The information is incredibly accurate and detailed.',
   },
   {
-    name: 'Nguyễn Thị Lan Anh',
-    role: 'Giáo viên sinh học, 28 tuổi',
+    name: 'Sarah M.',
+    role: 'Biology Teacher, 28',
     avatar: '🦕',
     rating: 5,
-    text: 'Tôi đã dùng nội dung trong bảo tàng để bổ sung bài giảng. Dòng thời gian địa chất và phần phân loại học cực kỳ chi tiết, hữu ích cho cả học sinh lẫn giáo viên.',
+    text: 'I use the museum’s content to enrich my lessons. The geological timeline and taxonomy section are incredibly detailed — useful for both students and teachers alike.',
   },
   {
-    name: 'Phạm Hoàng Đức',
-    role: 'Sinh viên cổ sinh vật học, 24 tuổi',
+    name: 'Dr. James H.',
+    role: 'Paleontology Student, 24',
     avatar: '🔬',
     rating: 5,
-    text: 'Là sinh viên chuyên ngành, tôi rất ấn tượng với độ chính xác khoa học. Phòng Theropoda đặc biệt xuất sắc — thông số từng loài đều được cập nhật theo nghiên cứu mới nhất.',
+    text: 'As a specialist in the field, I’m impressed by the scientific accuracy. The Theropoda Hall is outstanding — each species’ data is updated with the latest research findings.',
   },
 ];
 
+// Credibility badges displayed below testimonials
 const badges = [
-  { icon: Award, label: 'Kiến thức được kiểm chứng khoa học' },
-  { icon: Shield, label: 'Bảo tàng ảo VN đầu tiên' },
-  { icon: Globe, label: 'Cập nhật liên tục 2026' },
+  { icon: Award, label: 'Scientifically verified content' },
+  { icon: Shield, label: "Vietnam's first virtual museum" },
+  { icon: Globe, label: 'Continuously updated 2026' },
 ];
 
+// Beautiful number counter component with scroll-triggered animation
 function AnimatedCounter({ target, suffix = '', decimals = 0 }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
 
+  // Theo dõi khi component vào viewport để bắt đầu đếm
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) setInView(true); },
@@ -47,6 +52,7 @@ function AnimatedCounter({ target, suffix = '', decimals = 0 }) {
     return () => observer.disconnect();
   }, []);
 
+  // Chạy animation đếm số khi vào viewport
   useEffect(() => {
     if (!inView) return;
     const duration = 2000;
@@ -65,24 +71,29 @@ function AnimatedCounter({ target, suffix = '', decimals = 0 }) {
 
   return (
     <span ref={ref}>
-      {decimals > 0 ? count.toFixed(decimals) : count.toLocaleString('vi-VN')}{suffix}
+      {decimals > 0 ? count.toFixed(decimals) : count.toLocaleString('en-US')}{suffix}
     </span>
   );
 }
 
 const SocialProof = () => {
+  // Ref cho section — dùng để tính parallax scroll
+  const sectionRef = useRef(null);
+  const headingY = useParallax(sectionRef, ['25px', '-15px']);
+
   return (
     <section
       id="testimonials"
+      ref={sectionRef}
       className="section-pad relative overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #0a0804 0%, #0d0b06 100%)' }}
+      style={{ background: 'linear-gradient(180deg, var(--theme-bg) 0%, var(--theme-bg-alt) 100%)' }}
     >
-      {/* Ambient */}
+      {/* Ánh sáng ambient mờ góc trái */}
       <div className="absolute inset-0 pointer-events-none"
         style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(245,158,11,0.04) 0%, transparent 60%)' }} />
 
       <div className="relative max-w-7xl mx-auto">
-        {/* Counter row */}
+        {/* Hàng số liệu thống kê với animation đếm */}
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-20 p-8 rounded-2xl"
           style={{ background: 'rgba(245,158,11,0.04)', border: '1px solid rgba(245,158,11,0.1)' }}
@@ -92,9 +103,9 @@ const SocialProof = () => {
           transition={{ duration: 0.7 }}
         >
           {[
-            { target: 12000, suffix: '+', label: 'Lượt tham quan ảo', decimals: 0 },
-            { target: 4.9, suffix: '/5', label: 'Đánh giá trung bình', decimals: 1 },
-            { target: 275, suffix: '+', label: 'Hiện vật số hóa', decimals: 0 },
+            { target: 12000, suffix: '+', label: 'Virtual Visits', decimals: 0 },
+            { target: 4.9, suffix: '/5', label: 'Average Rating', decimals: 1 },
+            { target: 275, suffix: '+', label: 'Digital Specimens', decimals: 0 },
           ].map((item, i) => (
             <div key={i} className="text-center">
               <div
@@ -103,29 +114,31 @@ const SocialProof = () => {
               >
                 <AnimatedCounter target={item.target} suffix={item.suffix} decimals={item.decimals} />
               </div>
-              <div className="text-sm" style={{ color: 'rgba(245,240,232,0.5)' }}>{item.label}</div>
+              <div className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>{item.label}</div>
             </div>
           ))}
         </motion.div>
 
-        {/* Header */}
+        {/* Tiêu đề phần đánh giá — có parallax nhẹ */}
         <motion.div
           className="mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          style={{ y: headingY }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="section-divider" />
           <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b' }}>
-            Khách Tham Quan Nói Gì
+            What Visitors Say
           </p>
-          <h2 className="font-serif text-3xl md:text-5xl" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Được Yêu Thích Bởi{' '}
-            <span className="text-gradient-amber">Cộng Đồng</span>
+          <h2 className="font-serif text-3xl md:text-5xl" style={{ fontFamily: 'Playfair Display, serif', color: 'var(--theme-text)' }}>
+            Loved By{' '}
+            <span className="text-gradient-amber">Our Community</span>
           </h2>
         </motion.div>
 
-        {/* Testimonials */}
+        {/* Lưới các card đánh giá */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
           {testimonials.map((t, i) => (
             <motion.div
@@ -137,22 +150,22 @@ const SocialProof = () => {
               transition={{ delay: i * 0.15, duration: 0.6 }}
               whileHover={{ y: -4 }}
             >
-              {/* Stars */}
+              {/* Sao đánh giá */}
               <div className="flex gap-1">
                 {Array.from({ length: t.rating }).map((_, j) => (
                   <Star key={j} size={14} fill="#f59e0b" color="#f59e0b" />
                 ))}
               </div>
 
-              {/* Quote */}
+              {/* Nội dung đánh giá */}
               <blockquote
                 className="text-sm leading-relaxed flex-1 italic"
-                style={{ color: 'rgba(245,240,232,0.7)', fontFamily: 'Lora, serif' }}
+                style={{ color: 'var(--theme-text-muted)', fontFamily: 'Lora, serif' }}
               >
                 "{t.text}"
               </blockquote>
 
-              {/* Author */}
+              {/* Thông tin tác giả */}
               <div
                 className="flex items-center gap-3 pt-3"
                 style={{ borderTop: '1px solid rgba(245,158,11,0.12)' }}
@@ -164,15 +177,15 @@ const SocialProof = () => {
                   {t.avatar}
                 </div>
                 <div>
-                  <div className="text-sm font-semibold" style={{ color: '#f5f0e8' }}>{t.name}</div>
-                  <div className="text-xs" style={{ color: 'rgba(245,240,232,0.45)' }}>{t.role}</div>
+                  <div className="text-sm font-semibold" style={{ color: 'var(--theme-text)' }}>{t.name}</div>
+                  <div className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>{t.role}</div>
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Trust badges */}
+        {/* Các huy hiệu uy tín phía dưới */}
         <motion.div
           className="flex flex-wrap items-center justify-center gap-4"
           initial={{ opacity: 0 }}
@@ -189,7 +202,7 @@ const SocialProof = () => {
                 style={{
                   background: 'rgba(245,158,11,0.07)',
                   border: '1px solid rgba(245,158,11,0.18)',
-                  color: 'rgba(245,240,232,0.7)',
+                  color: 'var(--theme-text-muted)',
                 }}
               >
                 <Icon size={14} color="#f59e0b" strokeWidth={2} />

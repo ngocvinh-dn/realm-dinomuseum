@@ -1,22 +1,24 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useParallax } from '../../hooks/useParallax';
 
+// Geological period data — 3 eras of the Mesozoic, each with a distinctive image
 const eons = [
   {
     id: 'triassic',
     nameVi: 'Kỷ Tam Điệp',
     nameEn: 'Triassic',
     mya: '252 – 201',
-    duration: '51 triệu năm',
+    duration: '51 million years',
     color: '#e07b39',
     creature: '🦕',
-    creatureVi: 'Khủng long đầu tiên',
+    creatureVi: 'First Dinosaurs',
     image: '/images/triassic_eoraptor.png',
     imageCredit: 'Eoraptor lunensis',
-    desc: 'Khủng long xuất hiện lần đầu tiên trên Trái Đất. Thú nhỏ sống sót sau tuyệt chủng Permian. Pangaea bắt đầu tách vỡ thành các lục địa. Khí hậu khô, nóng — sa mạc rộng lớn bao phủ nội địa.',
-    climate: 'Khô nóng — sa mạc rộng lớn',
+    desc: 'Dinosaurs appeared on Earth for the first time. Small mammals survived the Permian extinction. Pangaea began breaking apart into continents. The climate was hot and arid — vast deserts covered the interior.',
+    climate: 'Hot & arid — vast desert landscapes',
     creatures: ['Eoraptor', 'Coelophysis', 'Plateosaurus', 'Herrerasaurus'],
-    event: 'Khủng long xuất hiện',
+    event: 'First Dinosaurs Emerge',
     eventColor: 'rgba(224,123,57,0.25)',
   },
   {
@@ -24,16 +26,16 @@ const eons = [
     nameVi: 'Kỷ Jura',
     nameEn: 'Jurassic',
     mya: '201 – 145',
-    duration: '56 triệu năm',
+    duration: '56 million years',
     color: '#4ade80',
     creature: '🦖',
-    creatureVi: 'Khủng long thống trị',
+    creatureVi: 'Dinosaurs Dominate',
     image: '/images/jurassic_brachiosaurus.jpg',
     imageCredit: 'Brachiosaurus altithorax',
-    desc: 'Thời đại vàng của khủng long — Stegosaurus, Brachiosaurus, Allosaurus thống trị khắp nơi. Pangaea tách ra, hình thành Đại Tây Dương. Chim đầu tiên tiến hóa từ khủng long theropod nhỏ. Khí hậu ấm, ẩm với rừng rậm rộng lớn.',
-    climate: 'Ấm ẩm — rừng rậm bao phủ',
+    desc: 'The golden age of dinosaurs — Stegosaurus, Brachiosaurus, and Allosaurus ruled everywhere. Pangaea split apart, forming the Atlantic Ocean. The first birds evolved from small theropod dinosaurs. Warm, humid climate with vast lush forests.',
+    climate: 'Warm & humid — dense rainforests',
     creatures: ['Brachiosaurus', 'Stegosaurus', 'Allosaurus', 'Archaeopteryx'],
-    event: 'Kỷ hoàng kim khủng long',
+    event: 'Golden Age of Dinosaurs',
     eventColor: 'rgba(74,222,128,0.2)',
   },
   {
@@ -41,30 +43,34 @@ const eons = [
     nameVi: 'Kỷ Phấn Trắng',
     nameEn: 'Cretaceous',
     mya: '145 – 66',
-    duration: '79 triệu năm',
+    duration: '79 million years',
     color: '#f59e0b',
     creature: '🦕',
     creatureVi: 'T-Rex & Triceratops',
     image: '/images/cretaceous_trex.jpg',
     imageCredit: 'Tyrannosaurus rex "Sue"',
-    desc: 'T-Rex thống trị — kẻ săn mồi lớn nhất trong lịch sử. Hoa quả đầu tiên xuất hiện. Kết thúc bằng sự kiện K-Pg: tiểu hành tinh Chicxulub đường kính 10km đâm vào Yucatán, Mexico — xóa sổ 75% sự sống trên Trái Đất, bao gồm toàn bộ khủng long không bay.',
-    climate: 'Ấm, không có băng cực — mực nước biển cao',
+    desc: 'T-Rex dominated — the largest predator in history. Flowering plants appeared for the first time. The era ended with the K-Pg event: the Chicxulub asteroid (10 km diameter) struck Yucatán, Mexico — wiping out 75% of all life, including all non-avian dinosaurs.',
+    climate: 'Warm, no polar ice — high sea levels',
     creatures: ['T-Rex', 'Triceratops', 'Velociraptor', 'Spinosaurus'],
-    event: '☄️ Tuyệt chủng K-Pg — 66 triệu năm trước',
+    event: '☄️ K-Pg Extinction — 66 million years ago',
     eventColor: 'rgba(239,68,68,0.2)',
   },
 ];
 
 const GeoTimeline = () => {
   const [active, setActive] = useState(null);
+  // Ref cho section — dùng để tính parallax scroll
+  const sectionRef = useRef(null);
+  const headingY = useParallax(sectionRef, ['30px', '-18px']);
 
   return (
     <section
       id="timeline"
+      ref={sectionRef}
       className="section-pad relative overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #0a0804 0%, #0d0b06 100%)' }}
+      style={{ background: 'linear-gradient(180deg, var(--theme-bg) 0%, var(--theme-bg-alt) 100%)' }}
     >
-      {/* Subtle background lines */}
+      {/* Các đường ngang mờ làm texture nền */}
       {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}
@@ -74,30 +80,32 @@ const GeoTimeline = () => {
       ))}
 
       <div className="relative max-w-7xl mx-auto">
-        {/* Section header */}
+        {/* Tiêu đề section Dòng Thời Gian Địa Chất — có parallax nhẹ */}
         <motion.div
           className="mb-16"
-          initial={{ opacity: 0, y: 30 }}
+          style={{ y: headingY }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="section-divider" />
           <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b' }}>
-            Dòng Thời Gian Địa Chất
+            Geological Timeline
           </p>
-          <h2 className="font-serif text-4xl md:text-5xl leading-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Đại Trung Sinh —{' '}
-            <span className="text-gradient-amber">Kỷ Nguyên Khủng Long</span>
+          <h2 className="font-serif text-4xl md:text-5xl leading-tight"
+            style={{ fontFamily: 'Playfair Display, serif', color: 'var(--theme-text)' }}>
+            Mesozoic Era —{' '}
+            <span className="text-gradient-amber">The Age of Dinosaurs</span>
           </h2>
-          <p className="mt-4 text-sm" style={{ color: 'rgba(245,240,232,0.45)', fontFamily: 'Lora, serif', fontStyle: 'italic' }}>
-            252 – 66 triệu năm trước • Click vào từng kỷ để khám phá chi tiết
+          <p className="mt-4 text-sm" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Lora, serif', fontStyle: 'italic' }}>
+            252 – 66 million years ago • Click each period to explore in detail
           </p>
         </motion.div>
 
-        {/* Timeline — 3 cards horizontal */}
+        {/* Timeline — 3 card theo chiều ngang */}
         <div className="relative">
-          {/* Connecting line */}
+          {/* Đường kết nối ngang giữa các card (chỉ hiện trên desktop) */}
           <div
             className="absolute top-16 left-0 right-0 h-0.5 hidden md:block"
             style={{ background: 'linear-gradient(90deg, rgba(245,158,11,0.15), rgba(245,158,11,0.4), rgba(245,158,11,0.15))' }}
@@ -114,12 +122,12 @@ const GeoTimeline = () => {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.15, duration: 0.6, ease: 'easeOut' }}
                 >
-                  {/* Period dot on timeline */}
+                  {/* Chấm tròn trên đường timeline (chỉ hiện trên desktop) */}
                   <div className="hidden md:flex justify-center mb-6 relative">
                     <motion.div
                       className="w-5 h-5 rounded-full border-2 cursor-pointer z-10"
                       style={{
-                        background: isActive ? eon.color : 'rgba(17,14,8,0.9)',
+                        background: isActive ? eon.color : 'var(--theme-bg)',
                         borderColor: eon.color,
                         boxShadow: isActive ? `0 0 20px ${eon.color}60` : 'none',
                       }}
@@ -127,7 +135,7 @@ const GeoTimeline = () => {
                       transition={{ repeat: isActive ? Infinity : 0, duration: 2 }}
                       onClick={() => setActive(isActive ? null : eon)}
                     />
-                    {/* Year label */}
+                    {/* Nhãn năm phía trên chấm */}
                     <div
                       className="absolute -top-7 text-xs font-mono text-center whitespace-nowrap"
                       style={{ color: 'rgba(245,158,11,0.5)', fontSize: '10px' }}
@@ -136,11 +144,11 @@ const GeoTimeline = () => {
                     </div>
                   </div>
 
-                  {/* Card */}
+                  {/* Card thông tin từng kỷ địa chất */}
                   <motion.div
                     className="relative rounded-2xl overflow-hidden cursor-pointer"
                     style={{
-                      background: isActive ? eon.eventColor : 'rgba(17,14,8,0.85)',
+                      background: isActive ? eon.eventColor : 'var(--theme-card-bg)',
                       border: `1px solid ${isActive ? eon.color : 'rgba(245,158,11,0.12)'}`,
                       boxShadow: isActive ? `0 20px 60px rgba(0,0,0,0.5), 0 0 40px ${eon.color}20` : 'none',
                     }}
@@ -148,34 +156,69 @@ const GeoTimeline = () => {
                     transition={{ duration: 0.3 }}
                     onClick={() => setActive(isActive ? null : eon)}
                   >
-                    {/* Top color bar */}
+                    {/* Thanh màu đặc trưng phía trên card */}
                     <div className="h-1" style={{ background: eon.color }} />
 
+                    {/* Ảnh đặc trưng của từng kỷ (hiển thị khi active) */}
+                    <AnimatePresence>
+                      {isActive && eon.image && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: '180px' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.4 }}
+                          className="overflow-hidden relative"
+                        >
+                          <img
+                            src={eon.image}
+                            alt={eon.imageCredit}
+                            className="w-full h-full object-cover"
+                            style={{
+                              objectPosition: 'center center',
+                              filter: 'brightness(0.8) saturate(1.1)',
+                            }}
+                          />
+                          {/* Gradient tối từ dưới lên để text dễ đọc */}
+                          <div
+                            className="absolute inset-0"
+                            style={{ background: 'linear-gradient(to bottom, transparent 50%, rgba(10,8,4,0.8) 100%)' }}
+                          />
+                          {/* Nhãn tên loài phía dưới ảnh */}
+                          <div className="absolute bottom-2 right-3">
+                            <span className="text-xs italic" style={{ color: 'rgba(245,240,232,0.6)', fontFamily: 'Nunito, sans-serif' }}>
+                              {eon.imageCredit}
+                            </span>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
                     <div className="p-6">
-                      {/* Icon + name */}
+                      {/* Icon + tên kỷ */}
                       <div className="flex items-start justify-between mb-4">
                         <div>
                           <div className="text-4xl mb-2">{eon.creature}</div>
                           <h3
                             className="font-serif font-bold text-xl leading-tight"
-                            style={{ fontFamily: 'Playfair Display, serif', color: isActive ? eon.color : '#f5f0e8' }}
+                            style={{ fontFamily: 'Playfair Display, serif', color: isActive ? eon.color : 'var(--theme-text)' }}
                           >
                             {eon.nameVi}
                           </h3>
-                          <p className="text-xs mt-0.5 italic" style={{ color: 'rgba(245,240,232,0.45)' }}>
+                          <p className="text-xs mt-0.5 italic" style={{ color: 'var(--theme-text-muted)' }}>
                             {eon.nameEn}
                           </p>
                         </div>
+                        {/* Huy hiệu khoảng thời gian */}
                         <div
                           className="flex-shrink-0 text-right px-3 py-2 rounded-xl"
                           style={{ background: `${eon.color}18`, border: `1px solid ${eon.color}40` }}
                         >
                           <div className="text-xs font-bold" style={{ color: eon.color }}>{eon.mya}</div>
-                          <div className="text-xs" style={{ color: 'rgba(245,240,232,0.4)', fontSize: '10px' }}>Triệu năm</div>
+                          <div className="text-xs" style={{ color: 'var(--theme-text-dim)', fontSize: '10px' }}>Mya</div>
                         </div>
                       </div>
 
-                      {/* Duration + climate */}
+                      {/* Nhãn thời gian và khí hậu */}
                       <div className="flex flex-wrap gap-2 mb-4">
                         <span
                           className="px-2.5 py-1 rounded-full text-xs"
@@ -185,21 +228,21 @@ const GeoTimeline = () => {
                         </span>
                         <span
                           className="px-2.5 py-1 rounded-full text-xs"
-                          style={{ background: 'rgba(245,158,11,0.06)', color: 'rgba(245,240,232,0.6)', border: '1px solid rgba(245,158,11,0.1)' }}
+                          style={{ background: 'rgba(245,158,11,0.06)', color: 'var(--theme-text-muted)', border: '1px solid rgba(245,158,11,0.1)' }}
                         >
                           🌍 {eon.climate}
                         </span>
                       </div>
 
-                      {/* Event badge */}
+                      {/* Sự kiện nổi bật của kỷ */}
                       <div
                         className="px-3 py-1.5 rounded-lg text-xs font-medium mb-4"
-                        style={{ background: eon.eventColor, color: 'rgba(245,240,232,0.8)', border: `1px solid ${eon.color}25` }}
+                        style={{ background: eon.eventColor, color: 'var(--theme-text)', border: `1px solid ${eon.color}25` }}
                       >
                         ✦ {eon.event}
                       </div>
 
-                      {/* Description — show when active */}
+                      {/* Mô tả chi tiết — chỉ hiện khi card được click (active) */}
                       <AnimatePresence>
                         {isActive && (
                           <motion.div
@@ -211,14 +254,14 @@ const GeoTimeline = () => {
                           >
                             <p
                               className="text-sm leading-relaxed mb-4"
-                              style={{ color: 'rgba(245,240,232,0.7)', fontFamily: 'Lora, serif' }}
+                              style={{ color: 'var(--theme-text-muted)', fontFamily: 'Lora, serif' }}
                             >
                               {eon.desc}
                             </p>
-                            {/* Creatures list */}
+                            {/* Key Species list */}
                             <div>
                               <p className="text-xs uppercase tracking-wider mb-2" style={{ color: 'rgba(245,158,11,0.6)' }}>
-                                Loài đặc trưng:
+                                Key Species:
                               </p>
                               <div className="flex flex-wrap gap-2">
                                 {eon.creatures.map((c, j) => (
@@ -236,10 +279,10 @@ const GeoTimeline = () => {
                         )}
                       </AnimatePresence>
 
-                      {/* Toggle hint */}
+                      {/* Gợi ý click để mở/thu gọn */}
                       <div className="mt-4 flex items-center justify-between">
-                        <span className="text-xs" style={{ color: 'rgba(245,240,232,0.3)' }}>
-                          {isActive ? 'Click để thu gọn' : 'Click để xem chi tiết'}
+                        <span className="text-xs" style={{ color: 'var(--theme-text-dim)' }}>
+                          {isActive ? 'Click to collapse' : 'Click to explore'}
                         </span>
                         <motion.span
                           animate={{ rotate: isActive ? 180 : 0 }}
@@ -257,7 +300,7 @@ const GeoTimeline = () => {
           </div>
         </div>
 
-        {/* Scale bar */}
+        {/* Thanh tỷ lệ thời gian ở cuối section */}
         <motion.div
           className="mt-12 flex items-center gap-4"
           initial={{ opacity: 0 }}
@@ -265,16 +308,18 @@ const GeoTimeline = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <span className="text-xs whitespace-nowrap" style={{ color: 'rgba(245,240,232,0.3)' }}>252 Ma</span>
+          <span className="text-xs whitespace-nowrap" style={{ color: 'var(--theme-text-dim)' }}>252 Ma</span>
           <div className="flex-1 relative h-2 rounded-full overflow-hidden">
             <div className="absolute inset-0 flex">
+              {/* Phân đoạn tỷ lệ theo thời gian của 3 kỷ */}
               <div className="flex-none" style={{ width: '27%', background: eons[0].color, opacity: 0.5 }} />
               <div className="flex-none" style={{ width: '30%', background: eons[1].color, opacity: 0.5 }} />
               <div className="flex-none" style={{ width: '43%', background: eons[2].color, opacity: 0.5 }} />
             </div>
           </div>
-          <span className="text-xs whitespace-nowrap" style={{ color: 'rgba(245,240,232,0.3)' }}>66 Ma</span>
+          <span className="text-xs whitespace-nowrap" style={{ color: 'var(--theme-text-dim)' }}>66 Ma</span>
         </motion.div>
+        {/* Nhãn tên các kỷ bên dưới thanh tỷ lệ */}
         <div className="flex mt-1 gap-0" style={{ paddingLeft: '36px', paddingRight: '36px' }}>
           {eons.map((e, i) => (
             <div
@@ -282,7 +327,7 @@ const GeoTimeline = () => {
               className="text-center"
               style={{ width: i === 0 ? '27%' : i === 1 ? '30%' : '43%', fontSize: '9px', color: e.color, opacity: 0.7 }}
             >
-              {e.nameVi}
+              {e.nameEn}
             </div>
           ))}
         </div>

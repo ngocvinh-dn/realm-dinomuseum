@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", sans-serif;
-  --font-serif: "Playfair Display", serif;
-  --font-lora: "Lora", serif;
+  --font-sans: "Nunito", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+  --font-ui: "DM Sans", sans-serif;
 
   /* Amber/Gold Palette */
   --color-amber-50: #fffbeb;
@@ -27,14 +27,61 @@
 }
 
 /* =====================
+   THEME VARIABLES
+   ===================== */
+:root {
+  --theme-bg: #0a0804;
+  --theme-bg-alt: #110e08;
+  --theme-surface: rgba(17, 14, 8, 0.85);
+  --theme-text: #f5f0e8;
+  --theme-text-muted: rgba(245, 240, 232, 0.5);
+  --theme-text-dim: rgba(245, 240, 232, 0.3);
+  --theme-border: rgba(245, 158, 11, 0.15);
+  --theme-card-bg: rgba(17, 14, 8, 0.85);
+  --theme-nav-bg: rgba(10, 8, 4, 0.95);
+  --theme-input-bg: rgba(30, 23, 16, 0.8);
+  --theme-accent: #f59e0b;
+  --theme-accent-bright: #fbbf24;
+  --theme-glass: rgba(30, 23, 16, 0.6);
+}
+
+[data-theme="light"] {
+  --theme-bg: #faf7f0;
+  --theme-bg-alt: #f0e8d4;
+  --theme-surface: rgba(255, 252, 245, 0.95);
+  --theme-text: #1a1208;
+  --theme-text-muted: rgba(26, 18, 8, 0.6);
+  --theme-text-dim: rgba(26, 18, 8, 0.38);
+  --theme-border: rgba(180, 83, 9, 0.22);
+  --theme-card-bg: rgba(255, 251, 242, 0.95);
+  --theme-nav-bg: rgba(250, 247, 240, 0.97);
+  --theme-input-bg: rgba(243, 237, 224, 0.95);
+  --theme-accent: #b45309;
+  --theme-accent-bright: #d97706;
+  --theme-glass: rgba(255, 251, 240, 0.82);
+}
+
+/* =====================
    BASE
    ===================== */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
+/* Disable native smooth scroll — Lenis handles this with better physics */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
+}
+
+/* Lenis required CSS reset */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
 
 html, body {
@@ -42,10 +89,11 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
-  background-color: #0a0804;
+  background-color: var(--theme-bg);
   font-family: var(--font-sans);
-  color: #f5f0e8;
+  color: var(--theme-text);
   overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 ::selection {
@@ -53,7 +101,7 @@ html, body {
   color: #0a0804;
 }
 
-/* Custom scrollbar */
+/* Thanh cuộn dọc trang — dark mode */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -68,14 +116,25 @@ html, body {
   background: #f59e0b;
 }
 
+/* Thanh cuộn — light mode */
+[data-theme="light"]::-webkit-scrollbar-track {
+  background: #f0e8d4;
+}
+[data-theme="light"]::-webkit-scrollbar-thumb {
+  background: #b45309;
+}
+[data-theme="light"]::-webkit-scrollbar-thumb:hover {
+  background: #d97706;
+}
+
 /* =====================
    TYPOGRAPHY
    ===================== */
 .font-serif {
   font-family: var(--font-serif);
 }
-.font-lora {
-  font-family: var(--font-lora);
+.font-ui {
+  font-family: var(--font-ui);
 }
 
 /* =====================
@@ -212,17 +271,24 @@ html, body {
   box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
 }
 
+/* Card kính mờ — dùng CSS variables để hỗ trợ dark/light mode */
 .glass-card {
-  background: rgba(30, 23, 16, 0.6);
+  background: var(--theme-glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(245, 158, 11, 0.12);
+  border: 1px solid var(--theme-border);
   border-radius: 16px;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .glass-card:hover {
-  border-color: rgba(245, 158, 11, 0.25);
-  background: rgba(30, 23, 16, 0.8);
+  border-color: rgba(245, 158, 11, 0.35);
+  background: var(--theme-surface);
+}
+
+/* Hover của glass-card trong light mode */
+[data-theme="light"] .glass-card:hover {
+  box-shadow: 0 8px 30px rgba(180, 83, 9, 0.12);
 }
 
 .amber-border {
@@ -236,6 +302,7 @@ html, body {
   margin-bottom: 1.5rem;
 }
 
+/* Lớp hạt nhiễu (grain) phủ toàn trang để tạo cảm giác cổ điển */
 .grain-overlay::after {
   content: '';
   position: fixed;
@@ -250,6 +317,11 @@ html, body {
   opacity: 0.4;
 }
 
+/* Giảm mạnh grain overlay trong light mode để không bị tối */
+[data-theme="light"] .grain-overlay::after {
+  opacity: 0.12;
+}
+
 .animate-float {
   animation: float-up-down 4s ease-in-out infinite;
 }
@@ -261,12 +333,13 @@ html, body {
 /* =====================
    GALLERY ROOM CARD
    ===================== */
+/* Card phòng trưng bày — hỗ trợ dark/light mode */
 .gallery-room-card {
   position: relative;
   overflow: hidden;
   border-radius: 16px;
-  border: 1px solid rgba(245, 158, 11, 0.12);
-  background: rgba(17, 14, 8, 0.8);
+  border: 1px solid var(--theme-border);
+  background: var(--theme-card-bg);
   transition: all 0.4s ease;
   cursor: pointer;
 }
@@ -274,13 +347,18 @@ html, body {
 .gallery-room-card:hover {
   border-color: rgba(245, 158, 11, 0.4);
   transform: translateY(-4px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(245,158,11,0.1);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 0 40px rgba(245,158,11,0.1);
+}
+
+/* Hover shadow nhẹ hơn trong light mode */
+[data-theme="light"] .gallery-room-card:hover {
+  box-shadow: 0 12px 40px rgba(180,83,9,0.15), 0 0 30px rgba(245,158,11,0.08);
 }
 
 .gallery-room-card .spotlight {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 30%, rgba(245,158,11,0.15) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 30%, rgba(245,158,11,0.12) 0%, transparent 70%);
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -292,19 +370,25 @@ html, body {
 /* =====================
    SPECIMEN CARD
    ===================== */
+/* Card hiện vật nổi bật — hỗ trợ dark/light mode */
 .specimen-card {
   position: relative;
   overflow: hidden;
   border-radius: 20px;
-  border: 1px solid rgba(245, 158, 11, 0.15);
-  background: rgba(17, 14, 8, 0.9);
+  border: 1px solid var(--theme-border);
+  background: var(--theme-card-bg);
   transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   cursor: pointer;
 }
 
 .specimen-card:hover {
   border-color: rgba(245, 158, 11, 0.5);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(245,158,11,0.15);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(245,158,11,0.12);
+}
+
+/* Hover shadow nhẹ hơn trong light mode */
+[data-theme="light"] .specimen-card:hover {
+  box-shadow: 0 16px 50px rgba(180,83,9,0.18), 0 0 40px rgba(245,158,11,0.08);
 }
 
 .specimen-card .detail-panel {
@@ -367,9 +451,10 @@ html, body {
 /* =====================
    MUSEUM MAP
    ===================== */
+/* Phòng trên sơ đồ bảo tàng — hỗ trợ dark/light mode */
 .museum-map-room {
   position: absolute;
-  border: 1.5px solid rgba(245,158,11,0.25);
+  border: 1.5px solid var(--theme-border);
   border-radius: 6px;
   background: rgba(245,158,11,0.04);
   cursor: pointer;
@@ -389,31 +474,38 @@ html, body {
 
 .museum-map-room.active {
   border-color: #f59e0b;
-  background: rgba(245,158,11,0.15);
-  box-shadow: 0 0 30px rgba(245,158,11,0.25);
+  background: rgba(245,158,11,0.12);
+  box-shadow: 0 0 30px rgba(245,158,11,0.2);
 }
 
 /* =====================
    VIRTUAL TOUR
    ===================== */
+/* Khung tour ảo — hỗ trợ dark/light mode */
 .tour-frame {
   position: relative;
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid rgba(245,158,11,0.2);
+  border: 1px solid var(--theme-border);
   cursor: pointer;
   transition: all 0.4s ease;
+  background: var(--theme-card-bg);
 }
 
 .tour-frame:hover {
   border-color: rgba(245,158,11,0.5);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* Hover shadow nhẹ hơn trong light mode */
+[data-theme="light"] .tour-frame:hover {
+  box-shadow: 0 12px 40px rgba(180,83,9,0.15);
 }
 
 .tour-frame .play-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -428,26 +520,33 @@ html, body {
 /* =====================
    INPUT STYLES
    ===================== */
+/* Input form — hỗ trợ dark/light mode */
 .input-dino {
-  background: rgba(30, 23, 16, 0.8);
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  background: var(--theme-input-bg);
+  border: 1px solid var(--theme-border);
   border-radius: 8px;
-  color: #f5f0e8;
+  color: var(--theme-text);
   padding: 0.875rem 1.25rem;
   width: 100%;
   font-family: var(--font-sans);
   font-size: 0.9375rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.3s;
   outline: none;
 }
 
 .input-dino::placeholder {
-  color: rgba(245, 240, 232, 0.35);
+  color: var(--theme-text-dim);
 }
 
 .input-dino:focus {
   border-color: rgba(245, 158, 11, 0.6);
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.08), 0 0 20px rgba(245, 158, 11, 0.05);
+}
+
+/* Focus nhẹ hơn trong light mode */
+[data-theme="light"] .input-dino:focus {
+  border-color: rgba(180, 83, 9, 0.7);
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.1);
 }
 
 .input-dino:focus-visible {
