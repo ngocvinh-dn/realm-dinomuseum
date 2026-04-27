@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Home from './pages/home';
@@ -19,3 +20,8 @@ function App() {
 }
 
 export default App;
+=======
+import PopupTestPage from "./pages/PopupTestPage";
+
+<Route path="/popup-test" element={<PopupTestPage />} />
+>>>>>>> 6acb2ed8cd15b4fe3ddc722df657d78b2ce1ec3b
