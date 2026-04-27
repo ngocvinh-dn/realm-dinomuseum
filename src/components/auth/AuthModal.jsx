@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { supabase } from '../../lib/supabaseClient';
 
 // Hằng số cho tab đăng nhập và đăng ký
@@ -25,6 +26,8 @@ const AuthModal = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const captchaRef = useRef(null);
 
   // Reset form về trạng thái ban đầu
   const reset = () => {
@@ -32,6 +35,8 @@ const AuthModal = ({ isOpen, onClose }) => {
     setError('');
     setSuccess('');
     setLoading(false);
+    setCaptchaToken(null);
+    captchaRef.current?.resetCaptcha();
   };
 
   // Chuyển đổi giữa tab đăng nhập và đăng ký
@@ -49,14 +54,21 @@ const AuthModal = ({ isOpen, onClose }) => {
   // Xử lý đăng nhập bằng Supabase Auth
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!captchaToken) {
+      setError('Please complete the CAPTCHA verification.');
+      return;
+    }
     setLoading(true);
     setError('');
     const { error } = await supabase.auth.signInWithPassword({
       email: form.email,
       password: form.password,
+      options: { captchaToken },
     });
     if (error) {
       setError('Incorrect email or password. Please try again.');
+      captchaRef.current?.resetCaptcha();
+      setCaptchaToken(null);
     } else {
       setSuccess('Login successful! Museum gates are open.');
       setTimeout(() => onClose(), 1400);
@@ -84,6 +96,13 @@ const AuthModal = ({ isOpen, onClose }) => {
       return;
     }
 
+    // Bắt buộc phải hoàn thành captcha trước khi đăng ký
+    if (!captchaToken) {
+      setError('Please complete the CAPTCHA verification.');
+      setLoading(false);
+      return;
+    }
+
     // Call Supabase sign-up API with emailRedirectTo to fix confirmation link redirect
     const { error } = await supabase.auth.signUp({
       email: form.email,
@@ -91,6 +110,7 @@ const AuthModal = ({ isOpen, onClose }) => {
       options: {
         // Redirect to current origin after email confirmation (fixes localhost redirect issue)
         emailRedirectTo: window.location.origin,
+        captchaToken,
         data: {
           full_name: form.name,
           phone: form.phone.replace(/\s/g, ''),
@@ -105,6 +125,9 @@ const AuthModal = ({ isOpen, onClose }) => {
       } else {
         setError('Registration failed: ' + error.message);
       }
+      // Reset captcha khi có lỗi để người dùng giải lại
+      captchaRef.current?.resetCaptcha();
+      setCaptchaToken(null);
     } else {
       // Success message with email verification guidance
       setSuccess('Registration successful! Please check your email inbox to confirm your account (including spam folder).');
@@ -262,6 +285,22 @@ const AuthModal = ({ isOpen, onClose }) => {
                       </motion.div>
                     ))}
                   </div>
+
+                  {/* hCaptcha — hiển thị cho cả Login và Register */}
+                  <motion.div
+                    className="mt-5 flex justify-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <HCaptcha
+                      sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
+                      onVerify={(token) => setCaptchaToken(token)}
+                      onExpire={() => setCaptchaToken(null)}
+                      theme="dark"
+                      ref={captchaRef}
+                    />
+                  </motion.div>
 
                   {/* Hiển thị thông báo lỗi hoặc thành công */}
                   <AnimatePresence mode="wait">
