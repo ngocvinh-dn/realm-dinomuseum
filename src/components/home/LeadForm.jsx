@@ -36,20 +36,17 @@ const LeadForm = ({ onLoginClick }) => {
     setLoading(true);
     setErrorMsg('');
 
+    // Cập nhật thông tin nhận vé vào bảng profiles
     const { error } = await supabase
-      .from('leads')
-      .insert([{
-        name: form.name || user.user_metadata?.full_name,
-        email: form.email || user.email,
+      .from('profiles')
+      .update({
         phone: form.phone || null,
-      }]);
+        has_ticket: true
+      })
+      .eq('id', user.id);
 
     if (error) {
-      if (error.code === '23505') {
-        setErrorMsg('This email already has a ticket! Check your inbox for the tour link.');
-      } else {
-        setErrorMsg('An error occurred. Please try again later.');
-      }
+      setErrorMsg('An error occurred while opening the gates. Please try again.');
       setLoading(false);
       return;
     }
