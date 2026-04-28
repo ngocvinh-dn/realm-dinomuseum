@@ -1,5 +1,11 @@
+/// <reference types="vite/client" />
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://your-project.supabase.co'
-const supabaseKey = 'your-anon-key'
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('[Supabase] Thiếu biến môi trường VITE_SUPABASE_URL hoặc VITE_SUPABASE_ANON_KEY trong file .env')
+}
+
+export const supabase = createClient(supabaseUrl, supabaseKey)

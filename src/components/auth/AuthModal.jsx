@@ -55,7 +55,7 @@ const AuthModal = ({ isOpen, onClose }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!captchaToken) {
-      setError('Please complete the CAPTCHA verification.');
+      setError('Vui lòng hoàn thành xác minh CAPTCHA.');
       return;
     }
     setLoading(true);
@@ -66,49 +66,49 @@ const AuthModal = ({ isOpen, onClose }) => {
       options: { captchaToken },
     });
     if (error) {
-      setError('Incorrect email or password. Please try again.');
+      setError('Email hoặc mật khẩu không chính xác. Vui lòng thử lại.');
       captchaRef.current?.resetCaptcha();
       setCaptchaToken(null);
     } else {
-      setSuccess('Login successful! Museum gates are open.');
+      setSuccess('Đăng nhập thành công! Cổng bảo tàng đã mở.');
       setTimeout(() => onClose(), 1400);
     }
     setLoading(false);
   };
 
-  // Handle new account registration with Supabase Auth
+  // Xử lý đăng ký tài khoản mới bằng Supabase Auth
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    // Validate password length
+    // Kiểm tra độ dài mật khẩu
     if (form.password.length < 6) {
-      setError('Password must be at least 6 characters.');
+      setError('Mật khẩu phải có ít nhất 6 ký tự.');
       setLoading(false);
       return;
     }
 
-    // Validate phone number format
+    // Kiểm tra định dạng số điện thoại
     if (!isValidPhone(form.phone)) {
-      setError('Invalid phone number. Please enter a valid VN number (e.g. 0912345678).');
+      setError('Số điện thoại không hợp lệ. Vui lòng nhập số VN hợp lệ (VD: 0912345678).');
       setLoading(false);
       return;
     }
 
     // Bắt buộc phải hoàn thành captcha trước khi đăng ký
     if (!captchaToken) {
-      setError('Please complete the CAPTCHA verification.');
+      setError('Vui lòng hoàn thành xác minh CAPTCHA.');
       setLoading(false);
       return;
     }
 
-    // Call Supabase sign-up API with emailRedirectTo to fix confirmation link redirect
+    // Gọi API đăng ký của Supabase với emailRedirectTo để sửa lỗi chuyển hướng liên kết xác nhận
     const { error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: {
-        // Redirect to current origin after email confirmation (fixes localhost redirect issue)
+        // Chuyển hướng về trang hiện tại sau khi xác nhận email (sửa lỗi chuyển hướng localhost)
         emailRedirectTo: window.location.origin,
         captchaToken,
         data: {
@@ -119,34 +119,34 @@ const AuthModal = ({ isOpen, onClose }) => {
     });
 
     if (error) {
-      // Display Supabase error (translate common errors to English)
+      // Hiển thị lỗi từ Supabase (dịch các lỗi phổ biến sang tiếng Việt)
       if (error.message.includes('already registered') || error.message.includes('User already registered')) {
-        setError('This email is already registered. Please log in or use a different email.');
+        setError('Email này đã được đăng ký. Vui lòng đăng nhập hoặc dùng một email khác.');
       } else {
-        setError('Registration failed: ' + error.message);
+        setError('Đăng ký thất bại: ' + error.message);
       }
       // Reset captcha khi có lỗi để người dùng giải lại
       captchaRef.current?.resetCaptcha();
       setCaptchaToken(null);
     } else {
-      // Success message with email verification guidance
-      setSuccess('Registration successful! Please check your email inbox to confirm your account (including spam folder).');
+      // Thông báo thành công kèm hướng dẫn xác thực email
+      setSuccess('Đăng ký thành công! Vui lòng kiểm tra hộp thư email của bạn để xác nhận tài khoản (bao gồm cả thư mục rác).');
     }
     setLoading(false);
   };
 
-  // Input fields for the login form
+  // Các trường nhập liệu cho form đăng nhập
   const loginFields = [
-    { name: 'email', label: 'Email', type: 'email', placeholder: 'your@email.com' },
-    { name: 'password', label: 'Password', type: 'password', placeholder: '••••••••' },
+    { name: 'email', label: 'Email', type: 'email', placeholder: 'email@cua-ban.com' },
+    { name: 'password', label: 'Mật khẩu', type: 'password', placeholder: '••••••••' },
   ];
 
-  // Input fields for the registration form
+  // Các trường nhập liệu cho form đăng ký
   const registerFields = [
-    { name: 'name', label: 'Full Name', type: 'text', placeholder: 'John Doe' },
-    { name: 'email', label: 'Email', type: 'email', placeholder: 'your@email.com' },
-    { name: 'phone', label: 'Phone Number', type: 'tel', placeholder: '0912 345 678' },
-    { name: 'password', label: 'Password', type: 'password', placeholder: 'At least 6 characters' },
+    { name: 'name', label: 'Họ và tên', type: 'text', placeholder: 'Nguyễn Văn A' },
+    { name: 'email', label: 'Email', type: 'email', placeholder: 'email@cua-ban.com' },
+    { name: 'phone', label: 'Số điện thoại', type: 'tel', placeholder: '0912 345 678' },
+    { name: 'password', label: 'Mật khẩu', type: 'password', placeholder: 'Ít nhất 6 ký tự' },
   ];
 
   const fields = tab === TAB_LOGIN ? loginFields : registerFields;
@@ -210,11 +210,11 @@ const AuthModal = ({ isOpen, onClose }) => {
                         className="font-serif text-2xl font-bold"
                         style={{ fontFamily: 'Cormorant Garamond, serif', color: '#fbbf24' }}
                       >
-                        {tab === TAB_LOGIN ? 'Welcome Back' : 'Create Account'}
+                        {tab === TAB_LOGIN ? 'Mừng trở lại' : 'Tạo tài khoản'}
                       </h2>
                     </div>
                     <p className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>
-                    Dinosaur Museum — Virtual Experience
+                    Bảo tàng Khủng long — Trải nghiệm Thực tế ảo
                     </p>
                   </div>
                   {/* Nút đóng modal */}
@@ -244,7 +244,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                         letterSpacing: '0.03em',
                       }}
                     >
-                      {t === TAB_LOGIN ? 'Sign In' : 'Register'}
+                      {t === TAB_LOGIN ? 'Đăng nhập' : 'Đăng ký'}
                     </button>
                   ))}
                 </div>
@@ -267,7 +267,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                           {field.label}
                           {field.name === 'phone' && (
                             <span className="ml-1 normal-case font-normal" style={{ color: 'var(--theme-text-dim)', letterSpacing: 0 }}>
-                              (required for verification)
+                              (bắt buộc để xác minh)
                             </span>
                           )}
                         </label>
@@ -336,14 +336,14 @@ const AuthModal = ({ isOpen, onClose }) => {
                     {loading ? (
                       <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      tab === TAB_LOGIN ? 'Enter the Museum' : 'Create My Account'
+                      tab === TAB_LOGIN ? 'Vào Bảo Tàng' : 'Tạo Tài Khoản Của Tôi'
                     )}
                   </motion.button>
 
                   {/* Hướng dẫn xác nhận email sau khi đăng ký */}
                   {tab === TAB_REGISTER && (
                     <p className="text-xs text-center mt-3" style={{ color: 'var(--theme-text-dim)', fontFamily: 'Nunito, sans-serif' }}>
-                      After registering, check your email to confirm your account (including the spam folder).
+                      Sau khi đăng ký, hãy kiểm tra email để xác nhận tài khoản (bao gồm cả thư mục rác).
                     </p>
                   )}
                 </form>
