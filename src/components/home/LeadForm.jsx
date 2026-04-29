@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../context/AuthContext';
+import { useSiteAssets } from '../../hooks/useSiteAssets';
 
-// URL video nền hành trình tiền sử (miễn phí từ Pixabay)
-const BG_VIDEO_URL = 'https://cdn.pixabay.com/video/2020/07/22/45093-443523069_large.mp4';
-
-const LeadForm = ({ onLoginClick }) => {
+const LeadForm = ({ onLoginClick, locale }) => {
   const { user } = useAuth();
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const { assets } = useSiteAssets();
+  const bgVideo = assets.find((a) => a.asset_type === 'video' && (a.asset_key === 'lead-bg-video' || a.asset_key === 'museum-video' || a.slug === 'lead-bg-video'))?.public_url || '';
+  const bgAudio = assets.find((a) => a.asset_type === 'audio' && (a.asset_key === 'lead-bg-audio' || a.asset_key === 'ambient-audio' || a.slug === 'lead-bg-audio'))?.public_url || '';
 
   // Cập nhật giá trị form khi người dùng nhập liệu
   const handleChange = (e) => {
@@ -30,23 +31,26 @@ const LeadForm = ({ onLoginClick }) => {
     }
 
     if (!agreed) {
-      setErrorMsg('Please agree to the terms to open the museum gates.');
+      setErrorMsg(locale === 'vi' ? 'Vui lòng đồng ý với điều khoản để mở cổng bảo tàng.' : 'Please agree to the terms to open the museum gates.');
       return;
     }
     setLoading(true);
     setErrorMsg('');
 
-    // Cập nhật thông tin nhận vé vào bảng profiles
+    const profilePayload = {
+      full_name: form.name || user.user_metadata?.full_name || null,
+      email: form.email || user.email || null,
+      phone: form.phone || null,
+      has_ticket: true,
+      updated_at: new Date().toISOString(),
+    };
+
     const { error } = await supabase
       .from('profiles')
-      .update({
-        phone: form.phone || null,
-        has_ticket: true
-      })
-      .eq('id', user.id);
+      .upsert({ id: user.id, ...profilePayload }, { onConflict: 'id' });
 
     if (error) {
-      setErrorMsg('An error occurred while opening the gates. Please try again.');
+      setErrorMsg(error.message || (locale === 'vi' ? 'Đã xảy ra lỗi khi mở cổng. Vui lòng thử lại.' : 'An error occurred while opening the gates. Please try again.'));
       setLoading(false);
       return;
     }
@@ -54,6 +58,8 @@ const LeadForm = ({ onLoginClick }) => {
     setStatus('success');
     setLoading(false);
   };
+
+  const ticketCode = useMemo(() => `VIP-${Math.random().toString(36).substring(2, 7).toUpperCase()}`, []);
 
   const fields = [
     { name: 'name', label: 'Full Name', type: 'text', placeholder: user?.user_metadata?.full_name || 'John Doe', required: true },
@@ -67,24 +73,22 @@ const LeadForm = ({ onLoginClick }) => {
       className="section-pad relative overflow-hidden"
     style={{ background: 'linear-gradient(180deg, var(--theme-bg-alt) 0%, var(--theme-bg) 50%, var(--theme-bg-alt) 100%)' }}
     >
-      {/* Video nền mờ — cảnh tiền sử */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-full object-cover"
-          style={{ opacity: 0.12, filter: 'saturate(0.5) sepia(0.3)' }}
-        >
-          <source src={BG_VIDEO_URL} type="video/mp4" />
-        </video>
-      {/* Gradient overlay phía trên video để hòa vào nền trang */}
-        <div
-          className="absolute inset-0"
-          style={{ background: 'linear-gradient(to bottom, #110e08 0%, transparent 30%, transparent 70%, #110e08 100%)' }}
-        />
+        {bgVideo ? (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+            style={{ opacity: 0.12, filter: 'saturate(0.5) sepia(0.3)' }}
+          >
+            <source src={bgVideo} type="video/mp4" />
+          </video>
+        ) : null}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, #110e08 0%, transparent 30%, transparent 70%, #110e08 100%)' }} />
       </div>
+      {bgAudio ? <audio src={bgAudio} autoPlay loop muted={false} className="hidden" /> : null}
 
       {/* Ánh sáng ambient màu vàng hổ phách */}
       <div
@@ -108,17 +112,15 @@ const LeadForm = ({ onLoginClick }) => {
           className="mb-12"
         >
           <div className="section-divider mx-auto" style={{ margin: '0 auto 1.5rem' }} />
-          <p className="text-xs font-semibold tracking-widest uppercase mb-4"
-            style={{ color: '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
-            Museum Entry Portal
+          <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
+            {locale === 'vi' ? 'Cổng vào bảo tàng' : 'Museum Entry Portal'}
           </p>
-          <h2 className="font-serif text-3xl md:text-5xl leading-tight mb-4"
-            style={{ fontFamily: 'Cormorant Garamond, serif' }}>
-            Open the Gates to{' '}
-            <span className="text-gradient-amber">the Virtual Museum</span>
+          <h2 className="font-serif text-3xl md:text-5xl leading-tight mb-4" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+            {locale === 'vi' ? 'Mở cánh cổng đến ' : 'Open the Gates to '}
+            <span className="text-gradient-amber">{locale === 'vi' ? 'bảo tàng ảo' : 'the Virtual Museum'}</span>
           </h2>
           <p className="text-sm" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif', fontStyle: 'italic' }}>
-            Book your ticket — receive a 3D tour link instantly. No VR headset, no payment.
+            {locale === 'vi' ? 'Đăng ký vé — nhận liên kết tour 3D ngay lập tức. Không cần kính VR, không cần thanh toán.' : 'Book your ticket — receive a 3D tour link instantly. No VR headset, no payment.'}
           </p>
 
           {!user && (
@@ -160,10 +162,10 @@ const LeadForm = ({ onLoginClick }) => {
           <div
             className="relative overflow-hidden"
             style={{
-              background: 'rgba(17, 14, 8, 0.95)',
-              border: '1px solid rgba(245,158,11,0.3)',
+              background: 'var(--theme-card-bg)',
+              border: '1px solid var(--theme-border)',
               borderRadius: '24px',
-              boxShadow: '0 0 60px rgba(245,158,11,0.15), 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(245,158,11,0.15)',
+              boxShadow: '0 0 40px rgba(245,158,11,0.12), 0 18px 48px rgba(0,0,0,0.22), inset 0 1px 0 rgba(245,158,11,0.12)',
             }}
           >
             {/* Đường kẻ vàng phía trên card */}
@@ -189,7 +191,7 @@ const LeadForm = ({ onLoginClick }) => {
                 <div className="text-right">
                   <div className="text-xs" style={{ color: 'rgba(245,240,232,0.4)', fontFamily: 'DM Sans, sans-serif' }}>TICKET NO.</div>
                   <div className="font-mono text-sm font-bold" style={{ color: '#f59e0b' }}>
-                    VIP-{Math.random().toString(36).substring(2, 7).toUpperCase()}
+                    {ticketCode}
                   </div>
                 </div>
               </div>
@@ -277,7 +279,7 @@ const LeadForm = ({ onLoginClick }) => {
                       initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
                       transition={{ delay: 0.55 }}
                     >
-                      <div className="relative flex-shrink-0 mt-0.5">
+                      <div className="relative shrink-0 mt-0.5">
                         <input type="checkbox" id="lead-agree" checked={agreed}
                           onChange={(e) => { setAgreed(e.target.checked); setErrorMsg(''); }}
                           className="sr-only" />
@@ -334,12 +336,12 @@ const LeadForm = ({ onLoginClick }) => {
                       {loading ? (
                         <>
                           <span className="inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                          Processing...
+                          {locale === 'vi' ? 'Đang xử lý...' : 'Processing...'}
                         </>
                       ) : !user ? (
-                        <>SIGN IN TO ENTER</>
+                        <>{locale === 'vi' ? 'ĐĂNG NHẬP ĐỂ TIẾP TỤC' : 'SIGN IN TO ENTER'}</>
                       ) : (
-                        <>OPEN MUSEUM GATES</>
+                        <>{locale === 'vi' ? 'MỞ CỔNG BẢO TÀNG' : 'OPEN MUSEUM GATES'}</>
                       )}
                     </motion.button>
 

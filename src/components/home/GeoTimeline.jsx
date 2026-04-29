@@ -1,67 +1,38 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParallax } from '../../hooks/useParallax';
+import { useDinosaurs } from '../../hooks/useDinosaurs';
 
-// Geological period data — 3 eras of the Mesozoic, each with a distinctive image
-const eons = [
-  {
-    id: 'triassic',
-    nameVi: 'Kỷ Tam Điệp',
-    nameEn: 'Triassic',
-    mya: '252 – 201',
-    duration: '51 million years',
-    color: '#e07b39',
-    creature: '🦕',
-    creatureVi: 'First Dinosaurs',
-    image: '/images/triassic_eoraptor.png',
-    imageCredit: 'Eoraptor lunensis',
-    desc: 'Dinosaurs appeared on Earth for the first time. Small mammals survived the Permian extinction. Pangaea began breaking apart into continents. The climate was hot and arid — vast deserts covered the interior.',
-    climate: 'Hot & arid — vast desert landscapes',
-    creatures: ['Eoraptor', 'Coelophysis', 'Plateosaurus', 'Herrerasaurus'],
-    event: 'First Dinosaurs Emerge',
-    eventColor: 'rgba(224,123,57,0.25)',
-  },
-  {
-    id: 'jurassic',
-    nameVi: 'Kỷ Jura',
-    nameEn: 'Jurassic',
-    mya: '201 – 145',
-    duration: '56 million years',
-    color: '#4ade80',
-    creature: '🦖',
-    creatureVi: 'Dinosaurs Dominate',
-    image: '/images/jurassic_brachiosaurus.jpg',
-    imageCredit: 'Brachiosaurus altithorax',
-    desc: 'The golden age of dinosaurs — Stegosaurus, Brachiosaurus, and Allosaurus ruled everywhere. Pangaea split apart, forming the Atlantic Ocean. The first birds evolved from small theropod dinosaurs. Warm, humid climate with vast lush forests.',
-    climate: 'Warm & humid — dense rainforests',
-    creatures: ['Brachiosaurus', 'Stegosaurus', 'Allosaurus', 'Archaeopteryx'],
-    event: 'Golden Age of Dinosaurs',
-    eventColor: 'rgba(74,222,128,0.2)',
-  },
-  {
-    id: 'cretaceous',
-    nameVi: 'Kỷ Phấn Trắng',
-    nameEn: 'Cretaceous',
-    mya: '145 – 66',
-    duration: '79 million years',
-    color: '#f59e0b',
-    creature: '🦕',
-    creatureVi: 'T-Rex & Triceratops',
-    image: '/images/cretaceous_trex.jpg',
-    imageCredit: 'Tyrannosaurus rex "Sue"',
-    desc: 'T-Rex dominated — the largest predator in history. Flowering plants appeared for the first time. The era ended with the K-Pg event: the Chicxulub asteroid (10 km diameter) struck Yucatán, Mexico — wiping out 75% of all life, including all non-avian dinosaurs.',
-    climate: 'Warm, no polar ice — high sea levels',
-    creatures: ['T-Rex', 'Triceratops', 'Velociraptor', 'Spinosaurus'],
-    event: '☄️ K-Pg Extinction — 66 million years ago',
-    eventColor: 'rgba(239,68,68,0.2)',
-  },
-];
-
-const GeoTimeline = () => {
+const GeoTimeline = ({ locale = 'vi' }) => {
+  const isVi = locale === 'vi';
   const [active, setActive] = useState(null);
-  // Ref cho section — dùng để tính parallax scroll
   const sectionRef = useRef(null);
   const headingY = useParallax(sectionRef, ['30px', '-18px']);
+  const { dinosaurs } = useDinosaurs();
+  const eons = (dinosaurs || []).slice(0, 3).map((dino, index) => ({
+    id: dino.id,
+    nameVi: dino.eras?.name_vi || dino.common_name_vi || dino.scientific_name,
+    nameEn: dino.eras?.name_en || dino.common_name_en || dino.scientific_name,
+    mya: dino.eras?.mya || dino.eras?.period_range || ['252 – 201', '201 – 145', '145 – 66'][index] || 'Mesozoic',
+    duration: dino.eras?.duration_label || 'Mesozoic Era',
+    color: ['#e07b39', '#4ade80', '#f59e0b'][index] || '#f59e0b',
+    creature: ['🦕', '🦖', '🦕'][index] || '🦕',
+    image: dino.image_url,
+    imageCredit: dino.common_name_en || dino.scientific_name,
+    desc: dino.description_en || dino.description_vi || '',
+    climate: dino.habitat_en || dino.habitat_vi || 'Mesozoic environment',
+    creatures: [dino.common_name_en || dino.scientific_name],
+    event: dino.eras?.name_en ? `${dino.eras.name_en}` : 'Mesozoic era',
+    eventColor: 'rgba(245,158,11,0.2)',
+  }));
+
+  const fallbackEons = [
+    { id: 'triassic', nameVi: 'Kỷ Tam Điệp', nameEn: 'Triassic', mya: '252 – 201', duration: '51 million years', color: '#e07b39', creature: '🦕', image: null, imageCredit: 'Triassic life', desc: 'The first dinosaurs appeared and started to diversify across Pangaea.', climate: 'Hot and dry', creatures: ['Coelophysis', 'Plateosaurus'], event: 'First dinosaurs emerge', eventColor: 'rgba(224,123,57,0.2)' },
+    { id: 'jurassic', nameVi: 'Kỷ Jura', nameEn: 'Jurassic', mya: '201 – 145', duration: '56 million years', color: '#4ade80', creature: '🦖', image: null, imageCredit: 'Jurassic life', desc: 'Large sauropods dominated vast landscapes with rich vegetation.', climate: 'Warm and humid', creatures: ['Brachiosaurus', 'Allosaurus'], event: 'Sauropod dominance', eventColor: 'rgba(74,222,128,0.2)' },
+    { id: 'cretaceous', nameVi: 'Kỷ Phấn Trắng', nameEn: 'Cretaceous', mya: '145 – 66', duration: '79 million years', color: '#f59e0b', creature: '🦕', image: null, imageCredit: 'Cretaceous life', desc: 'Flowering plants spread and many iconic dinosaurs evolved before extinction.', climate: 'Diverse climates', creatures: ['Tyrannosaurus', 'Triceratops'], event: 'K-Pg extinction event', eventColor: 'rgba(245,158,11,0.2)' },
+  ];
+
+  const displayEons = eons.length ? eons : fallbackEons;
 
   return (
     <section
@@ -112,7 +83,7 @@ const GeoTimeline = () => {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {eons.map((eon, i) => {
+            {displayEons.map((eon, i) => {
               const isActive = active?.id === eon.id;
               return (
                 <motion.div
@@ -202,10 +173,10 @@ const GeoTimeline = () => {
                             className="font-serif font-bold text-xl leading-tight"
                             style={{ fontFamily: 'Playfair Display, serif', color: isActive ? eon.color : 'var(--theme-text)' }}
                           >
-                            {eon.nameVi}
+                            {isVi ? eon.nameVi : eon.nameEn}
                           </h3>
                           <p className="text-xs mt-0.5 italic" style={{ color: 'var(--theme-text-muted)' }}>
-                            {eon.nameEn}
+                            {isVi ? eon.nameEn : eon.nameVi}
                           </p>
                         </div>
                         {/* Huy hiệu khoảng thời gian */}
@@ -312,16 +283,16 @@ const GeoTimeline = () => {
           <div className="flex-1 relative h-2 rounded-full overflow-hidden">
             <div className="absolute inset-0 flex">
               {/* Phân đoạn tỷ lệ theo thời gian của 3 kỷ */}
-              <div className="flex-none" style={{ width: '27%', background: eons[0].color, opacity: 0.5 }} />
-              <div className="flex-none" style={{ width: '30%', background: eons[1].color, opacity: 0.5 }} />
-              <div className="flex-none" style={{ width: '43%', background: eons[2].color, opacity: 0.5 }} />
+              <div className="flex-none" style={{ width: '27%', background: displayEons[0].color, opacity: 0.5 }} />
+              <div className="flex-none" style={{ width: '30%', background: displayEons[1].color, opacity: 0.5 }} />
+              <div className="flex-none" style={{ width: '43%', background: displayEons[2].color, opacity: 0.5 }} />
             </div>
           </div>
           <span className="text-xs whitespace-nowrap" style={{ color: 'var(--theme-text-dim)' }}>66 Ma</span>
         </motion.div>
         {/* Nhãn tên các kỷ bên dưới thanh tỷ lệ */}
         <div className="flex mt-1 gap-0" style={{ paddingLeft: '36px', paddingRight: '36px' }}>
-          {eons.map((e, i) => (
+          {displayEons.map((e, i) => (
             <div
               key={i}
               className="text-center"
