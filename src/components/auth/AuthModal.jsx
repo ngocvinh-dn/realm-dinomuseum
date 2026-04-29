@@ -20,7 +20,8 @@ const inputVariants = {
 // Kiểm tra định dạng số điện thoại Việt Nam
 const isValidPhone = (phone) => /^(0[3|5|7|8|9])[0-9]{8}$/.test(phone.replace(/\s/g, ''));
 
-const AuthModal = ({ isOpen, onClose }) => {
+const AuthModal = ({ isOpen, onClose, locale = 'vi' }) => {
+  const isVi = locale === 'vi';
   const [tab, setTab] = useState(TAB_LOGIN);
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
   const [loading, setLoading] = useState(false);
@@ -135,18 +136,17 @@ const AuthModal = ({ isOpen, onClose }) => {
     setLoading(false);
   };
 
-  // Các trường nhập liệu cho form đăng nhập
+  // Các trường nhập liệu theo ngôn ngữ
   const loginFields = [
-    { name: 'email', label: 'Email', type: 'email', placeholder: 'email@cua-ban.com' },
-    { name: 'password', label: 'Mật khẩu', type: 'password', placeholder: '••••••••' },
+    { name: 'email', label: 'Email', type: 'email', placeholder: isVi ? 'email@cua-ban.com' : 'your@email.com' },
+    { name: 'password', label: isVi ? 'Mật khẩu' : 'Password', type: 'password', placeholder: '••••••••' },
   ];
 
-  // Các trường nhập liệu cho form đăng ký
   const registerFields = [
-    { name: 'name', label: 'Họ và tên', type: 'text', placeholder: 'Nguyễn Văn A' },
-    { name: 'email', label: 'Email', type: 'email', placeholder: 'email@cua-ban.com' },
-    { name: 'phone', label: 'Số điện thoại', type: 'tel', placeholder: '0912 345 678' },
-    { name: 'password', label: 'Mật khẩu', type: 'password', placeholder: 'Ít nhất 6 ký tự' },
+    { name: 'name', label: isVi ? 'Họ và tên' : 'Full name', type: 'text', placeholder: isVi ? 'Nguyễn Văn A' : 'John Doe' },
+    { name: 'email', label: 'Email', type: 'email', placeholder: isVi ? 'email@cua-ban.com' : 'your@email.com' },
+    { name: 'phone', label: isVi ? 'Số điện thoại' : 'Phone number', type: 'tel', placeholder: isVi ? '0912 345 678' : '+84 912 345 678' },
+    { name: 'password', label: isVi ? 'Mật khẩu' : 'Password', type: 'password', placeholder: isVi ? 'Ít nhất 6 ký tự' : 'At least 6 characters' },
   ];
 
   const fields = tab === TAB_LOGIN ? loginFields : registerFields;
@@ -209,12 +209,12 @@ const AuthModal = ({ isOpen, onClose }) => {
                       <h2
                         className="font-serif text-2xl font-bold"
                         style={{ fontFamily: 'Cormorant Garamond, serif', color: '#fbbf24' }}
-                      >
-                        {tab === TAB_LOGIN ? 'Mừng trở lại' : 'Tạo tài khoản'}
+>
+                        {tab === TAB_LOGIN ? (isVi ? 'Mừng trở lại' : 'Welcome back') : (isVi ? 'Tạo tài khoản' : 'Create account')}
                       </h2>
                     </div>
                     <p className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>
-                    Bảo tàng Khủng long — Trải nghiệm Thực tế ảo
+                      {isVi ? 'Bảo tàng Khủng long — Trải nghiệm Thực tế ảo' : 'Dinosaur Museum — Immersive Virtual Experience'}
                     </p>
                   </div>
                   {/* Nút đóng modal */}
@@ -244,7 +244,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                         letterSpacing: '0.03em',
                       }}
                     >
-                      {t === TAB_LOGIN ? 'Đăng nhập' : 'Đăng ký'}
+                      {t === TAB_LOGIN ? (isVi ? 'Đăng nhập' : 'Sign In') : (isVi ? 'Đăng ký' : 'Sign Up')}
                     </button>
                   ))}
                 </div>
@@ -336,7 +336,9 @@ const AuthModal = ({ isOpen, onClose }) => {
                     {loading ? (
                       <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      tab === TAB_LOGIN ? 'Vào Bảo Tàng' : 'Tạo Tài Khoản Của Tôi'
+                      tab === TAB_LOGIN
+                        ? (isVi ? 'Vào bảo tàng' : 'Enter Museum')
+                        : (isVi ? 'Tạo tài khoản của tôi' : 'Create My Account')
                     )}
                   </motion.button>
 

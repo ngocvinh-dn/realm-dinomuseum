@@ -39,13 +39,15 @@ export async function getDinosaurs() {
 
   if (error) {
     console.error("Error fetching dinosaurs:", error);
-    throw error;
+    return [];
   }
 
-  return data.map((dino) => ({
-    ...dino,
-    dinosaur_facts: [...(dino.dinosaur_facts || [])].sort(
-      (a, b) => a.order_index - b.order_index
-    ),
-  }));
+  return Array.isArray(data)
+    ? data.map((dino) => ({
+        ...dino,
+        dinosaur_facts: [...(dino.dinosaur_facts || [])].sort(
+          (a, b) => a.order_index - b.order_index
+        ),
+      }))
+    : [];
 }
