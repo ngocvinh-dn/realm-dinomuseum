@@ -11,12 +11,12 @@ const VirtualTourPreview = ({ locale = 'vi' }) => {
   const { dinosaurs } = useDinosaurs();
   const tourViews = (dinosaurs || []).slice(0, 3).map((dino, index) => ({
     id: dino.id,
-    title: dino.common_name_en || dino.scientific_name,
-    desc: dino.description_en || dino.description_vi || '',
+    title: isVi ? (dino.common_name_vi || dino.scientific_name) : (dino.common_name_en || dino.scientific_name),
+    desc: isVi ? (dino.description_vi || dino.description_en || '') : (dino.description_en || dino.description_vi || ''),
     bgColor: 'linear-gradient(135deg, rgba(17,14,8,1) 0%, rgba(26,18,8,0.9) 100%)',
-    highlight: dino.eras?.name_en || dino.eras?.name_vi || 'Mesozoic',
-    dinoImage: dino.revived_model_url || dino.fossil_model_url || dino.image_url,
-    dinoLabel: dino.common_name_en || dino.scientific_name,
+    highlight: isVi ? (dino.eras?.name_vi || 'Kỷ địa chất') : (dino.eras?.name_en || 'Mesozoic'),
+    dinoImage: dino.revived_model_url || dino.fossil_model_url || dino.image_url || null,
+    dinoLabel: isVi ? (dino.common_name_vi || dino.scientific_name) : (dino.common_name_en || dino.scientific_name),
     fallbackEmoji: ['🦖', '🦕', '🦴'][index] || '🦕',
     objectPosition: 'center center',
   }));

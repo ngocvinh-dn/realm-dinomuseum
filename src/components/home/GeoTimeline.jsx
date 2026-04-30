@@ -9,22 +9,53 @@ const GeoTimeline = ({ locale = 'vi' }) => {
   const sectionRef = useRef(null);
   const headingY = useParallax(sectionRef, ['30px', '-18px']);
   const { dinosaurs } = useDinosaurs();
-  const eons = (dinosaurs || []).slice(0, 3).map((dino, index) => ({
-    id: dino.id,
-    nameVi: dino.eras?.name_vi || dino.common_name_vi || dino.scientific_name,
-    nameEn: dino.eras?.name_en || dino.common_name_en || dino.scientific_name,
-    mya: dino.eras?.mya || dino.eras?.period_range || ['252 – 201', '201 – 145', '145 – 66'][index] || 'Mesozoic',
-    duration: dino.eras?.duration_label || 'Mesozoic Era',
-    color: ['#e07b39', '#4ade80', '#f59e0b'][index] || '#f59e0b',
-    creature: ['🦕', '🦖', '🦕'][index] || '🦕',
-    image: dino.image_url,
-    imageCredit: dino.common_name_en || dino.scientific_name,
-    desc: dino.description_en || dino.description_vi || '',
-    climate: dino.habitat_en || dino.habitat_vi || 'Mesozoic environment',
-    creatures: [dino.common_name_en || dino.scientific_name],
-    event: dino.eras?.name_en ? `${dino.eras.name_en}` : 'Mesozoic era',
-    eventColor: 'rgba(245,158,11,0.2)',
-  }));
+
+  const eraOrder = ['triassic', 'jurassic', 'cretaceous'];
+  const eraPalette = {
+    triassic: { color: '#e07b39', creature: '🦕', mya: '252 – 201', duration: '51 million years' },
+    jurassic: { color: '#4ade80', creature: '🦖', mya: '201 – 145', duration: '56 million years' },
+    cretaceous: { color: '#f59e0b', creature: '🦕', mya: '145 – 66', duration: '79 million years' },
+  };
+
+  const byEra = (dinosaurs || []).reduce((acc, dino) => {
+    const slug = dino?.eras?.slug;
+    if (!slug) return acc;
+    if (!acc[slug]) acc[slug] = [];
+    acc[slug].push(dino);
+    return acc;
+  }, {});
+
+  const eons = eraOrder
+    .map((slug) => {
+      const items = byEra[slug] || [];
+      if (!items.length) return null;
+
+      const withImage = items.find((d) => d.image_url);
+      const representative = withImage || items[0];
+      const palette = eraPalette[slug] || { color: '#f59e0b', creature: '🦕', mya: 'Mesozoic', duration: 'Mesozoic Era' };
+
+      return {
+        id: slug,
+        nameVi: representative.eras?.name_vi || representative.common_name_vi || representative.scientific_name,
+        nameEn: representative.eras?.name_en || representative.common_name_en || representative.scientific_name,
+        mya: palette.mya,
+        duration: palette.duration,
+        color: palette.color,
+        creature: palette.creature,
+        image: representative.image_url,
+        imageCredit: representative.common_name_en || representative.scientific_name,
+        desc: representative.eras?.description_en || representative.description_en || representative.description_vi || '',
+        climate: representative.habitat_en || representative.habitat_vi || 'Mesozoic environment',
+        creatures: items
+          .slice(0, 4)
+          .map((d) => d.common_name_en || d.scientific_name)
+          .filter(Boolean),
+        event: representative.eras?.name_en ? `${representative.eras.name_en}` : 'Mesozoic era',
+        eventColor: 'rgba(245,158,11,0.2)',
+        localLabel: isVi ? representative.eras?.name_vi : representative.eras?.name_en,
+      };
+    })
+    .filter(Boolean);
 
   const fallbackEons = [
     { id: 'triassic', nameVi: 'Kỷ Tam Điệp', nameEn: 'Triassic', mya: '252 – 201', duration: '51 million years', color: '#e07b39', creature: '🦕', image: null, imageCredit: 'Triassic life', desc: 'The first dinosaurs appeared and started to diversify across Pangaea.', climate: 'Hot and dry', creatures: ['Coelophysis', 'Plateosaurus'], event: 'First dinosaurs emerge', eventColor: 'rgba(224,123,57,0.2)' },
@@ -62,15 +93,15 @@ const GeoTimeline = ({ locale = 'vi' }) => {
         >
           <div className="section-divider" />
           <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b' }}>
-            Geological Timeline
+            {isVi ? 'Dòng thời gian địa chất' : 'Geological Timeline'}
           </p>
           <h2 className="font-serif text-4xl md:text-5xl leading-tight"
             style={{ fontFamily: 'Playfair Display, serif', color: 'var(--theme-text)' }}>
-            Mesozoic Era —{' '}
-            <span className="text-gradient-amber">The Age of Dinosaurs</span>
+            {isVi ? 'Kỷ nguyên Đại Trung Sinh — ' : 'Mesozoic Era — '}
+            <span className="text-gradient-amber">{isVi ? 'Thời đại khủng long' : 'The Age of Dinosaurs'}</span>
           </h2>
           <p className="mt-4 text-sm" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Lora, serif', fontStyle: 'italic' }}>
-            252 – 66 million years ago • Click each period to explore in detail
+            {isVi ? '252 – 66 triệu năm trước • Chọn từng kỷ để khám phá chi tiết' : '252 – 66 million years ago • Click each period to explore in detail'}
           </p>
         </motion.div>
 
@@ -181,7 +212,7 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                         </div>
                         {/* Huy hiệu khoảng thời gian */}
                         <div
-                          className="flex-shrink-0 text-right px-3 py-2 rounded-xl"
+                          className="shrink-0 text-right px-3 py-2 rounded-xl"
                           style={{ background: `${eon.color}18`, border: `1px solid ${eon.color}40` }}
                         >
                           <div className="text-xs font-bold" style={{ color: eon.color }}>{eon.mya}</div>
@@ -298,7 +329,7 @@ const GeoTimeline = ({ locale = 'vi' }) => {
               className="text-center"
               style={{ width: i === 0 ? '27%' : i === 1 ? '30%' : '43%', fontSize: '9px', color: e.color, opacity: 0.7 }}
             >
-              {e.nameEn}
+              {isVi ? e.nameVi : e.nameEn}
             </div>
           ))}
         </div>

@@ -1,32 +1,16 @@
-import React, { useRef, Suspense, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
-import Dino from '../home/Dino';
 import { useSiteAssets } from '../../hooks/useSiteAssets';
-
-class CanvasErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  render() {
-    return this.state.hasError ? null : this.props.children;
-  }
-}
 
 const HeroSection = ({ copy }) => {
   const sectionRef = useRef(null);
   const audioRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] });
   const { assets } = useSiteAssets();
-  const heroBg = assets.find((a) => a.asset_key === 'hero-bg' || a.asset_key === 'hero_background' || a.asset_type === 'image')?.public_url || '/images/museum_hero_bg.jpg';
-  const heroVideo = assets.find((a) => a.asset_key === 'hero-bg-video' || a.asset_key === 'hero_video' || (a.asset_type === 'video' && a.slug === 'hero-video'))?.public_url || '/videos/dino-hero.mp4';
+  const heroBg = assets.find((a) => a.asset_key === 'hero-bg' || a.asset_key === 'hero_background' || a.asset_type === 'image')?.public_url || null;
+  // Thử lấy video từ Supabase, fallback sang video khủng long royalty-free
+  const heroVideo = assets.find((a) => a.asset_key === 'hero-bg-video' || a.asset_key === 'hero_video' || (a.asset_type === 'video' && a.slug === 'hero-video'))?.public_url
+    || 'https://cdn.pixabay.com/video/2022/08/15/128092-739397050_large.mp4';
   const heroAudio = assets.find((a) => a.asset_key === 'hero-bg-audio' || a.asset_key === 'hero_music' || (a.asset_type === 'audio' && a.slug === 'hero-audio'))?.public_url || 'https://cdn.pixabay.com/audio/2022/10/30/audio_946f88d5c4.mp3';
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
   const bgOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0.3]);
@@ -41,7 +25,7 @@ const HeroSection = ({ copy }) => {
 
     const startAudio = async () => {
       try {
-        audio.volume = 1.5;
+        audio.volume = 0.45;
         await audio.play();
         localStorage.setItem('dino-audio-unlocked', '1');
       } catch {
@@ -49,9 +33,7 @@ const HeroSection = ({ copy }) => {
       }
     };
 
-    if (localStorage.getItem('dino-audio-unlocked') === '1') {
-      startAudio();
-    }
+    startAudio();
 
     const unlockOnFirstGesture = () => {
       startAudio();
@@ -75,33 +57,38 @@ const HeroSection = ({ copy }) => {
     <section id="hero" ref={sectionRef} className="relative w-full min-h-screen flex flex-col items-center justify-center text-center overflow-hidden" style={{ paddingTop: '80px' }}>
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top, rgba(245,158,11,0.14), transparent 55%), linear-gradient(180deg, rgba(10,8,4,0.35) 0%, rgba(10,8,4,0.65) 100%)' }} />
 
+      {/* Video nền khủng long */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <video
+          key={heroVideo}
           autoPlay
           muted
           loop
           playsInline
           className="w-full h-full object-cover"
-          style={{ opacity: 0.4, filter: 'saturate(1.05) brightness(0.85)' }}
-          poster={heroBg}
+          style={{
+            opacity: 0.45,
+            filter: 'saturate(1.1) brightness(0.7) contrast(1.1)',
+            transform: 'scale(1.05)',
+          }}
+          poster={heroBg || '/images/hero_dino_bg.png'}
         >
           <source src={heroVideo} type="video/mp4" />
+          {/* fallback nếu mp4 không chạy */}
+          <source src="https://cdn.pixabay.com/video/2023/10/04/184087-870568984_large.mp4" type="video/mp4" />
         </video>
+        {/* Gradient overlay phía trên video để tối hóa và tăng độ tương phản text */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(to bottom, rgba(10,8,4,0.55) 0%, rgba(10,8,4,0.15) 45%, rgba(10,8,4,0.55) 100%)',
+          }}
+        />
       </div>
       <audio ref={audioRef} src={heroAudio} preload="auto" loop />
 
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <CanvasErrorBoundary>
-          <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-            <Suspense fallback={null}>
-              <Dino />
-              <Environment preset="sunset" />
-              <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.3} enablePan={false} />
-            </Suspense>
-          </Canvas>
-        </CanvasErrorBoundary>
-      </div>
-      <motion.div className="absolute inset-0 z-0 pointer-events-none" style={{ backgroundImage: `url('${heroBg}')`, backgroundSize: 'cover', backgroundPosition: 'center', y: smoothBgY, opacity: bgOpacity, scale: 1.1 }} />
+      <motion.div className="absolute inset-0 z-0 pointer-events-none" style={{ backgroundImage: heroBg ? `url('${heroBg}')` : 'radial-gradient(circle at top, rgba(245,158,11,0.08), transparent 60%)', backgroundSize: 'cover', backgroundPosition: 'center', y: smoothBgY, opacity: bgOpacity, scale: 1.1 }} />
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(10,8,4,0.5) 0%, rgba(10,8,4,0.1) 40%, rgba(10,8,4,0.6) 100%)' }} />
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center top, rgba(245,158,11,0.12) 0%, transparent 60%)' }} />
       <div className="absolute bottom-0 left-0 right-0 z-0 pointer-events-none h-48" style={{ background: 'linear-gradient(to top, #0a0804, transparent)' }} />

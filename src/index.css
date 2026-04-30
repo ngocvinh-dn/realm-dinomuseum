@@ -30,35 +30,35 @@
    THEME VARIABLES
    ===================== */
 :root {
-  --theme-bg: #0a0804;
-  --theme-bg-alt: #110e08;
-  --theme-surface: rgba(17, 14, 8, 0.85);
+  --theme-bg: #1c140a;
+  --theme-bg-alt: #24190d;
+  --theme-surface: rgba(36, 25, 13, 0.88);
   --theme-text: #f5f0e8;
-  --theme-text-muted: rgba(245, 240, 232, 0.5);
-  --theme-text-dim: rgba(245, 240, 232, 0.3);
-  --theme-border: rgba(245, 158, 11, 0.15);
-  --theme-card-bg: rgba(17, 14, 8, 0.85);
-  --theme-nav-bg: rgba(10, 8, 4, 0.95);
-  --theme-input-bg: rgba(30, 23, 16, 0.8);
+  --theme-text-muted: rgba(245, 240, 232, 0.62);
+  --theme-text-dim: rgba(245, 240, 232, 0.38);
+  --theme-border: rgba(245, 158, 11, 0.2);
+  --theme-card-bg: rgba(36, 25, 13, 0.88);
+  --theme-nav-bg: rgba(26, 18, 8, 0.94);
+  --theme-input-bg: rgba(44, 31, 16, 0.9);
   --theme-accent: #f59e0b;
   --theme-accent-bright: #fbbf24;
-  --theme-glass: rgba(30, 23, 16, 0.6);
+  --theme-glass: rgba(44, 31, 16, 0.68);
 }
 
 [data-theme="light"] {
-  --theme-bg: #faf7f0;
-  --theme-bg-alt: #f0e8d4;
-  --theme-surface: rgba(255, 252, 245, 0.95);
-  --theme-text: #1a1208;
-  --theme-text-muted: rgba(26, 18, 8, 0.6);
-  --theme-text-dim: rgba(26, 18, 8, 0.38);
-  --theme-border: rgba(180, 83, 9, 0.22);
-  --theme-card-bg: rgba(255, 251, 242, 0.95);
-  --theme-nav-bg: rgba(250, 247, 240, 0.97);
-  --theme-input-bg: rgba(243, 237, 224, 0.95);
+  --theme-bg: #f8f1e4;
+  --theme-bg-alt: #efe0c5;
+  --theme-surface: rgba(255, 248, 236, 0.98);
+  --theme-text: #2b1b0c;
+  --theme-text-muted: rgba(43, 27, 12, 0.68);
+  --theme-text-dim: rgba(43, 27, 12, 0.45);
+  --theme-border: rgba(180, 83, 9, 0.2);
+  --theme-card-bg: rgba(255, 248, 236, 0.98);
+  --theme-nav-bg: rgba(255, 250, 240, 0.98);
+  --theme-input-bg: rgba(245, 236, 221, 0.98);
   --theme-accent: #b45309;
   --theme-accent-bright: #d97706;
-  --theme-glass: rgba(255, 251, 240, 0.82);
+  --theme-glass: rgba(255, 248, 236, 0.9);
 }
 
 /* =====================
