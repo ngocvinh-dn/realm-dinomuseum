@@ -95,4 +95,4 @@ export async function getDinosaurBySlug(slug) {
   }
 
   return sortDinosaurFacts(data);
-}
+} 
