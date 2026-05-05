@@ -43,6 +43,16 @@
   --theme-accent: #f59e0b;
   --theme-accent-bright: #fbbf24;
   --theme-glass: rgba(44, 31, 16, 0.68);
+  --theme-timeline-card-bg: rgba(12, 10, 6, 0.78);
+  --theme-timeline-card-border: rgba(245, 158, 11, 0.12);
+  --theme-timeline-soft-bg: rgba(245, 158, 11, 0.06);
+  --image-overlay-strong: rgba(10, 8, 4, 0.92);
+  --timeline-bg-start: #0b0905;
+  --timeline-bg-end: #120e09;
+  --footer-bg-start: #090704;
+  --footer-bg-end: #070503;
+  --tour-frame-bg-start: rgba(17,14,8,1);
+  --tour-frame-bg-end: rgba(26,18,8,0.9);
 }
 
 [data-theme="light"] {
@@ -53,12 +63,22 @@
   --theme-text-muted: rgba(43, 27, 12, 0.68);
   --theme-text-dim: rgba(43, 27, 12, 0.45);
   --theme-border: rgba(180, 83, 9, 0.2);
-  --theme-card-bg: rgba(255, 248, 236, 0.98);
+  --theme-card-bg: rgba(255, 252, 244, 0.96);
   --theme-nav-bg: rgba(255, 250, 240, 0.98);
-  --theme-input-bg: rgba(245, 236, 221, 0.98);
-  --theme-accent: #b45309;
-  --theme-accent-bright: #d97706;
-  --theme-glass: rgba(255, 248, 236, 0.9);
+  --theme-input-bg: rgba(255, 252, 244, 0.98);
+  --theme-accent: #92400e;
+  --theme-accent-bright: #b45309;
+  --theme-glass: rgba(255, 252, 244, 0.88);
+  --timeline-bg-start: #fff8ec;
+  --timeline-bg-end: #f5e5c9;
+  --theme-timeline-card-bg: rgba(255, 252, 244, 0.94);
+  --theme-timeline-card-border: rgba(146, 64, 14, 0.22);
+  --theme-timeline-soft-bg: rgba(146, 64, 14, 0.08);
+  --image-overlay-strong: rgba(43, 27, 12, 0.48);
+  --footer-bg-start: #fff8ee;
+  --footer-bg-end: #f3e3c6;
+  --tour-frame-bg-start: rgba(255, 248, 236, 1);
+  --tour-frame-bg-end: rgba(245, 236, 221, 0.96);
 }
 
 /* =====================
@@ -521,6 +541,35 @@ html, body {
 /* Hover shadow nhẹ hơn trong light mode */
 [data-theme="light"] .tour-frame:hover {
   box-shadow: 0 12px 40px rgba(180,83,9,0.15);
+}
+
+[data-theme="light"] .gallery-room-card,
+[data-theme="light"] .specimen-card,
+[data-theme="light"] .tour-frame,
+[data-theme="light"] .glass-card {
+  color: var(--theme-text);
+  box-shadow: 0 10px 32px rgba(146, 64, 14, 0.08);
+}
+
+[data-theme="light"] .specimen-card {
+  border-color: rgba(146, 64, 14, 0.16);
+}
+
+[data-theme="light"] .specimen-image-shell {
+  background: linear-gradient(135deg, rgba(255,252,244,0.96) 0%, rgba(245,229,201,0.92) 100%) !important;
+}
+
+[data-theme="light"] .specimen-image-shell img,
+[data-theme="light"] .tour-frame img {
+  filter: brightness(0.9) saturate(1.04) !important;
+}
+
+[data-theme="light"] .text-gradient-amber,
+[data-theme="light"] .text-gradient-gold {
+  background: linear-gradient(135deg, #92400e 0%, #b45309 48%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .tour-frame .play-overlay {

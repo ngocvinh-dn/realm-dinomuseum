@@ -107,7 +107,7 @@ const GeoTimeline = ({ locale = 'vi' }) => {
       id="timeline"
       ref={sectionRef}
       className="section-pad relative overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #0b0905 0%, #120e09 100%)' }}
+      style={{ background: 'linear-gradient(180deg, var(--timeline-bg-start) 0%, var(--timeline-bg-end) 100%)' }}
     >
       <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.08) 0%, transparent 65%)' }} />
       {Array.from({ length: 5 }).map((_, i) => (
@@ -157,8 +157,8 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                   whileHover={{ y: -4 }}
                   className="text-left rounded-2xl overflow-hidden"
                   style={{
-                    background: 'rgba(12, 10, 6, 0.78)',
-                    border: `1px solid ${isActive ? eon.color : 'rgba(245,158,11,0.12)'}`,
+                    background: 'var(--theme-timeline-card-bg)',
+                    border: `1px solid ${isActive ? eon.color : 'var(--theme-timeline-card-border)'}`,
                     boxShadow: isActive
                       ? `0 0 0 1px ${eon.color}44, 0 0 38px ${eon.color}22, 0 18px 48px rgba(0,0,0,0.52)`
                       : '0 14px 38px rgba(0,0,0,0.26)',
@@ -185,12 +185,12 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                       <span className="px-2.5 py-1 rounded-full text-xs" style={{ background: `${eon.color}18`, color: eon.color, border: `1px solid ${eon.color}33` }}>
                         ⏳ {eon.duration}
                       </span>
-                      <span className="px-2.5 py-1 rounded-full text-xs" style={{ background: 'rgba(245,158,11,0.06)', color: 'var(--theme-text-muted)', border: '1px solid rgba(245,158,11,0.1)' }}>
+                      <span className="px-2.5 py-1 rounded-full text-xs" style={{ background: 'var(--theme-timeline-soft-bg)', color: 'var(--theme-text-muted)', border: '1px solid var(--theme-border)' }}>
                         🌍 {eon.climate}
                       </span>
                     </div>
 
-                    <div className="px-3 py-2 rounded-xl text-sm font-medium mb-4" style={{ background: `${eon.color}16`, color: 'var(--theme-text)', border: `1px solid ${eon.color}24` }}>
+                    <div className="px-3 py-2 rounded-xl text-sm font-medium mb-4" style={{ background: 'var(--theme-timeline-soft-bg)', color: 'var(--theme-text)', border: `1px solid ${eon.color}33` }}>
                       ✦ {eon.event}
                     </div>
 
@@ -230,8 +230,8 @@ const GeoTimeline = ({ locale = 'vi' }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
             style={{
-              background: 'rgba(12, 10, 6, 0.78)',
-              border: `1px solid ${active?.color || '#f59e0b'}22`,
+              background: 'var(--theme-timeline-card-bg)',
+              border: `1px solid ${active?.color || '#f59e0b'}33`,
               boxShadow: `0 0 36px ${active?.color || '#f59e0b'}16`,
             }}
           >
@@ -247,13 +247,13 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                 ) : (
                   <div className="w-full h-full min-h-[260px] flex items-center justify-center" style={{ color: 'var(--theme-text-dim)' }}>🦕</div>
                 )}
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 35%, rgba(10,8,4,0.92) 100%)' }} />
-                <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs" style={{ background: 'rgba(10,8,4,0.75)', color: active?.color || '#fbbf24', border: `1px solid ${active?.color || '#f59e0b'}33` }}>
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 35%, var(--image-overlay-strong) 100%)' }} />
+                <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs" style={{ background: 'var(--theme-card-bg)', color: active?.color || 'var(--theme-accent)', border: `1px solid ${active?.color || '#f59e0b'}33` }}>
                   {active?.mya} Mya
                 </div>
                 <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
-                  <span className="text-sm italic" style={{ color: 'rgba(245,240,232,0.72)' }}>{active?.imageCredit}</span>
-                  <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(10,8,4,0.75)', color: active?.color || '#fbbf24', border: `1px solid ${active?.color || '#f59e0b'}33` }}>
+                  <span className="text-sm italic" style={{ color: 'rgba(255,248,236,0.86)' }}>{active?.imageCredit}</span>
+                  <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'var(--theme-card-bg)', color: active?.color || 'var(--theme-accent)', border: `1px solid ${active?.color || '#f59e0b'}33` }}>
                     {isVi ? 'Card đang chọn' : 'Selected card'}
                   </span>
                 </div>
@@ -279,7 +279,7 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                 </div>
 
                 <div className="grid grid-cols-3 gap-3 mb-5">
-                  <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.1)' }}>
+                  <div className="rounded-xl p-3 text-center" style={{ background: 'var(--theme-timeline-soft-bg)', border: '1px solid var(--theme-border)' }}>
                     <div className="text-xs font-bold" style={{ color: active?.dot || '#fbbf24' }}>{active?.duration}</div>
                     <div className="text-[11px] mt-1" style={{ color: 'var(--theme-text-dim)' }}>{isVi ? 'Niên đại' : 'Duration'}</div>
                   </div>
@@ -310,7 +310,7 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                       <span
                         key={`${c}-${idx}`}
                         className="px-2.5 py-1 rounded-full text-xs"
-                        style={{ background: 'rgba(245,158,11,0.08)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.2)' }}
+                        style={{ background: 'var(--theme-timeline-soft-bg)', color: 'var(--theme-accent-bright)', border: '1px solid var(--theme-border)' }}
                       >
                         {c}
                       </span>

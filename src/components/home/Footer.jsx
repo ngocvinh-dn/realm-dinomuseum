@@ -28,8 +28,8 @@ const Footer = ({ locale }) => {
     <footer
       className="w-full relative overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, #090704 0%, #070503 100%)',
-        borderTop: '1px solid rgba(245,158,11,0.12)',
+        background: 'linear-gradient(180deg, var(--footer-bg-start) 0%, var(--footer-bg-end) 100%)',
+        borderTop: '1px solid var(--theme-border)',
       }}
     >
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 0%, rgba(245,158,11,0.08) 0%, transparent 45%)' }} />
@@ -40,22 +40,22 @@ const Footer = ({ locale }) => {
             <div className="flex items-center gap-3 mb-4">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold" style={{ background: 'linear-gradient(135deg, #f59e0b, #b45309)', boxShadow: '0 0 16px rgba(245,158,11,0.35)' }}>🏛️</div>
               <div>
-                <div className="font-serif text-lg font-bold leading-none" style={{ fontFamily: 'Cormorant Garamond, serif', color: '#fbbf24' }}>
+                <div className="font-serif text-lg font-bold leading-none" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
                   Dinosaur Museum
                 </div>
-                <div className="text-[11px] tracking-widest mt-1" style={{ color: 'rgba(245,158,11,0.42)' }}>
+                <div className="text-[11px] tracking-widest mt-1" style={{ color: 'var(--theme-text-muted)' }}>
                   PALEONTOLOGY MUSEUM
                 </div>
               </div>
             </div>
 
-            <p className="text-xs leading-6 italic mb-4" style={{ color: 'rgba(245,240,232,0.6)' }}>
+            <p className="text-xs leading-6 italic mb-4" style={{ color: 'var(--theme-text-muted)' }}>
               {isVi
                 ? 'Bảo tàng ảo đầu tiên của Việt Nam về khủng long & cổ sinh vật học. Không cần kính VR.'
                 : "Vietnam's first immersive virtual museum on dinosaurs & paleontology. No VR headset needed."}
             </p>
 
-            <ul className="space-y-2 text-xs" style={{ color: 'rgba(245,240,232,0.62)' }}>
+            <ul className="space-y-2 text-xs" style={{ color: 'var(--theme-text-muted)' }}>
               <li>✉️ nguyenphukha18@gmail.com</li>
               <li>📞 0903 545 899</li>
               <li>🌐 {isVi ? 'Hỗ trợ 24/7' : 'Available: 24/7 Online'}</li>
@@ -63,10 +63,10 @@ const Footer = ({ locale }) => {
           </div>
 
           <div>
-            <h4 className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#f59e0b' }}>
+            <h4 className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: 'var(--theme-accent)' }}>
               {isVi ? 'Trưng bày' : 'Exhibitions'}
             </h4>
-            <ul className="space-y-2.5 text-sm" style={{ color: 'rgba(245,240,232,0.68)' }}>
+            <ul className="space-y-2.5 text-sm" style={{ color: 'var(--theme-text-muted)' }}>
               {exhibitions.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -74,10 +74,10 @@ const Footer = ({ locale }) => {
           </div>
 
           <div>
-            <h4 className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#f59e0b' }}>
+            <h4 className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: 'var(--theme-accent)' }}>
               {isVi ? 'Bảo tàng' : 'Museum'}
             </h4>
-            <ul className="space-y-2.5 text-sm" style={{ color: 'rgba(245,240,232,0.68)' }}>
+            <ul className="space-y-2.5 text-sm" style={{ color: 'var(--theme-text-muted)' }}>
               {museum.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -85,10 +85,10 @@ const Footer = ({ locale }) => {
           </div>
 
           <div>
-            <h4 className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#f59e0b' }}>
+            <h4 className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: 'var(--theme-accent)' }}>
               {isVi ? 'Giờ tham quan' : 'Visit Hours'}
             </h4>
-            <ul className="space-y-2.5 text-sm" style={{ color: 'rgba(245,240,232,0.68)' }}>
+            <ul className="space-y-2.5 text-sm" style={{ color: 'var(--theme-text-muted)' }}>
               {visitInfo.map((item) => (
                 <li key={item}>▪ {item}</li>
               ))}
@@ -97,7 +97,7 @@ const Footer = ({ locale }) => {
         </div>
 
         <div className="h-px mt-8 mb-4" style={{ background: 'linear-gradient(to right, transparent, rgba(245,158,11,0.16), transparent)' }} />
-        <div className="text-center text-xs" style={{ color: 'rgba(245,240,232,0.42)' }}>
+        <div className="text-center text-xs" style={{ color: 'var(--theme-text-dim)' }}>
           © {currentYear} Dinosaur Museum. All rights reserved.
         </div>
       </div>
