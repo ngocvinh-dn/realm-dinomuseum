@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Navbar from '../components/layout/Navbar';
 import HeroSection from '../components/home/HeroSection';
-import GalleriesPreview from '../components/home/FeaturesList';
 import GeoTimeline from '../components/home/GeoTimeline';
 import SpecimenShowcase from '../components/home/VisualsSection';
 import VirtualTourPreview from '../components/home/VirtualTourPreview';
@@ -11,7 +10,7 @@ import Footer from '../components/home/Footer';
 import AuthModal from '../components/auth/AuthModal';
 import AmbientAudio from '../components/home/AmbientAudio';
 
-const sectionIds = ['hero', 'galleries', 'timeline', 'specimens', 'virtual-tour', 'dang-ky'];
+const sectionIds = ['hero', 'timeline', 'specimens', 'virtual-tour', 'dang-ky'];
 
 const Home = () => {
   const [authOpen, setAuthOpen] = useState(false);
@@ -83,7 +82,6 @@ const Home = () => {
       />
       <main>
         <HeroSection copy={copy[locale]} />
-        <GalleriesPreview copy={copy[locale]} />
         <GeoTimeline locale={locale} copy={copy[locale]} />
         <SpecimenShowcase locale={locale} copy={copy[locale]} />
         <VirtualTourPreview locale={locale} copy={copy[locale]} />
