@@ -53,7 +53,7 @@ export async function getDinosaurs() {
 
   if (error) {
     console.error("Error fetching dinosaurs:", error);
-    return [];
+    throw error;
   }
 
   return (data || []).map(sortDinosaurFacts);

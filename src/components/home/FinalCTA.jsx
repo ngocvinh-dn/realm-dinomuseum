@@ -2,8 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 // Component CTA cuối trang — thông điệp mạnh mẽ thúc đẩy đăng ký
-const FinalCTA = ({ locale = 'vi' }) => {
-  const isVi = locale === 'vi';
+const FinalCTA = ({ onLoginClick }) => {
 
   // Smooth scroll to ticket form (Lenis-aware)
   const scrollToTicket = () => {
@@ -36,15 +35,15 @@ const FinalCTA = ({ locale = 'vi' }) => {
         >
           {/* Khẩu hiệu phía trên tiêu đề */}
           <p className="text-xs font-semibold tracking-widest uppercase mb-6" style={{ color: 'rgba(245,158,11,0.6)' }}>
-            {isVi ? 'Một bảo tàng. Vô hạn khám phá.' : 'One Museum. Infinite Discovery.'}
+            One Museum. Infinite Discovery.
           </p>
           <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-tight mb-8"
             style={{ fontFamily: 'Playfair Display, serif' }}>
-            {isVi ? 'Bộ xương khổng lồ' : 'The Giant Skeleton'}
+            The Giant Skeleton
             <br />
-            <span className="text-gradient-gold">{isVi ? 'Đang chờ bạn' : 'Is Waiting For You'}</span>
+            <span className="text-gradient-gold">Is Waiting For You</span>
             <br />
-            {isVi ? 'Trong màn đêm.' : 'In The Dark.'}
+            In The Dark.
           </h2>
 
           {/* Nút CTA lớn — đặt vé vào bảo tàng */}
@@ -58,16 +57,16 @@ const FinalCTA = ({ locale = 'vi' }) => {
             animate={{ boxShadow: ['0 4px 20px rgba(245,158,11,0.35)', '0 8px 40px rgba(245,158,11,0.55)', '0 4px 20px rgba(245,158,11,0.35)'] }}
             transition={{ boxShadow: { repeat: Infinity, duration: 2.5, ease: 'easeInOut' } }}
           >
-            {isVi ? '🏗️ Vào bảo tàng — Miễn phí' : "🏗️ Enter the Museum — It's Free"}
+            🏗️ Enter the Museum — It's Free
           </motion.button>
 
           {/* Các điểm đảm bảo phía dưới nút */}
           <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
             {[
-              isVi ? '✓ Không cần kính VR' : '✓ No VR headset required',
-              isVi ? '✓ Không cần thanh toán' : '✓ No payment needed',
-              isVi ? '✓ Bảo mật tuyệt đối' : '✓ Completely secure',
-              isVi ? '✓ Nhận link tour ngay' : '✓ Instant tour link',
+              '✓ No VR headset required',
+              '✓ No payment needed',
+              '✓ Completely secure',
+              '✓ Instant tour link',
             ].map((item, i) => (
               <span key={i} className="text-xs" style={{ color: 'var(--theme-text-dim)' }}>
                 {item}

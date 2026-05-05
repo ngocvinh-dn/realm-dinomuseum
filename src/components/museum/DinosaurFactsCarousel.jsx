@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, useMotionValue } from "framer-motion";
+import { motion, useMotionValue } from "motion/react";
 import "./DinosaurFactsCarousel.css";
 
 const VELOCITY_THRESHOLD = 500;

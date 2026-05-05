@@ -1,0 +1,198 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap");
+
+.instruction-panel,
+.instruction-panel * {
+  box-sizing: border-box;
+}
+
+.instruction-panel {
+  /* 👉 SỬ DỤNG LẠI BỘ BIẾN MÀU PHẤN TRẮNG (GOLD) THEO CSS CỦA MÀY */
+  --era-color: #f59e0b;
+  /* Cam hổ phách/Vàng */
+  --era-hsl: 38deg 92% 50%;
+  --era-glow: rgba(245, 158, 11, 0.25);
+  --panel-bg: rgba(17, 14, 8, 0.92);
+  /* Nền sẫm hơi nâu sang trọng */
+  --text-main: #f5f0e8;
+  /* Màu chữ kem sáng */
+  --text-soft: rgba(245, 240, 232, 0.7);
+  --text-muted: rgba(245, 240, 232, 0.45);
+
+  /* 👉 CỐ ĐỊNH Ở GÓC TRÁI, KÍCH THƯỚC NHỎ GỌN */
+  position: absolute;
+  top: 20px;
+  left: 20px;
+
+  width: 220px;
+  min-width: 180px;
+  height: auto;
+  z-index: 10;
+
+  isolation: isolate;
+  border-radius: 16px;
+  /* Bo góc nhỏ hơn để hợp kích thước */
+  border: 1px solid color-mix(in srgb, var(--era-color) 26%, transparent);
+
+  /* 👉 HIỆU ỨNG NỀN NÂNG CẤP gradient TỪ CSS CỦA MÀY */
+  background:
+    radial-gradient(circle at top right, var(--era-glow), transparent 34%),
+    radial-gradient(circle at top left, var(--era-glow), transparent 34%),
+    linear-gradient(180deg, rgba(17, 14, 8, 0.96), var(--panel-bg));
+
+  color: var(--text-main);
+  box-shadow:
+    0 0 26px color-mix(in srgb, var(--era-color) 22%, transparent),
+    0 10px 30px rgba(0, 0, 0, 0.45);
+
+  backdrop-filter: blur(18px);
+  /* KÍNH MỜ GƯƠNG MẪU */
+  overflow: hidden;
+  font-family: "Inter", system-ui, sans-serif;
+  padding: 16px 20px;
+
+  /* 👉 HIỆU ỨNG NẢY LÊN LÚC LOAD WEB */
+  animation: instructionPanelEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 👉 HIỆU ỨNG VIỀN PHÁT SÁNG CÔNG NGHỆ CAO (Simpler static version) */
+.instruction-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  padding: 1px;
+
+  background:
+    conic-gradient(from 45deg at center,
+      transparent 0deg,
+      hsl(var(--era-hsl) / 0.7) 45deg,
+      transparent 100deg,
+      transparent 225deg,
+      hsl(var(--era-hsl) / 0.4) 225deg,
+      transparent 270deg);
+
+  opacity: 0.6;
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+/* 👉 HIỆU ỨNG ÁNH SÁNG NỀN MỜ ẢO (Simpler static version) */
+.instruction-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+
+  background:
+    radial-gradient(circle at 90% 15%,
+      hsl(var(--era-hsl) / 0.1),
+      transparent 30%),
+    radial-gradient(circle at 10% 85%,
+      hsl(var(--era-hsl) / 0.05),
+      transparent 25%);
+
+  opacity: 0.3;
+  mix-blend-mode: screen;
+}
+
+.instruction-panel__header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid color-mix(in srgb, var(--era-color) 30%, transparent);
+  padding-bottom: 10px;
+}
+
+.instruction-panel__title {
+  margin: 0;
+  color: var(--text-main);
+  font-family: "Cinzel", "Inter", system-ui, sans-serif;
+  /* FONT CINZEL XỊN XÒ */
+  font-size: 16px;
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.instruction-panel__subtitle {
+  margin: 4px 0 0;
+  color: var(--era-color);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 10px;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.instruction-panel__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.instruction-panel__control-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 500;
+  color: var(--text-soft);
+}
+
+.instruction-panel__control-list li {
+  display: flex;
+  align-items: center;
+}
+
+.instruction-panel__control-list b {
+  color: var(--text-main);
+  font-weight: 700;
+  display: inline-block;
+  width: 70px;
+  border-right: 1px solid color-mix(in srgb, var(--text-muted) 30%, transparent);
+  margin-right: 10px;
+  padding-right: 4px;
+}
+
+/* 👉 KEYFRAMES ANIMATION NẢY LÊN LÚC LOAD WEB */
+@keyframes instructionPanelEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+    filter: blur(10px);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translateY(3px) scale(1.01);
+    filter: blur(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}

@@ -1,175 +1,286 @@
 import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useParallax } from '../../hooks/useParallax';
-import { useDinosaurs } from '../../hooks/useDinosaurs';
 
-const fallbackGalleries = {
-  vi: [
-    {
-      id: 'triassic-hall',
-      title: 'Kỷ Tam Điệp',
-      subtitle: 'Khủng long sơ khai',
-      desc: 'Những loài khủng long đầu tiên xuất hiện trong kỷ nguyên đầu của Mesozoi.',
-      period: 'Tam Điệp',
-      dinoImage: '/images/Eoraptor_lunensis.png',
-      dinoLabel: 'Eoraptor lunensis',
-    },
-    {
-      id: 'jurassic-hall',
-      title: 'Kỷ Jura',
-      subtitle: 'Khủng long ăn cỏ lớn',
-      desc: 'Những loài sauropod khổng lồ phát triển mạnh, chiếm lĩnh các vùng đất cổ đại.',
-      period: 'Jura',
-      dinoImage: '/images/Plateosaurus_engelhardti.png',
-      dinoLabel: 'Plateosaurus engelhardti',
-    },
-    {
-      id: 'cretaceous-hall',
-      title: 'Kỷ Phấn Trắng',
-      subtitle: 'Khủng long kích thước lớn',
-      desc: 'Giai đoạn cuối cùng của thời đại khủng long, với nhiều loài bò sát cổ đại đa dạng.',
-      period: 'Phấn Trắng',
-      dinoImage: '/images/Camarasaurus.png',
-      dinoLabel: 'Camarasaurus',
-    },
-  ],
-  en: [
-    {
-      id: 'triassic-hall',
-      title: 'Triassic',
-      subtitle: 'Early Dinosaurs',
-      desc: 'The first dinosaurs emerged during the opening chapter of the Mesozoic.',
-      period: 'Triassic',
-      dinoImage: '/images/Eoraptor_lunensis.png',
-      dinoLabel: 'Eoraptor lunensis',
-    },
-    {
-      id: 'jurassic-hall',
-      title: 'Jurassic',
-      subtitle: 'Large Herbivores',
-      desc: 'Massive sauropod lineages flourished and dominated ancient landscapes.',
-      period: 'Jurassic',
-      dinoImage: '/images/Plateosaurus_engelhardti.png',
-      dinoLabel: 'Plateosaurus engelhardti',
-    },
-    {
-      id: 'cretaceous-hall',
-      title: 'Cretaceous',
-      subtitle: 'Large Dinosaurs',
-      desc: 'The final chapter of dinosaur history, with many diverse ancient reptiles.',
-      period: 'Cretaceous',
-      dinoImage: '/images/Camarasaurus.png',
-      dinoLabel: 'Camarasaurus',
-    },
-  ],
-};
+// Gallery room data — each room has an image, accent color, and artifact count
+const galleries = [
+  {
+    id: 'mesozoic',
+    title: 'Mesozoic Era',
+    subtitle: 'The Age of Dinosaurs',
+    desc: 'Journey through 180 million years of giant reptile dominance — from the Triassic to the end of the Cretaceous.',
+    count: 150,
+    period: 'Triassic – Cretaceous',
+    dinoImage: '/images/dino_brachiosaurus.png',
+    dinoLabel: 'Brachiosaurus',
+    objectPosition: 'center 20%',
+    color: 'rgba(34,197,94,0.15)',
+    borderColor: 'rgba(34,197,94,0.3)',
+    accentColor: '#22c55e',
+  },
+  {
+    id: 'theropoda',
+    title: 'Theropoda Hall',
+    subtitle: 'The Great Predators',
+    desc: 'Tyrannosaurus Rex, Velociraptor, Spinosaurus — the ultimate killing machines that once ruled this planet.',
+    count: 48,
+    period: 'Jurassic – Cretaceous',
+    dinoImage: '/images/dino_trex.png',
+    dinoLabel: 'T-Rex',
+    objectPosition: 'center top',
+    color: 'rgba(239,68,68,0.12)',
+    borderColor: 'rgba(239,68,68,0.25)',
+    accentColor: '#ef4444',
+  },
+  {
+    id: 'vietnam',
+    title: 'Vietnamese Fossils',
+    subtitle: 'Local Discoveries',
+    desc: 'Rare finds from Vietnam’s S-shaped territory — dinosaur teeth, footprints, and plant fossils.',
+    count: 23,
+    period: 'Jurassic – Paleogene',
+    dinoImage: '/images/dino_velociraptor.png',
+    dinoLabel: 'Velociraptor',
+    objectPosition: 'center center',
+    color: 'rgba(245,158,11,0.12)',
+    borderColor: 'rgba(245,158,11,0.3)',
+    accentColor: '#f59e0b',
+  },
+  {
+    id: 'extinction',
+    title: 'Mass Extinction',
+    subtitle: '66 Million Years Ago',
+    desc: 'The K-Pg event — an asteroid, nuclear winter, and the end of an era. What survived and what was lost.',
+    count: 35,
+    period: 'Cretaceous – Paleogene',
+    dinoImage: '/images/dino_triceratops.png',
+    dinoLabel: 'Triceratops',
+    objectPosition: 'center center',
+    color: 'rgba(168,85,247,0.12)',
+    borderColor: 'rgba(168,85,247,0.25)',
+    accentColor: '#a855f7',
+  },
+  {
+    id: 'embryo',
+    title: 'Eggs & Embryos',
+    subtitle: 'Where Life Begins',
+    desc: 'A collection of fossilized eggs, preserved embryos, and evidence of dinosaur nesting behavior.',
+    count: 19,
+    period: 'Jurassic – Cretaceous',
+    // AI-generated dinosaur egg fossil image
+    dinoImage: '/images/dino_eggs_fossil.png',
+    dinoLabel: 'Fossil Eggs',
+    objectPosition: 'center center',
+    color: 'rgba(245,158,11,0.08)',
+    borderColor: 'rgba(245,158,11,0.2)',
+    accentColor: '#f59e0b',
+  },
+];
 
-const GalleriesPreview = ({ locale = 'vi' }) => {
-  const [activeId, setActiveId] = useState(null);
-  const sectionRef = useRef(null);
-  const headingRef = useRef(null);
-  const headingY = useParallax(sectionRef, ['30px', '-20px']);
-  const { dinosaurs, loading } = useDinosaurs();
-
-  const isVi = locale === 'vi';
-  const galleries = (dinosaurs || []).slice(0, 3).map((dino, index) => {
-    const palettes = [
-      { border: 'rgba(251,191,36,0.55)', glow: 'rgba(251,191,36,0.18)', dot: '#f59e0b' },
-      { border: 'rgba(74,222,128,0.55)', glow: 'rgba(74,222,128,0.18)', dot: '#22c55e' },
-      { border: 'rgba(96,165,250,0.55)', glow: 'rgba(96,165,250,0.18)', dot: '#3b82f6' },
-    ];
-    const p = palettes[index] || palettes[0];
-    return {
-      id: dino.id,
-      title: isVi ? (dino.common_name_vi || dino.scientific_name) : (dino.common_name_en || dino.scientific_name),
-      subtitle: isVi ? (dino.common_name_en || dino.scientific_name) : (dino.common_name_vi || dino.scientific_name),
-      desc: isVi ? (dino.description_vi || dino.description_en || '') : (dino.description_en || dino.description_vi || ''),
-      period: isVi ? (dino.eras?.name_vi || 'Kỷ Mesozoi') : (dino.eras?.name_en || 'Mesozoic'),
-      dinoImage: dino.image_url,
-      dinoLabel: isVi ? (dino.common_name_vi || dino.scientific_name) : (dino.common_name_en || dino.scientific_name),
-      objectPosition: 'center center',
-      ...p,
-    };
-  });
-
-  const displayGalleries = galleries.length ? galleries : (isVi ? fallbackGalleries.vi : fallbackGalleries.en);
-  const activeGallery = displayGalleries.find((g) => g.id === activeId) || displayGalleries[0];
+// Component hiển thị ảnh khủng long trong card — hỗ trợ cả ảnh thực và emoji thay thế
+const SpinningDino = ({ dinoImage, emoji, accentColor, dinoLabel, objectPosition }) => {
+  // Nếu không có ảnh, hiển thị emoji thay thế
+  if (!dinoImage) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-7xl opacity-30 group-hover:opacity-50 transition-opacity duration-500">
+          {emoji || '🦕'}
+        </span>
+      </div>
+    );
+  }
 
   return (
-    <section id="galleries" ref={sectionRef} className="section-pad relative overflow-hidden" style={{ background: 'linear-gradient(180deg, var(--theme-bg) 0%, var(--theme-bg-alt) 60%, var(--theme-bg) 100%)' }}>
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.07) 0%, transparent 60%)' }} />
+    <div className="absolute inset-0 overflow-hidden">
+      <img
+        src={dinoImage}
+        alt={dinoLabel || 'Dinosaur'}
+        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        style={{
+          filter: 'brightness(0.75) saturate(1.1)',
+          objectPosition: objectPosition || 'center center',
+        }}
+      />
+      {/* Gradient tối từ dưới lên để nội dung text dễ đọc */}
+      <div
+        className="absolute inset-0"
+        style={{ background: 'linear-gradient(to bottom, transparent 40%, rgba(10,8,4,0.85) 100%)' }}
+      />
+    </div>
+  );
+};
+
+// Animation stagger cho các card — xuất hiện lần lượt từ trên xuống
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+};
+
+const GalleriesPreview = () => {
+  const [hoveredId, setHoveredId] = useState(null);
+  const [loadedIds, setLoadedIds] = useState({});
+  // Ref cho section — dùng để tính parallax scroll
+  const sectionRef = useRef(null);
+  const headingRef = useRef(null);
+
+  // Parallax nhẹ cho heading: dịch chuyển lên nhẹ khi scroll qua
+  const headingY = useParallax(sectionRef, ['30px', '-20px']);
+
+  // Theo dõi card nào đang được hover
+  const handleMouseEnter = (id) => {
+    setHoveredId(id);
+    setLoadedIds(prev => ({ ...prev, [id]: true }));
+  };
+
+  return (
+    <section
+      id="galleries"
+      ref={sectionRef}
+      className="section-pad relative overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, var(--theme-bg) 0%, var(--theme-bg-alt) 60%, var(--theme-bg) 100%)' }}
+    >
+      {/* Ánh sáng ambient mờ phía trên */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.07) 0%, transparent 60%)' }}
+      />
+
       <div className="relative max-w-7xl mx-auto">
-        <motion.div ref={headingRef} className="mb-10 md:mb-16" style={{ y: headingY }} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+        {/* Tiêu đề section Phòng Trưng Bày — có parallax nhẹ */}
+        <motion.div
+          ref={headingRef}
+          className="mb-16"
+          style={{ y: headingY }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="section-divider" />
-          <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
-            {isVi ? 'Phòng trưng bày' : 'Dinosaur Halls'}
+          <p className="text-xs font-semibold tracking-widest uppercase mb-4"
+            style={{ color: '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
+            5 Themed Exhibition Halls
           </p>
-          <h2 className="font-serif text-4xl md:text-6xl leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
-            {loading ? (isVi ? 'Đang tải hiện vật...' : 'Loading exhibits...') : (isVi ? '3 card đầu tiên theo dòng thời gian' : 'First 3 cards in the timeline')}
+          <h2 className="font-serif text-4xl md:text-6xl leading-tight"
+            style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
+            Explore Each{' '}
+            <br className="hidden md:block" />
+            <span className="text-gradient-amber">Exhibition Hall</span>
           </h2>
+          <p className="mt-4 max-w-xl text-sm leading-relaxed"
+            style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif', fontStyle: 'italic' }}>
+            Hover over each room to see a rotating 3D dinosaur model — lit up just like a real museum.
+          </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-6 lg:gap-8 items-start">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {displayGalleries.map((gallery) => {
-              const isActive = activeGallery?.id === gallery.id;
-              return (
-                <motion.button
-                  key={gallery.id}
-                  type="button"
-                  onClick={() => setActiveId(gallery.id)}
-                  className="gallery-room-card group text-left"
-                  style={{
-                    borderColor: isActive ? gallery.border : 'rgba(245,158,11,0.12)',
-                    boxShadow: isActive ? `0 0 0 1px ${gallery.border}, 0 0 34px ${gallery.glow}` : 'none',
-                    outline: 'none',
-                    padding: 0,
-                  }}
-                  whileHover={{ y: -6 }}
-                >
-                  <div className="relative pt-5 px-5">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-4 h-4 rounded-full border-2" style={{ background: isActive ? gallery.dot : 'var(--theme-bg)', borderColor: gallery.dot, boxShadow: isActive ? `0 0 16px ${gallery.dot}88` : 'none' }} />
-                      <span className="text-[10px] uppercase tracking-[0.2em]" style={{ color: gallery.dot }}>{gallery.period}</span>
-                    </div>
-                    <div className="relative h-48 overflow-hidden rounded-2xl" style={{ border: `1px solid ${gallery.border}` }}>
-                      {gallery.dinoImage ? <img src={gallery.dinoImage} alt={gallery.dinoLabel} className="w-full h-full object-cover" style={{ objectPosition: gallery.objectPosition || 'center center', filter: 'brightness(0.78) saturate(1.08)' }} /> : <div className="w-full h-full flex items-center justify-center">🦕</div>}
-                      <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 35%, rgba(10,8,4,0.9) 100%)' }} />
-                    </div>
-                  </div>
-                  <div className="p-5 pt-4">
-                    <h3 className="font-serif font-bold text-lg leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>{gallery.title}</h3>
-                    <p className="text-xs font-semibold mt-0.5" style={{ color: gallery.dot, fontFamily: 'DM Sans, sans-serif' }}>{gallery.subtitle}</p>
-                    <p className="text-sm leading-relaxed mt-3 mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif' }}>{gallery.desc}</p>
-                    <span className="btn-amber-outline text-xs py-2 px-4 w-full inline-flex justify-center" style={{ fontFamily: 'DM Sans, sans-serif', borderColor: isActive ? gallery.dot : undefined, boxShadow: isActive ? `0 0 20px ${gallery.glow}` : 'none' }}>{isVi ? 'Card đang chọn' : 'Selected card'}</span>
-                  </div>
-                </motion.button>
-              );
-            })}
-          </div>
+        {/* Lưới các card phòng trưng bày */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-50px' }}
+        >
+          {galleries.map((gallery) => (
+            <motion.div
+              key={gallery.id}
+              variants={cardVariants}
+              className="gallery-room-card group"
+              onMouseEnter={() => handleMouseEnter(gallery.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              style={{
+                border: `1px solid ${hoveredId === gallery.id ? gallery.borderColor : 'rgba(245,158,11,0.1)'}`,
+              }}
+              whileHover={{ y: -6 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              {/* Hiệu ứng spotlight khi hover */}
+              <div className="spotlight" />
 
-          <motion.div className="glass-card p-6 md:p-8 sticky top-24" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35 }} style={{ borderColor: activeGallery?.border, boxShadow: `0 0 36px ${activeGallery?.glow || 'rgba(245,158,11,0.14)'}` }}>
-            <div className="flex items-center justify-between gap-4 mb-4">
-              <div>
-                <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: activeGallery?.dot || '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>{isVi ? 'Thông tin đang chọn' : 'Selected details'}</p>
-                <h3 className="font-serif text-3xl md:text-4xl" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>{activeGallery?.title}</h3>
-                <p className="mt-1 text-sm" style={{ color: 'var(--theme-text-muted)' }}>{activeGallery?.subtitle}</p>
+              {/* Vùng ảnh khủng long phía trên card */}
+              <div
+                className="relative h-52 overflow-hidden rounded-t-2xl"
+                style={{
+                  background: `linear-gradient(135deg, ${gallery.color} 0%, rgba(10,8,4,0.8) 100%)`,
+                }}
+              >
+                {/* Overlay tối nhẹ */}
+                <div
+                  className="absolute inset-0 z-10 pointer-events-none"
+                  style={{ background: 'transparent' }}
+                />
+                {/* Nhãn kỷ địa chất góc trên phải */}
+                <div
+                  className="absolute top-3 right-3 z-20 px-2.5 py-1 rounded-full text-xs font-medium"
+                  style={{ background: 'rgba(10,8,4,0.7)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.2)', backdropFilter: 'blur(8px)', fontFamily: 'DM Sans, sans-serif' }}
+                >
+                  {gallery.period}
+                </div>
+
+                {/* Ảnh khủng long được scale vừa khung */}
+                <SpinningDino
+                  dinoImage={gallery.dinoImage}
+                  emoji={gallery.emoji}
+                  accentColor={gallery.accentColor}
+                  dinoLabel={gallery.dinoLabel}
+                  objectPosition={gallery.objectPosition}
+                />
               </div>
-              <div className="px-3 py-2 rounded-xl text-right" style={{ background: 'rgba(245,158,11,0.08)', border: `1px solid ${activeGallery?.border || 'rgba(245,158,11,0.18)'}` }}>
-                <div className="text-xs uppercase tracking-wider" style={{ color: activeGallery?.dot || '#fbbf24' }}>{activeGallery?.period}</div>
+
+              {/* Nội dung text phía dưới card */}
+              <div className="p-6">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div>
+                    <h3 className="font-serif font-bold text-lg leading-tight"
+                      style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
+                      {gallery.title}
+                    </h3>
+                    <p className="text-xs font-semibold mt-0.5" style={{ color: '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
+                      {gallery.subtitle}
+                    </p>
+                  </div>
+                  {/* Huy hiệu số lượng hiện vật */}
+                  <div
+                    className="flex-shrink-0 text-center px-3 py-1.5 rounded-xl"
+                    style={{ background: gallery.color, border: `1px solid ${gallery.borderColor}` }}
+                  >
+                    <div className="text-lg font-bold font-serif"
+                      style={{ fontFamily: 'Cormorant Garamond, serif', color: '#fbbf24' }}>
+                      {gallery.count}
+                    </div>
+                    <div className="text-xs" style={{ color: 'var(--theme-text-muted)', fontFamily: 'DM Sans, sans-serif' }}>items</div>
+                  </div>
+                </div>
+
+                <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif' }}>
+                  {gallery.desc}
+                </p>
+
+                {/* Đường kẻ gradient xuất hiện khi hover */}
+                <div className="h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-4"
+                  style={{ background: `linear-gradient(90deg, ${gallery.accentColor || '#f59e0b'}, transparent)` }} />
+
+                {/* Nút vào tham quan — cuộn đến form đặt vé */}
+                <button
+                  className="btn-amber-outline text-xs py-2 px-4 w-full"
+                  id={`gallery-btn-${gallery.id}`}
+                  style={{ fontFamily: 'DM Sans, sans-serif' }}
+                  onClick={() => {
+                    const t = document.querySelector('#dang-ky');
+                    if (t) window.__lenis ? window.__lenis.scrollTo(t, { offset: -80, duration: 1.4 }) : t.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  🚪 Enter Hall
+                </button>
               </div>
-            </div>
-            <div className="relative rounded-2xl overflow-hidden mb-5" style={{ minHeight: '220px', border: `1px solid ${activeGallery?.border || 'rgba(245,158,11,0.15)'}` }}>
-              {activeGallery?.dinoImage ? <img src={activeGallery.dinoImage} alt={activeGallery.dinoLabel} className="w-full h-full object-cover" style={{ minHeight: '220px', objectPosition: 'center center', filter: 'brightness(0.82) saturate(1.08)' }} /> : <div className="w-full h-[220px] flex items-center justify-center">🦕</div>}
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 35%, rgba(10,8,4,0.9) 100%)' }} />
-              <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-3">
-                <span className="text-sm italic" style={{ color: 'rgba(245,240,232,0.75)' }}>{activeGallery?.dinoLabel}</span>
-                <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(10,8,4,0.7)', color: activeGallery?.dot || '#fbbf24', border: `1px solid ${activeGallery?.border || 'rgba(245,158,11,0.2)'}` }}>{isVi ? 'Card được chọn' : 'Selected'}</span>
-              </div>
-            </div>
-            <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif' }}>{activeGallery?.desc}</p>
-          </motion.div>
-        </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
