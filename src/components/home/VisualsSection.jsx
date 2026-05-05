@@ -1,92 +1,124 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useParallax } from '../../hooks/useParallax';
-const uploadedSpecimens = {
-  vi: [
-    {
-      id: 'uploaded-fossil-jpg',
+const specimenCards = [
+  {
+    id: 'uploaded-fossil-styracosaurus',
+    dinoImage: '/images/Styracosaurus%20.png',
+    objectPosition: 'center center',
+    imageScale: 1.08,
+    highlight: true,
+    vi: {
       name: 'Styracosaurus',
       fullName: 'Styracosaurus albertensis',
       tag: 'Mới upload',
-      dinoImage: '/images/Styracosaurus%20.png',
-      objectPosition: 'center center',
-      imageScale: 1.08,
       period: 'Kỷ Phấn Trắng muộn',
       age: 'Khoảng 75–76 triệu năm',
       length: '5.1 m',
       weight: '2.7 tấn',
       location: 'Alberta, Canada',
       desc: 'Styracosaurus là khủng long sừng nổi bật với chiếc diềm cổ lớn và nhiều gai dài quanh đầu, được cho là dùng để phòng vệ và trình diễn.',
-      highlight: true,
     },
-    {
-      id: 'uploaded-fossil-png',
-      name: 'Mẫu vật tải lên #2',
-      fullName: 'Uploaded specimen #2',
-      tag: 'Mới upload',
-      dinoImage: '/images/Coelophysis_bauri.png',
-      objectPosition: 'center center',
-      imageScale: 1.08,
-      period: 'Kỷ Tam Điệp muộn',
-      age: 'Khoảng 203–196 triệu năm',
-      length: '2.6 m',
-      weight: '15–20 kg',
-      location: 'New Mexico, USA',
-      desc: 'Mẫu hiện vật mới được tải lên thư mục public/images và được hiển thị trực tiếp ở đầu danh sách.',
-      highlight: true,
-    },
-  ],
-  en: [
-    {
-      id: 'uploaded-fossil-jpg',
-      name: 'New Dinosaur Fossil',
-      fullName: 'Uploaded specimen #1',
-      tag: 'New upload',
-      dinoImage: '/images/7ffd53ffe25c6f1af9602e5ad38db2ac.jpg',
-      objectPosition: 'center center',
-      imageScale: 1,
-      period: 'New Collection',
-      age: 'Updating',
-      length: 'Updating',
-      weight: null,
-      location: 'Museum image archive',
-      desc: 'A newly uploaded specimen from public/images displayed at the front of the featured collection.',
-      highlight: true,
-    },
-    {
-      id: 'uploaded-fossil-png',
-      name: 'Coelophysis',
-      fullName: 'Coelophysis bauri',
-      tag: 'New upload',
-      dinoImage: '/images/Coelophysis_bauri.png',
-      objectPosition: 'center center',
-      imageScale: 1.08,
-      period: 'Late Triassic',
-      age: 'About 203–196 million years ago',
-      length: '2.6 m',
-      weight: '15–20 kg',
-      location: 'New Mexico, USA',
-      desc: 'Coelophysis is a small, agile early theropod dinosaur known for its lightweight body, long neck, and narrow jaw packed with sharp teeth.',
-      highlight: true,
-    },
-    {
-      id: 'uploaded-fossil-styracosaurus',
+    en: {
       name: 'Styracosaurus',
       fullName: 'Styracosaurus albertensis',
       tag: 'New upload',
-      dinoImage: '/images/Styracosaurus%20.png',
-      objectPosition: 'center center',
-      imageScale: 1.08,
       period: 'Late Cretaceous',
       age: 'About 75–76 million years ago',
       length: '5.1 m',
       weight: '2.7 tons',
       location: 'Alberta, Canada',
       desc: 'Styracosaurus is a horned dinosaur known for its large frill and long spikes around the head, used for defense and display.',
-      highlight: true,
     },
-  ],
-};
+  },
+  {
+    id: 'uploaded-fossil-coelophysis',
+    dinoImage: '/images/Coelophysis_bauri.png',
+    objectPosition: 'center center',
+    imageScale: 1.08,
+    highlight: true,
+    vi: {
+      name: 'Mẫu vật tải lên #2',
+      fullName: 'Uploaded specimen #2',
+      tag: 'Mới upload',
+      period: 'Kỷ Tam Điệp muộn',
+      age: 'Khoảng 203–196 triệu năm',
+      length: '2.6 m',
+      weight: '15–20 kg',
+      location: 'New Mexico, USA',
+      desc: 'Mẫu hiện vật mới được tải lên thư mục public/images và được hiển thị trực tiếp ở đầu danh sách.',
+    },
+    en: {
+      name: 'Coelophysis',
+      fullName: 'Coelophysis bauri',
+      tag: 'New upload',
+      period: 'Late Triassic',
+      age: 'About 203–196 million years ago',
+      length: '2.6 m',
+      weight: '15–20 kg',
+      location: 'New Mexico, USA',
+      desc: 'Coelophysis is a small, agile early theropod dinosaur known for its lightweight body, long neck, and narrow jaw packed with sharp teeth.',
+    },
+  },
+  {
+    id: 'trex',
+    dinoImage: '/images/dino_trex.png',
+    objectPosition: 'center top',
+    imageScale: 1,
+    highlight: true,
+    vi: {
+      name: 'T-Rex',
+      fullName: 'Tyrannosaurus rex',
+      tag: 'Theropoda',
+      period: 'Kỷ Phấn Trắng muộn',
+      age: '67 triệu năm',
+      length: '12.3 m',
+      weight: '8.4 tấn',
+      location: 'South Dakota, USA (1990)',
+      desc: 'Bộ xương T-Rex hoàn chỉnh nhất từng được phát hiện. “Sue” được đặt theo tên người tìm ra mẫu vật — Sue Hendrickson. Hiện trưng bày tại Field Museum, Chicago.',
+    },
+    en: {
+      name: 'T-Rex',
+      fullName: 'Tyrannosaurus rex',
+      tag: 'Theropoda',
+      period: 'Late Cretaceous',
+      age: '67 million yrs',
+      length: '12.3 m',
+      weight: '8.4 tons',
+      location: 'South Dakota, USA (1990)',
+      desc: 'The most complete T-Rex skeleton ever found. “Sue” is named after its discoverer — Sue Hendrickson. Currently on display at the Field Museum, Chicago.',
+    },
+  },
+  {
+    id: 'triceratops',
+    dinoImage: '/images/dino_triceratops.png',
+    objectPosition: 'center center',
+    imageScale: 1.14,
+    highlight: false,
+    vi: {
+      name: 'Triceratops "Horridus"',
+      fullName: 'Triceratops horridus',
+      tag: 'Ceratopsidae',
+      period: 'Kỷ Phấn Trắng muộn',
+      age: '68 triệu năm',
+      length: '9 m',
+      weight: '12 tấn',
+      location: 'Montana, USA',
+      desc: 'Hộp sọ gần như hoàn chỉnh với 3 sừng đặc trưng. Triceratops là một trong các loài phổ biến nhất giai đoạn cuối Kỷ Phấn Trắng, cùng tồn tại với T-Rex.',
+    },
+    en: {
+      name: '"Horridus" Triceratops',
+      fullName: 'Triceratops horridus',
+      tag: 'Ceratopsidae',
+      period: 'Late Cretaceous',
+      age: '68 million yrs',
+      length: '9 m',
+      weight: '12 tons',
+      location: 'Montana, USA',
+      desc: 'Complete skull with its iconic 3 horns. Triceratops was the most common species of late Cretaceous — coexisting alongside T-Rex.',
+    },
+  },
+];
 
 const fallbackSpecimens = {
   vi: [
@@ -217,7 +249,7 @@ const fallbackSpecimens = {
 };
 
 // Component hiển thị ảnh hiện vật trong card — hỗ trợ cả ảnh và emoji thay thế
-const SketchfabSpecimen = ({ dinoImage, emoji, objectPosition, imageScale = 1, isSupabaseNew = false }) => {
+const SketchfabSpecimen = ({ dinoImage, emoji, objectPosition, imageScale = 1 }) => {
   // Nếu không có ảnh, hiển thị emoji thay thế
   if (!dinoImage) {
     return (
@@ -250,12 +282,28 @@ const SketchfabSpecimen = ({ dinoImage, emoji, objectPosition, imageScale = 1, i
 
 const SpecimenShowcase = ({ locale = 'vi' }) => {
   const [activeId, setActiveId] = useState(null);
-  const [loadedIds, setLoadedIds] = useState({});
+  const [, setLoadedIds] = useState({});
   const isVi = locale === 'vi';
   const displaySpecimens = useMemo(() => {
-    const uploaded = isVi ? uploadedSpecimens.vi : uploadedSpecimens.en;
-    const fallback = isVi ? fallbackSpecimens.vi : fallbackSpecimens.en;
-    return [...uploaded, ...fallback].slice(0, 4);
+    const localeKey = isVi ? 'vi' : 'en';
+    const localizedCards = specimenCards.map((specimen) => ({
+      id: specimen.id,
+      dinoImage: specimen.dinoImage,
+      objectPosition: specimen.objectPosition,
+      imageScale: specimen.imageScale,
+      highlight: specimen.highlight,
+      ...specimen[localeKey],
+    }));
+
+    const fallbackCards = (isVi ? fallbackSpecimens.vi : fallbackSpecimens.en).map((specimen) => ({
+      ...specimen,
+      id: specimen.id,
+    }));
+
+    const orderedIds = ['uploaded-fossil-styracosaurus', 'uploaded-fossil-coelophysis', 'trex', 'triceratops'];
+    const byId = new Map([...localizedCards, ...fallbackCards].map((item) => [item.id, item]));
+
+    return orderedIds.map((id) => byId.get(id)).filter(Boolean);
   }, [isVi]);
   // Ref cho section — dùng để tính parallax scroll
   const sectionRef = useRef(null);
@@ -315,7 +363,6 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {displaySpecimens.map((s, i) => {
             const isActive = activeId === s.id;
-            const isLoaded = loadedIds[s.id];
             return (
               <motion.div
                 key={s.id}
@@ -359,7 +406,6 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                     emoji={s.emoji}
                     objectPosition={s.objectPosition}
                     imageScale={s.imageScale}
-                    isSupabaseNew={s.tag === 'Mới upload' || s.tag === 'New upload'}
                   />
 
                   {/* Nhãn phân loại và đánh dấu tiêu biểu */}
@@ -404,7 +450,7 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                     {[
                       { label: isVi ? 'Niên đại' : 'Age', value: s.age },
                       { label: isVi ? 'Kích thước' : 'Length', value: s.length },
-                      { label: isVi ? 'Địa điểm' : 'Location', value: s.location.split(',')[0] },
+                      { label: isVi ? 'Địa điểm' : 'Location', value: s.location ? s.location.split(',')[0] : '' },
                     ].map((stat, j) => (
                       <div key={j} className="text-center p-2 rounded-lg"
                         style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.1)' }}>
