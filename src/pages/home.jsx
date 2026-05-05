@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Navbar from '../components/layout/Navbar';
 import HeroSection from '../components/home/HeroSection';
-import GalleriesPreview from '../components/home/FeaturesList';
 import GeoTimeline from '../components/home/GeoTimeline';
 import SpecimenShowcase from '../components/home/VisualsSection';
+import VirtualTourPreview from '../components/home/VirtualTourPreview';
 import LeadForm from '../components/home/LeadForm';
 import FinalCTA from '../components/home/FinalCTA';
 import Footer from '../components/home/Footer';
 import AuthModal from '../components/auth/AuthModal';
 import AmbientAudio from '../components/home/AmbientAudio';
 
-const sectionIds = ['hero', 'galleries', 'timeline', 'specimens', 'dang-ky'];
+const sectionIds = ['hero', 'timeline', 'specimens', 'virtual-tour', 'dang-ky'];
 
 const Home = () => {
   const [authOpen, setAuthOpen] = useState(false);
@@ -49,6 +49,7 @@ const Home = () => {
       galleries: 'Phòng trưng bày',
       timeline: 'Dòng thời gian',
       specimens: 'Hiện vật',
+      virtualTour: 'Tour ảo',
       ticket: 'Đăng ký vé',
     },
     en: {
@@ -60,6 +61,7 @@ const Home = () => {
       galleries: 'Galleries',
       timeline: 'Timeline',
       specimens: 'Specimens',
+      virtualTour: 'Virtual Tour',
       ticket: 'Book ticket',
     },
   }), []);
@@ -80,9 +82,9 @@ const Home = () => {
       />
       <main>
         <HeroSection copy={copy[locale]} />
-        <GalleriesPreview locale={locale} copy={copy[locale]} />
         <GeoTimeline locale={locale} copy={copy[locale]} />
         <SpecimenShowcase locale={locale} copy={copy[locale]} />
+        <VirtualTourPreview locale={locale} copy={copy[locale]} />
         <LeadForm locale={locale} copy={copy[locale]} onLoginClick={() => setAuthOpen(true)} />
         <FinalCTA locale={locale} copy={copy[locale]} onLoginClick={() => setAuthOpen(true)} />
       </main>

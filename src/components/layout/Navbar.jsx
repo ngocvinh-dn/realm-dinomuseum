@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext';
 
 const navLinks = [
   { id: 'hero', label: { vi: 'Trang chủ', en: 'Home' }, href: '#hero' },
-  { id: 'galleries', label: { vi: 'Phòng trưng bày', en: 'Galleries' }, href: '#galleries' },
   { id: 'timeline', label: { vi: 'Dòng thời gian', en: 'Timeline' }, href: '#timeline' },
   { id: 'specimens', label: { vi: 'Hiện vật', en: 'Specimens' }, href: '#specimens' },
   { id: 'dang-ky', label: { vi: 'Đăng ký vé', en: 'Tickets' }, href: '#dang-ky' },

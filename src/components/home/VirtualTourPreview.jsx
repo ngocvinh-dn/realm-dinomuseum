@@ -30,7 +30,7 @@ const VirtualTourPreview = ({ locale = 'vi' }) => {
             {isVi ? 'Xem trước tour 3D' : '3D Virtual Tour Preview'}
           </p>
           <h2 className="font-serif text-4xl md:text-6xl leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
-            <span className="text-gradient-amber">{isVi ? 'Tư liệu thực tế' : 'Real Media'}</span> {isVi ? 'từ Supabase' : 'From Supabase'}
+            {isVi ? 'Tư liệu thực tế' : 'Real Media'}
           </h2>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-12">

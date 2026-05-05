@@ -1,337 +1,325 @@
-import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useMemo, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useParallax } from '../../hooks/useParallax';
 import { useDinosaurs } from '../../hooks/useDinosaurs';
 
+const ERA_COLORS = ['#e07b39', '#4ade80', '#f59e0b'];
+const ERA_DOTS = ['#fb923c', '#4ade80', '#f59e0b'];
+const ERA_ICONS = ['🦕', '🦖', '🦕'];
+const ERA_RANGES = ['252 – 201', '201 – 145', '145 – 66'];
+
+const fallbackEons = (isVi) => [
+  {
+    id: 'triassic',
+    nameVi: 'Kỷ Tam Điệp',
+    nameEn: 'Triassic',
+    mya: '252 – 201',
+    duration: isVi ? '51 triệu năm' : '51 million years',
+    climate: isVi ? 'Nóng và khô' : 'Hot and dry',
+    event: isVi ? 'Khủng long đầu tiên xuất hiện' : 'First dinosaurs emerge',
+    desc: isVi
+      ? 'Những loài khủng long đầu tiên xuất hiện và bắt đầu đa dạng hóa trên siêu lục địa Pangaea.'
+      : 'The first dinosaurs appeared and started to diversify across Pangaea.',
+    color: ERA_COLORS[0],
+    dot: ERA_DOTS[0],
+    icon: ERA_ICONS[0],
+    creatures: ['Coelophysis', 'Plateosaurus'],
+    image: '/images/Coelophysis_bauri.png',
+    objectPosition: '18% center',
+    imageCredit: 'Coelophysis bauri',
+    tag: isVi ? 'Kỷ 51 triệu năm' : '51 Myr era',
+  },
+  {
+    id: 'jurassic',
+    nameVi: 'Kỷ Jura',
+    nameEn: 'Jurassic',
+    mya: '201 – 145',
+    duration: isVi ? '56 triệu năm' : '56 million years',
+    climate: isVi ? 'Ấm và ẩm' : 'Warm and humid',
+    event: isVi ? 'Thời kỳ thống trị của sauropod' : 'Sauropod dominance',
+    desc: isVi
+      ? 'Các loài sauropod khổng lồ thống trị những vùng đất rộng lớn với thảm thực vật phong phú.'
+      : 'Large sauropods dominated vast landscapes with rich vegetation.',
+    color: ERA_COLORS[1],
+    dot: ERA_DOTS[1],
+    icon: ERA_ICONS[1],
+    creatures: ['Plateosaurus', 'Camarasaurus'],
+    image: '/images/Plateosaurus_engelhardti.png',
+    objectPosition: 'left center',
+    imageCredit: 'Plateosaurus engelhardti',
+    tag: isVi ? 'Kỷ 56 triệu năm' : '56 Myr era',
+  },
+  {
+    id: 'cretaceous',
+    nameVi: 'Kỷ Phấn Trắng',
+    nameEn: 'Cretaceous',
+    mya: '145 – 66',
+    duration: isVi ? '79 triệu năm' : '79 million years',
+    climate: isVi ? 'Khí hậu đa dạng' : 'Diverse climates',
+    event: isVi ? 'Sự kiện tuyệt chủng K-Pg' : 'K-Pg extinction event',
+    desc: isVi
+      ? 'Thực vật có hoa lan rộng và nhiều loài khủng long biểu tượng tiến hóa trước khi tuyệt chủng hàng loạt.'
+      : 'Flowering plants spread and many iconic dinosaurs evolved before extinction.',
+    color: ERA_COLORS[2],
+    dot: ERA_DOTS[2],
+    icon: ERA_ICONS[2],
+    creatures: ['Tyrannosaurus', 'Triceratops'],
+    image: '/images/dino_trex.png',
+    objectPosition: 'center 15%',
+    imageCredit: 'Tyrannosaurus rex',
+    tag: isVi ? 'Kỷ 79 triệu năm' : '79 Myr era',
+  },
+];
+
 const GeoTimeline = ({ locale = 'vi' }) => {
   const isVi = locale === 'vi';
-  const [active, setActive] = useState(null);
+  const [activeId, setActiveId] = useState('triassic');
   const sectionRef = useRef(null);
-  const headingY = useParallax(sectionRef, ['30px', '-18px']);
+  const headingY = useParallax(sectionRef, ['24px', '-16px']);
   const { dinosaurs } = useDinosaurs();
 
-  const eraOrder = ['triassic', 'jurassic', 'cretaceous'];
-  const eraPalette = {
-    triassic: { color: '#e07b39', creature: '🦕', mya: '252 – 201', duration: '51 million years' },
-    jurassic: { color: '#4ade80', creature: '🦖', mya: '201 – 145', duration: '56 million years' },
-    cretaceous: { color: '#f59e0b', creature: '🦕', mya: '145 – 66', duration: '79 million years' },
-  };
+  const eons = useMemo(() => {
+    const dinoEons = (dinosaurs || []).slice(0, 3).map((dino, index) => ({
+      id: dino.id || `era-${index}`,
+      nameVi: dino.eras?.name_vi || dino.common_name_vi || dino.scientific_name,
+      nameEn: dino.eras?.name_en || dino.common_name_en || dino.scientific_name,
+      mya: dino.eras?.mya || ERA_RANGES[index],
+      duration: dino.eras?.duration_label || (isVi ? 'Mesozoic Era' : 'Mesozoic Era'),
+      climate: isVi ? (dino.habitat_vi || dino.habitat_en || 'Môi trường kỷ Mesozoi') : (dino.habitat_en || dino.habitat_vi || 'Mesozoic environment'),
+      event: isVi ? (dino.eras?.name_vi || 'Kỷ Mesozoi') : (dino.eras?.name_en || 'Mesozoic era'),
+      desc: isVi ? (dino.description_vi || dino.description_en || '') : (dino.description_en || dino.description_vi || ''),
+      color: ERA_COLORS[index] || ERA_COLORS[2],
+      dot: ERA_DOTS[index] || ERA_DOTS[2],
+      icon: ERA_ICONS[index] || ERA_ICONS[2],
+      creatures: [isVi ? (dino.common_name_vi || dino.scientific_name) : (dino.common_name_en || dino.scientific_name)],
+      image: dino.image_url,
+      imageCredit: dino.common_name_en || dino.scientific_name,
+      tag: dino.eras?.duration_label || (isVi ? 'Kỷ' : 'Era'),
+    }));
+    return dinoEons.length ? dinoEons : fallbackEons(isVi);
+  }, [dinosaurs, isVi]);
 
-  const byEra = (dinosaurs || []).reduce((acc, dino) => {
-    const slug = dino?.eras?.slug;
-    if (!slug) return acc;
-    if (!acc[slug]) acc[slug] = [];
-    acc[slug].push(dino);
-    return acc;
-  }, {});
-
-  const eons = eraOrder
-    .map((slug) => {
-      const items = byEra[slug] || [];
-      if (!items.length) return null;
-
-      const withImage = items.find((d) => d.image_url);
-      const representative = withImage || items[0];
-      const palette = eraPalette[slug] || { color: '#f59e0b', creature: '🦕', mya: 'Mesozoic', duration: 'Mesozoic Era' };
-
-      return {
-        id: slug,
-        nameVi: representative.eras?.name_vi || representative.common_name_vi || representative.scientific_name,
-        nameEn: representative.eras?.name_en || representative.common_name_en || representative.scientific_name,
-        mya: palette.mya,
-        duration: palette.duration,
-        color: palette.color,
-        creature: palette.creature,
-        image: representative.image_url,
-        imageCredit: representative.common_name_en || representative.scientific_name,
-        desc: representative.eras?.description_en || representative.description_en || representative.description_vi || '',
-        climate: representative.habitat_en || representative.habitat_vi || 'Mesozoic environment',
-        creatures: items
-          .slice(0, 4)
-          .map((d) => d.common_name_en || d.scientific_name)
-          .filter(Boolean),
-        event: representative.eras?.name_en ? `${representative.eras.name_en}` : 'Mesozoic era',
-        eventColor: 'rgba(245,158,11,0.2)',
-        localLabel: isVi ? representative.eras?.name_vi : representative.eras?.name_en,
-      };
-    })
-    .filter(Boolean);
-
-  const fallbackEons = [
-    { id: 'triassic', nameVi: 'Kỷ Tam Điệp', nameEn: 'Triassic', mya: '252 – 201', duration: '51 million years', color: '#e07b39', creature: '🦕', image: null, imageCredit: 'Triassic life', desc: 'The first dinosaurs appeared and started to diversify across Pangaea.', climate: 'Hot and dry', creatures: ['Coelophysis', 'Plateosaurus'], event: 'First dinosaurs emerge', eventColor: 'rgba(224,123,57,0.2)' },
-    { id: 'jurassic', nameVi: 'Kỷ Jura', nameEn: 'Jurassic', mya: '201 – 145', duration: '56 million years', color: '#4ade80', creature: '🦖', image: null, imageCredit: 'Jurassic life', desc: 'Large sauropods dominated vast landscapes with rich vegetation.', climate: 'Warm and humid', creatures: ['Brachiosaurus', 'Allosaurus'], event: 'Sauropod dominance', eventColor: 'rgba(74,222,128,0.2)' },
-    { id: 'cretaceous', nameVi: 'Kỷ Phấn Trắng', nameEn: 'Cretaceous', mya: '145 – 66', duration: '79 million years', color: '#f59e0b', creature: '🦕', image: null, imageCredit: 'Cretaceous life', desc: 'Flowering plants spread and many iconic dinosaurs evolved before extinction.', climate: 'Diverse climates', creatures: ['Tyrannosaurus', 'Triceratops'], event: 'K-Pg extinction event', eventColor: 'rgba(245,158,11,0.2)' },
-  ];
-
-  const displayEons = eons.length ? eons : fallbackEons;
+  const active = eons.find((e) => e.id === activeId) || eons[0];
+  const progressWidths = ['27%', '30%', '43%'];
 
   return (
     <section
       id="timeline"
       ref={sectionRef}
       className="section-pad relative overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, var(--theme-bg) 0%, var(--theme-bg-alt) 100%)' }}
+      style={{ background: 'linear-gradient(180deg, #0b0905 0%, #120e09 100%)' }}
     >
-      {/* Các đường ngang mờ làm texture nền */}
+      <div className="absolute inset-0 pointer-events-none opacity-60" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.08) 0%, transparent 65%)' }} />
       {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}
           className="absolute w-full h-px pointer-events-none"
-          style={{ top: `${20 + i * 15}%`, background: 'rgba(245,158,11,0.03)' }}
+          style={{ top: `${18 + i * 16}%`, background: 'rgba(245,158,11,0.03)' }}
         />
       ))}
 
       <div className="relative max-w-7xl mx-auto">
-        {/* Tiêu đề section Dòng Thời Gian Địa Chất — có parallax nhẹ */}
         <motion.div
-          className="mb-16"
+          className="mb-12 md:mb-16"
           style={{ y: headingY }}
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="section-divider" />
-          <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b' }}>
-            {isVi ? 'Dòng thời gian địa chất' : 'Geological Timeline'}
+          <p className="text-xs font-semibold tracking-[0.28em] uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
+            {isVi ? 'DÒNG THỜI GIAN ĐỊA CHẤT' : 'GEOLOGICAL TIMELINE'}
           </p>
-          <h2 className="font-serif text-4xl md:text-5xl leading-tight"
-            style={{ fontFamily: 'Playfair Display, serif', color: 'var(--theme-text)' }}>
-            {isVi ? 'Kỷ nguyên Đại Trung Sinh — ' : 'Mesozoic Era — '}
-            <span className="text-gradient-amber">{isVi ? 'Thời đại khủng long' : 'The Age of Dinosaurs'}</span>
+          <h2 className="font-serif text-4xl md:text-6xl leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
+            {isVi ? 'Kỷ Mesozoi — ' : 'Mesozoic Era — '}
+            <span className="text-gradient-amber">{isVi ? 'Thời đại của khủng long' : 'The Age of Dinosaurs'}</span>
           </h2>
-          <p className="mt-4 text-sm" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Lora, serif', fontStyle: 'italic' }}>
-            {isVi ? '252 – 66 triệu năm trước • Chọn từng kỷ để khám phá chi tiết' : '252 – 66 million years ago • Click each period to explore in detail'}
+          <p className="mt-4 text-sm md:text-base italic" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Lora, serif' }}>
+            {isVi
+              ? '252 – 66 triệu năm trước • Nhấn vào từng kỷ để khám phá chi tiết'
+              : '252 – 66 million years ago • Click each period to explore in detail'}
           </p>
         </motion.div>
 
-        {/* Timeline — 3 card theo chiều ngang */}
-        <div className="relative">
-          {/* Đường kết nối ngang giữa các card (chỉ hiện trên desktop) */}
-          <div
-            className="absolute top-16 left-0 right-0 h-0.5 hidden md:block"
-            style={{ background: 'linear-gradient(90deg, rgba(245,158,11,0.15), rgba(245,158,11,0.4), rgba(245,158,11,0.15))' }}
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {displayEons.map((eon, i) => {
+        <div className="grid grid-cols-1 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
+            {eons.map((eon, i) => {
               const isActive = active?.id === eon.id;
               return (
-                <motion.div
+                <motion.button
                   key={eon.id}
-                  initial={{ opacity: 0, y: 40 }}
+                  type="button"
+                  onClick={() => setActiveId(eon.id)}
+                  initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.15, duration: 0.6, ease: 'easeOut' }}
+                  transition={{ delay: i * 0.12, duration: 0.55, ease: 'easeOut' }}
+                  whileHover={{ y: -4 }}
+                  className="text-left rounded-2xl overflow-hidden"
+                  style={{
+                    background: 'rgba(12, 10, 6, 0.78)',
+                    border: `1px solid ${isActive ? eon.color : 'rgba(245,158,11,0.12)'}`,
+                    boxShadow: isActive
+                      ? `0 0 0 1px ${eon.color}44, 0 0 38px ${eon.color}22, 0 18px 48px rgba(0,0,0,0.52)`
+                      : '0 14px 38px rgba(0,0,0,0.26)',
+                  }}
                 >
-                  {/* Chấm tròn trên đường timeline (chỉ hiện trên desktop) */}
-                  <div className="hidden md:flex justify-center mb-6 relative">
-                    <motion.div
-                      className="w-5 h-5 rounded-full border-2 cursor-pointer z-10"
-                      style={{
-                        background: isActive ? eon.color : 'var(--theme-bg)',
-                        borderColor: eon.color,
-                        boxShadow: isActive ? `0 0 20px ${eon.color}60` : 'none',
-                      }}
-                      animate={isActive ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-                      transition={{ repeat: isActive ? Infinity : 0, duration: 2 }}
-                      onClick={() => setActive(isActive ? null : eon)}
-                    />
-                    {/* Nhãn năm phía trên chấm */}
-                    <div
-                      className="absolute -top-7 text-xs font-mono text-center whitespace-nowrap"
-                      style={{ color: 'rgba(245,158,11,0.5)', fontSize: '10px' }}
-                    >
-                      {eon.mya} Ma
+                  <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${eon.color}, ${eon.dot})` }} />
+                  <div className="p-5 md:p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-3xl" style={{ color: eon.dot }}>{eon.icon}</div>
+                      <div className="px-3 py-2 rounded-xl text-right" style={{ background: `${eon.color}18`, border: `1px solid ${eon.color}40` }}>
+                        <div className="text-xs font-bold" style={{ color: eon.color }}>{eon.mya}</div>
+                        <div className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--theme-text-dim)' }}>Mya</div>
+                      </div>
+                    </div>
+
+                    <h3 className="font-serif text-2xl md:text-[1.75rem] leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
+                      {isVi ? eon.nameVi : eon.nameEn}
+                    </h3>
+                    <p className="mt-1 text-xs italic" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif' }}>
+                      {isVi ? 'Bấm để xem chi tiết theo từng kỷ' : 'Tap to view details for this period'}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2 mt-4 mb-4">
+                      <span className="px-2.5 py-1 rounded-full text-xs" style={{ background: `${eon.color}18`, color: eon.color, border: `1px solid ${eon.color}33` }}>
+                        ⏳ {eon.duration}
+                      </span>
+                      <span className="px-2.5 py-1 rounded-full text-xs" style={{ background: 'rgba(245,158,11,0.06)', color: 'var(--theme-text-muted)', border: '1px solid rgba(245,158,11,0.1)' }}>
+                        🌍 {eon.climate}
+                      </span>
+                    </div>
+
+                    <div className="px-3 py-2 rounded-xl text-sm font-medium mb-4" style={{ background: `${eon.color}16`, color: 'var(--theme-text)', border: `1px solid ${eon.color}24` }}>
+                      ✦ {eon.event}
+                    </div>
+
+                    <div className="text-xs" style={{ color: 'var(--theme-text-dim)' }}>
+                      {isActive ? (isVi ? 'Nhấn để thu gọn' : 'Click to collapse') : (isVi ? 'Nhấn để khám phá' : 'Click to explore')}
                     </div>
                   </div>
-
-                  {/* Card thông tin từng kỷ địa chất */}
-                  <motion.div
-                    className="relative rounded-2xl overflow-hidden cursor-pointer"
-                    style={{
-                      background: isActive ? eon.eventColor : 'var(--theme-card-bg)',
-                      border: `1px solid ${isActive ? eon.color : 'rgba(245,158,11,0.12)'}`,
-                      boxShadow: isActive ? `0 20px 60px rgba(0,0,0,0.5), 0 0 40px ${eon.color}20` : 'none',
-                    }}
-                    whileHover={{ y: -4, borderColor: eon.color }}
-                    transition={{ duration: 0.3 }}
-                    onClick={() => setActive(isActive ? null : eon)}
-                  >
-                    {/* Thanh màu đặc trưng phía trên card */}
-                    <div className="h-1" style={{ background: eon.color }} />
-
-                    {/* Ảnh đặc trưng của từng kỷ (hiển thị khi active) */}
-                    <AnimatePresence>
-                      {isActive && eon.image && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: '180px' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.4 }}
-                          className="overflow-hidden relative"
-                        >
-                          <img
-                            src={eon.image}
-                            alt={eon.imageCredit}
-                            className="w-full h-full object-cover"
-                            style={{
-                              objectPosition: 'center center',
-                              filter: 'brightness(0.8) saturate(1.1)',
-                            }}
-                          />
-                          {/* Gradient tối từ dưới lên để text dễ đọc */}
-                          <div
-                            className="absolute inset-0"
-                            style={{ background: 'linear-gradient(to bottom, transparent 50%, rgba(10,8,4,0.8) 100%)' }}
-                          />
-                          {/* Nhãn tên loài phía dưới ảnh */}
-                          <div className="absolute bottom-2 right-3">
-                            <span className="text-xs italic" style={{ color: 'rgba(245,240,232,0.6)', fontFamily: 'Nunito, sans-serif' }}>
-                              {eon.imageCredit}
-                            </span>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    <div className="p-6">
-                      {/* Icon + tên kỷ */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <div className="text-4xl mb-2">{eon.creature}</div>
-                          <h3
-                            className="font-serif font-bold text-xl leading-tight"
-                            style={{ fontFamily: 'Playfair Display, serif', color: isActive ? eon.color : 'var(--theme-text)' }}
-                          >
-                            {isVi ? eon.nameVi : eon.nameEn}
-                          </h3>
-                          <p className="text-xs mt-0.5 italic" style={{ color: 'var(--theme-text-muted)' }}>
-                            {isVi ? eon.nameEn : eon.nameVi}
-                          </p>
-                        </div>
-                        {/* Huy hiệu khoảng thời gian */}
-                        <div
-                          className="shrink-0 text-right px-3 py-2 rounded-xl"
-                          style={{ background: `${eon.color}18`, border: `1px solid ${eon.color}40` }}
-                        >
-                          <div className="text-xs font-bold" style={{ color: eon.color }}>{eon.mya}</div>
-                          <div className="text-xs" style={{ color: 'var(--theme-text-dim)', fontSize: '10px' }}>Mya</div>
-                        </div>
-                      </div>
-
-                      {/* Nhãn thời gian và khí hậu */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <span
-                          className="px-2.5 py-1 rounded-full text-xs"
-                          style={{ background: `${eon.color}15`, color: eon.color, border: `1px solid ${eon.color}30` }}
-                        >
-                          ⏳ {eon.duration}
-                        </span>
-                        <span
-                          className="px-2.5 py-1 rounded-full text-xs"
-                          style={{ background: 'rgba(245,158,11,0.06)', color: 'var(--theme-text-muted)', border: '1px solid rgba(245,158,11,0.1)' }}
-                        >
-                          🌍 {eon.climate}
-                        </span>
-                      </div>
-
-                      {/* Sự kiện nổi bật của kỷ */}
-                      <div
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium mb-4"
-                        style={{ background: eon.eventColor, color: 'var(--theme-text)', border: `1px solid ${eon.color}25` }}
-                      >
-                        ✦ {eon.event}
-                      </div>
-
-                      {/* Mô tả chi tiết — chỉ hiện khi card được click (active) */}
-                      <AnimatePresence>
-                        {isActive && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.35 }}
-                            className="overflow-hidden"
-                          >
-                            <p
-                              className="text-sm leading-relaxed mb-4"
-                              style={{ color: 'var(--theme-text-muted)', fontFamily: 'Lora, serif' }}
-                            >
-                              {eon.desc}
-                            </p>
-                            {/* Key Species list */}
-                            <div>
-                              <p className="text-xs uppercase tracking-wider mb-2" style={{ color: 'rgba(245,158,11,0.6)' }}>
-                                Key Species:
-                              </p>
-                              <div className="flex flex-wrap gap-2">
-                                {eon.creatures.map((c, j) => (
-                                  <span
-                                    key={j}
-                                    className="px-2.5 py-1 rounded-full text-xs"
-                                    style={{ background: 'rgba(245,158,11,0.08)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.2)' }}
-                                  >
-                                    {c}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-
-                      {/* Gợi ý click để mở/thu gọn */}
-                      <div className="mt-4 flex items-center justify-between">
-                        <span className="text-xs" style={{ color: 'var(--theme-text-dim)' }}>
-                          {isActive ? 'Click to collapse' : 'Click to explore'}
-                        </span>
-                        <motion.span
-                          animate={{ rotate: isActive ? 180 : 0 }}
-                          transition={{ duration: 0.3 }}
-                          style={{ color: 'rgba(245,158,11,0.5)', fontSize: '12px' }}
-                        >
-                          ▼
-                        </motion.span>
-                      </div>
-                    </div>
-                  </motion.div>
-                </motion.div>
+                </motion.button>
               );
             })}
           </div>
-        </div>
 
-        {/* Thanh tỷ lệ thời gian ở cuối section */}
-        <motion.div
-          className="mt-12 flex items-center gap-4"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-        >
-          <span className="text-xs whitespace-nowrap" style={{ color: 'var(--theme-text-dim)' }}>252 Ma</span>
-          <div className="flex-1 relative h-2 rounded-full overflow-hidden">
-            <div className="absolute inset-0 flex">
-              {/* Phân đoạn tỷ lệ theo thời gian của 3 kỷ */}
-              <div className="flex-none" style={{ width: '27%', background: displayEons[0].color, opacity: 0.5 }} />
-              <div className="flex-none" style={{ width: '30%', background: displayEons[1].color, opacity: 0.5 }} />
-              <div className="flex-none" style={{ width: '43%', background: displayEons[2].color, opacity: 0.5 }} />
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] items-center gap-4 md:gap-6 mt-2">
+            <span className="text-xs whitespace-nowrap" style={{ color: 'var(--theme-text-dim)' }}>252 Ma</span>
+            <div className="relative h-2 rounded-full overflow-hidden">
+              <div className="absolute inset-0 flex">
+                {eons.map((eon, i) => (
+                  <div key={eon.id} className="flex-none" style={{ width: progressWidths[i], background: eon.color, opacity: 0.55 }} />
+                ))}
+              </div>
             </div>
+            <span className="text-xs whitespace-nowrap text-right" style={{ color: 'var(--theme-text-dim)' }}>66 Ma</span>
           </div>
-          <span className="text-xs whitespace-nowrap" style={{ color: 'var(--theme-text-dim)' }}>66 Ma</span>
-        </motion.div>
-        {/* Nhãn tên các kỷ bên dưới thanh tỷ lệ */}
-        <div className="flex mt-1 gap-0" style={{ paddingLeft: '36px', paddingRight: '36px' }}>
-          {displayEons.map((e, i) => (
-            <div
-              key={i}
-              className="text-center"
-              style={{ width: i === 0 ? '27%' : i === 1 ? '30%' : '43%', fontSize: '9px', color: e.color, opacity: 0.7 }}
-            >
-              {isVi ? e.nameVi : e.nameEn}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-0 md:px-9 -mt-2">
+            {eons.map((eon) => (
+              <div key={eon.id} className="text-center text-[10px] md:text-xs uppercase tracking-wider" style={{ color: eon.color, opacity: 0.78, width: '100%' }}>
+                {isVi ? eon.nameVi : eon.nameEn}
+              </div>
+            ))}
+          </div>
+
+          <motion.div
+            key={active?.id}
+            className="mt-2 rounded-3xl overflow-hidden"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            style={{
+              background: 'rgba(12, 10, 6, 0.78)',
+              border: `1px solid ${active?.color || '#f59e0b'}22`,
+              boxShadow: `0 0 36px ${active?.color || '#f59e0b'}16`,
+            }}
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr]">
+              <div className="relative min-h-[260px] md:min-h-[320px]">
+                {active?.image ? (
+                  <img
+                    src={active.image}
+                    alt={active.imageCredit}
+                    className="w-full h-full object-cover"
+                    style={{ minHeight: '260px', objectPosition: active?.objectPosition || 'center center', filter: 'brightness(0.82) saturate(1.08)' }}
+                  />
+                ) : (
+                  <div className="w-full h-full min-h-[260px] flex items-center justify-center" style={{ color: 'var(--theme-text-dim)' }}>🦕</div>
+                )}
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 35%, rgba(10,8,4,0.92) 100%)' }} />
+                <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs" style={{ background: 'rgba(10,8,4,0.75)', color: active?.color || '#fbbf24', border: `1px solid ${active?.color || '#f59e0b'}33` }}>
+                  {active?.mya} Mya
+                </div>
+                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
+                  <span className="text-sm italic" style={{ color: 'rgba(245,240,232,0.72)' }}>{active?.imageCredit}</span>
+                  <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(10,8,4,0.75)', color: active?.color || '#fbbf24', border: `1px solid ${active?.color || '#f59e0b'}33` }}>
+                    {isVi ? 'Card đang chọn' : 'Selected card'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-6 md:p-8">
+                <div className="flex items-start justify-between gap-4 mb-5">
+                  <div>
+                    <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: active?.dot || '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
+                      {isVi ? 'Thông tin đang chọn' : 'Selected details'}
+                    </p>
+                    <h3 className="font-serif text-3xl md:text-4xl leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
+                      {isVi ? active?.nameVi : active?.nameEn}
+                    </h3>
+                    <p className="mt-1 text-sm" style={{ color: 'var(--theme-text-muted)' }}>
+                      {isVi ? 'Bấm vào card khác để đổi thông tin' : 'Click another card to change details'}
+                    </p>
+                  </div>
+                  <div className="px-3 py-2 rounded-xl text-right shrink-0" style={{ background: `${active?.color || '#f59e0b'}16`, border: `1px solid ${active?.color || '#f59e0b'}33` }}>
+                    <div className="text-xs font-bold" style={{ color: active?.dot || '#fbbf24' }}>{active?.tag || 'Era'}</div>
+                    <div className="text-[10px] uppercase tracking-wider mt-1" style={{ color: 'var(--theme-text-dim)' }}>Mya</div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3 mb-5">
+                  <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.1)' }}>
+                    <div className="text-xs font-bold" style={{ color: active?.dot || '#fbbf24' }}>{active?.duration}</div>
+                    <div className="text-[11px] mt-1" style={{ color: 'var(--theme-text-dim)' }}>{isVi ? 'Niên đại' : 'Duration'}</div>
+                  </div>
+                  <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.1)' }}>
+                    <div className="text-xs font-bold" style={{ color: active?.dot || '#fbbf24' }}>{active?.climate}</div>
+                    <div className="text-[11px] mt-1" style={{ color: 'var(--theme-text-dim)' }}>{isVi ? 'Khí hậu' : 'Climate'}</div>
+                  </div>
+                  <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.1)' }}>
+                    <div className="text-xs font-bold" style={{ color: active?.dot || '#fbbf24' }}>{isVi ? active?.nameVi : active?.nameEn}</div>
+                    <div className="text-[11px] mt-1" style={{ color: 'var(--theme-text-dim)' }}>{isVi ? 'Kỷ' : 'Period'}</div>
+                  </div>
+                </div>
+
+                <div className="px-3 py-2 rounded-xl text-sm font-medium mb-5" style={{ background: `${active?.color || '#f59e0b'}16`, color: 'var(--theme-text)', border: `1px solid ${active?.color || '#f59e0b'}24` }}>
+                  ✦ {active?.event}
+                </div>
+
+                <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Lora, serif' }}>
+                  {active?.desc}
+                </p>
+
+                <div>
+                  <p className="text-xs uppercase tracking-wider mb-2" style={{ color: active?.dot || '#f59e0b' }}>
+                    {isVi ? 'Loài tiêu biểu:' : 'Key Species:'}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {active?.creatures?.map((c, idx) => (
+                      <span
+                        key={`${c}-${idx}`}
+                        className="px-2.5 py-1 rounded-full text-xs"
+                        style={{ background: 'rgba(245,158,11,0.08)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.2)' }}
+                      >
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
+          </motion.div>
         </div>
       </div>
     </section>
