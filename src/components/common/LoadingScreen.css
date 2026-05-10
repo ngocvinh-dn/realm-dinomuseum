@@ -1,0 +1,126 @@
+.museum-loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #0a0804 0%, #0d0b06 100%);
+  color: #fff7ed;
+}
+
+.loading-ambient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(245, 158, 11, 0.16), transparent 28%),
+    radial-gradient(circle at 50% 64%, rgba(120, 53, 15, 0.14), transparent 36%),
+    radial-gradient(circle at 50% 100%, rgba(245, 158, 11, 0.08), transparent 42%);
+  animation: ambientPulse 3s ease-in-out infinite;
+}
+
+.loading-lines {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(245, 158, 11, 0.035) 0px,
+    rgba(245, 158, 11, 0.035) 1px,
+    transparent 1px,
+    transparent 48px
+  );
+  opacity: 0.85;
+}
+
+.loading-center {
+  position: relative;
+  z-index: 2;
+  width: min(360px, 82vw);
+  text-align: center;
+}
+
+.loading-ring {
+  position: relative;
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.loading-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(245, 158, 11, 0.12);
+}
+
+.loading-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #f59e0b;
+  border-right-color: rgba(250, 204, 21, 0.9);
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.35);
+  animation: spin 0.9s linear infinite;
+}
+
+.loading-message {
+  margin: 0 0 18px;
+  color: rgba(255, 247, 237, 0.76);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+.loading-progress {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+}
+
+.loading-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #92400e,
+    #f59e0b,
+    #facc15
+  );
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.65);
+  transition: width 0.35s ease;
+}
+
+.loading-percent {
+  display: block;
+  margin-top: 12px;
+  color: #fbbf24;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ambientPulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
