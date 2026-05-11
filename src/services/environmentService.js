@@ -11,7 +11,7 @@ const environmentSelectFields = `
   period_end_mya,
   order_index,
   background_image_url,
-  environment_url
+  environment_map_url
 `;
 
 export async function getEnvironments() {

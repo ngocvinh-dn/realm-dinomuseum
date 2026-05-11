@@ -9,6 +9,7 @@ export default function InteractableModel({
   scale = 1,
   data = null,
   eraColor = "#f59e0b",
+  normalize = false,
   onEnter,
   onLeave,
   onInteract,
@@ -78,6 +79,10 @@ export default function InteractableModel({
           Math.max(size.z * 1.15, 0.8),
         ],
       });
+      if (normalize && size.y > 0 && groupRef.current) {
+    const normalizedScale = (2 / size.y) * scale;
+    groupRef.current.scale.setScalar(normalizedScale);
+  }
     }
   }, [clonedScene]);
 
