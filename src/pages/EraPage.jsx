@@ -6,10 +6,10 @@ import InteractableModel from "../components/museum/InteractableModel";
 import PlayerController from "../components/museum/PlayerController";
 import MuseumLoader from "../components/museum/MuseumLoader";
 import { Crosshair } from "../components/museum/Crosshair";
-import DinoPopup from "../components/museum/DinoPopup";
+import DinosaurPopup from "../components/museum/DinosaurPopup";
 import { getEnvironmentBySlug } from "../services/environmentService";
 import { getExhibitsByEraId } from "../services/exhibitsService";
-
+import CanvasErrorBoundary from "../components/home/CanvasErrorBoundary";
 export default function EraPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -49,19 +49,37 @@ export default function EraPage() {
     return (
       <div style={styles.centered}>
         <p style={{ color: "#fff", marginBottom: 16 }}>{error}</p>
-        <button style={styles.backBtnStatic} onClick={() => navigate("/museum")}>
-          ← Quay lại Bảo Tàng
-        </button>
+        <button style={{...styles.backBtn, borderColor: eraColor, color: eraColor}} onClick={() => navigate("/museum")}>
+  ← Quay lại Bảo Tàng
+</button>
       </div>
     );
   }
 
   return (
     <div style={styles.page}>
-      {/* Nút quay lại */}
-      <button style={styles.backBtn} onClick={() => navigate("/museum")}>
-        ← Quay lại Bảo Tàng
-      </button>
+     {/* Nút quay lại */}
+<button
+  style={{
+    position: "absolute",
+    top: 20,
+    left: 20,
+    zIndex: 100,
+    background: `linear-gradient(135deg, ${eraColor}99, rgba(0,0,0,0.7))`,  
+    color: "#f5f0e8",
+    border: `1px solid ${eraColor}77`,
+    borderRadius: "18px",
+    padding: "12px 24px",
+    cursor: "pointer",
+    fontSize: "15px",
+    fontWeight: "800",
+    backdropFilter: "blur(8px)",
+    letterSpacing: "0.05em",
+  }}
+  onClick={() => navigate("/museum")}
+>
+  ← Quay lại Bảo Tàng
+</button>
 
       {/* Tên kỷ */}
       {era && (
@@ -81,9 +99,9 @@ export default function EraPage() {
       <Canvas style={styles.canvas} camera={{ position: [0, 2, 8], fov: 60 }}>
         <Suspense fallback={null}>
           {/* EXR làm background + lighting */}
-          {!loading && era?.environment_url && (
-            <Environment files={era.environment_url} background />
-          )}
+          {!loading && era?.environment_map_url && (
+  <Environment files={era.environment_map_url} background backgroundBlurriness={0} />
+    )}
 
           <ambientLight intensity={0.6} />
           <directionalLight position={[5, 8, 5]} intensity={1.2} />
@@ -94,16 +112,18 @@ export default function EraPage() {
               const modelUrl = exhibit.dinosaurs?.fossil_model_url;
               if (!modelUrl) return null;
               return (
-                <InteractableModel
-                  key={exhibit.id}
-                  url={modelUrl}
-                  position={exhibit.position}
-                  rotation={exhibit.rotation}
-                  scale={exhibit.modelScale}
-                  eraColor={eraColor}
-                  data={exhibit.dinosaurs}
-                  onInteract={setSelectedDino}
-                />
+                <CanvasErrorBoundary key={exhibit.id}>
+  <InteractableModel
+    url={modelUrl}
+    position={exhibit.position}
+    rotation={exhibit.rotation}
+    scale={2}
+    normalize={true}
+    eraColor={eraColor}
+    data={exhibit.dinosaurs}
+    onInteract={setSelectedDino}
+  />
+</CanvasErrorBoundary>
               );
             })}
 
@@ -137,21 +157,13 @@ export default function EraPage() {
       )}
 
       {/* Popup thông tin khủng long */}
-      {selectedDino && (
-        <DinoPopup
-          dino={{
-            id: slug,
-            era: era?.name_vi || slug,
-            name: selectedDino.common_name_vi || selectedDino.common_name_en,
-            description:
-              selectedDino.description_vi ||
-              selectedDino.description_en ||
-              "Chưa có mô tả.",
-            route: `/era/${slug}`,
-          }}
-          onClose={() => setSelectedDino(null)}
-        />
-      )}
+{selectedDino && (
+  <DinosaurPopup
+    dinosaur={selectedDino}
+    onClose={() => setSelectedDino(null)}
+    language="vi"
+  />
+)}
     </div>
   );
 }
