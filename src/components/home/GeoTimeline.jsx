@@ -2,23 +2,15 @@ import React, { useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParallax } from '../../hooks/useParallax';
 import { useDinosaurs } from '../../hooks/useDinosaurs';
+import {
+  getDinosaurImagePosition,
+  getDinosaurImagePresentation,
+} from '../../utils/dinosaurImage';
 
 const ERA_COLORS = ['#e07b39', '#4ade80', '#f59e0b'];
 const ERA_DOTS = ['#fb923c', '#4ade80', '#f59e0b'];
 const ERA_ICONS = ['🦕', '🦖', '🦕'];
 const ERA_RANGES = ['252 – 201', '201 – 145', '145 – 66'];
-
-// Map tên khoa học → ảnh local (phòng khi Supabase image_url bị lỗi)
-const LOCAL_DINO_IMAGES = {
-  'Eoraptor lunensis': '/images/Eoraptor_lunensis.png',
-  'Coelophysis bauri': '/images/Coelophysis_bauri.png',
-  'Plateosaurus engelhardti': '/images/Plateosaurus_engelhardti.png',
-  'Camarasaurus': '/images/Camarasaurus.png',
-  'Tyrannosaurus rex': '/images/Styracosaurus .png',
-  'Triceratops horridus': '/images/dino_triceratops.png',
-  'Velociraptor mongoliensis': '/images/dino_velociraptor.png',
-};
-
 
 const fallbackEons = (isVi) => [
   {
@@ -56,7 +48,7 @@ const fallbackEons = (isVi) => [
     dot: ERA_DOTS[1],
     icon: ERA_ICONS[1],
     creatures: ['Plateosaurus', 'Camarasaurus'],
-    image: '/images/Plateosaurus_engelhardti.png',
+    image: '/images/Plateosaurus.png',
     objectPosition: 'left center',
     imageCredit: 'Plateosaurus engelhardti',
     tag: isVi ? 'Kỷ 56 triệu năm' : '56 Myr era',
@@ -76,7 +68,7 @@ const fallbackEons = (isVi) => [
     dot: ERA_DOTS[2],
     icon: ERA_ICONS[2],
     creatures: ['Tyrannosaurus', 'Triceratops'],
-    image: '/images/dino_trex.png',
+    image: '/images/Tyrannosaurus_rex.png',
     objectPosition: 'center 15%',
     imageCredit: 'Tyrannosaurus rex',
     tag: isVi ? 'Kỷ 79 triệu năm' : '79 Myr era',
@@ -105,6 +97,8 @@ const GeoTimeline = ({ locale = 'vi' }) => {
       icon: ERA_ICONS[index] || ERA_ICONS[2],
       creatures: [isVi ? (dino.common_name_vi || dino.scientific_name) : (dino.common_name_en || dino.scientific_name)],
       image: dino.image_url,
+      objectPosition: getDinosaurImagePosition(dino, index === 0 ? '18% center' : 'center center'),
+      imagePresentation: getDinosaurImagePresentation(dino),
       imageCredit: dino.common_name_en || dino.scientific_name,
       tag: dino.eras?.duration_label || (isVi ? 'Kỷ' : 'Era'),
     }));
@@ -255,8 +249,14 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                   <img
                     src={active.image}
                     alt={active.imageCredit}
-                    className="w-full h-full object-cover"
-                    style={{ minHeight: '260px', objectPosition: active?.objectPosition || 'center center', filter: 'brightness(0.82) saturate(1.08)' }}
+                    className="w-full h-full"
+                    style={{
+                      minHeight: '260px',
+                      objectFit: active?.imagePresentation?.objectFit || 'cover',
+                      objectPosition: active?.objectPosition || 'center center',
+                      transform: `scale(${active?.imagePresentation?.scale || 1})`,
+                      filter: 'brightness(0.82) saturate(1.08)',
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full min-h-[260px] flex items-center justify-center" style={{ color: 'var(--theme-text-dim)' }}>🦕</div>
