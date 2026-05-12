@@ -8,6 +8,18 @@ const ERA_DOTS = ['#fb923c', '#4ade80', '#f59e0b'];
 const ERA_ICONS = ['🦕', '🦖', '🦕'];
 const ERA_RANGES = ['252 – 201', '201 – 145', '145 – 66'];
 
+// Map tên khoa học → ảnh local (phòng khi Supabase image_url bị lỗi)
+const LOCAL_DINO_IMAGES = {
+  'Eoraptor lunensis': '/images/Eoraptor_lunensis.png',
+  'Coelophysis bauri': '/images/Coelophysis_bauri.png',
+  'Plateosaurus engelhardti': '/images/Plateosaurus_engelhardti.png',
+  'Camarasaurus': '/images/Camarasaurus.png',
+  'Tyrannosaurus rex': '/images/Styracosaurus .png',
+  'Triceratops horridus': '/images/dino_triceratops.png',
+  'Velociraptor mongoliensis': '/images/dino_velociraptor.png',
+};
+
+
 const fallbackEons = (isVi) => [
   {
     id: 'triassic',
