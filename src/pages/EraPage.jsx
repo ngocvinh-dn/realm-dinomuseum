@@ -117,7 +117,7 @@ export default function EraPage() {
     url={modelUrl}
     position={exhibit.position}
     rotation={exhibit.rotation}
-    scale={2}
+    scale={3}
     normalize={true}
     eraColor={eraColor}
     data={exhibit.dinosaurs}

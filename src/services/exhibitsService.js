@@ -12,15 +12,24 @@ const exhibitSelectFields = `
   is_interactive,
   order_index,
   dinosaurs (
-    id,
-    scientific_name,
-    slug,
-    common_name_vi,
-    common_name_en,
-    fossil_model_url,
-    revived_model_url,
-    image_url
-  )
+  id,
+  scientific_name,
+  slug,
+  common_name_vi,
+  common_name_en,
+  fossil_model_url,
+  revived_model_url,
+  image_url,
+  diet,
+  length_m,
+  height_m,
+  weight_kg,
+  description_vi,
+  description_en,
+  discovery_location,
+  habitat_vi,
+  habitat_en
+)
 `;
 
 function normalizeExhibit(exhibit) {

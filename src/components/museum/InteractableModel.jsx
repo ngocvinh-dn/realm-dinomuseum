@@ -79,10 +79,13 @@ export default function InteractableModel({
           Math.max(size.z * 1.15, 0.8),
         ],
       });
-      if (normalize && size.y > 0 && groupRef.current) {
-    const normalizedScale = (2 / size.y) * scale;
+      if (normalize && groupRef.current) {
+  const maxSize = Math.max(size.x, size.y, size.z);
+  if (maxSize > 0) {
+    const normalizedScale = (3 / maxSize) * scale;
     groupRef.current.scale.setScalar(normalizedScale);
   }
+}
     }
   }, [clonedScene]);
 
