@@ -20,7 +20,7 @@ const fallbackGalleries = {
       subtitle: 'Khủng long ăn cỏ lớn',
       desc: 'Những loài sauropod khổng lồ phát triển mạnh, chiếm lĩnh các vùng đất cổ đại.',
       period: 'Jura',
-      dinoImage: '/images/Plateosaurus_engelhardti.png',
+      dinoImage: '/images/Plateosaurus.png',
       dinoLabel: 'Plateosaurus engelhardti',
     },
     {
@@ -49,7 +49,7 @@ const fallbackGalleries = {
       subtitle: 'Large Herbivores',
       desc: 'Massive sauropod lineages flourished and dominated ancient landscapes.',
       period: 'Jurassic',
-      dinoImage: '/images/Plateosaurus_engelhardti.png',
+      dinoImage: '/images/Plateosaurus.png',
       dinoLabel: 'Plateosaurus engelhardti',
     },
     {

@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabaseClient";
+import { getDinosaurImage } from "../utils/dinosaurImage";
 
 const exhibitSelectFields = `
   id,
@@ -35,6 +36,12 @@ const exhibitSelectFields = `
 function normalizeExhibit(exhibit) {
   return {
     ...exhibit,
+    dinosaurs: exhibit.dinosaurs
+      ? {
+          ...exhibit.dinosaurs,
+          image_url: getDinosaurImage(exhibit.dinosaurs),
+        }
+      : exhibit.dinosaurs,
     position: [
       Number(exhibit.position_x ?? 0),
       Number(exhibit.position_y ?? 0),

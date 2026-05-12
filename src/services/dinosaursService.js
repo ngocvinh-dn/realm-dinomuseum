@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabaseClient";
+import { getDinosaurImage } from "../utils/dinosaurImage";
 
 export async function getDinosaurs() {
   const { data, error } = await supabase
@@ -45,6 +46,7 @@ export async function getDinosaurs() {
   return Array.isArray(data)
     ? data.map((dino) => ({
         ...dino,
+        image_url: getDinosaurImage(dino),
         dinosaur_facts: [...(dino.dinosaur_facts || [])].sort(
           (a, b) => a.order_index - b.order_index
         ),
