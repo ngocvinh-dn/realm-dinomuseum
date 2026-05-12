@@ -1,11 +1,13 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 import { useSiteAssets } from '../../hooks/useSiteAssets';
 
 const LeadForm = ({ onLoginClick, locale }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -14,6 +16,20 @@ const LeadForm = ({ onLoginClick, locale }) => {
   const { assets } = useSiteAssets();
   const bgVideo = assets.find((a) => a.asset_type === 'video' && (a.asset_key === 'lead-bg-video' || a.asset_key === 'museum-video' || a.slug === 'lead-bg-video'))?.public_url || '';
   const bgAudio = assets.find((a) => a.asset_type === 'audio' && (a.asset_key === 'lead-bg-audio' || a.asset_key === 'ambient-audio' || a.slug === 'lead-bg-audio'))?.public_url || '';
+
+  useEffect(() => {
+    if (!user) return;
+
+    setForm((prev) => ({
+      name: prev.name || user.user_metadata?.full_name || '',
+      email: prev.email || user.email || '',
+      phone: prev.phone || user.user_metadata?.phone || '',
+    }));
+  }, [user]);
+
+  const museum = () => {
+    navigate('/museum');
+  };
 
   // Cập nhật giá trị form khi người dùng nhập liệu
   const handleChange = (e) => {
@@ -39,7 +55,6 @@ const LeadForm = ({ onLoginClick, locale }) => {
 
     const profilePayload = {
       full_name: form.name || user.user_metadata?.full_name || null,
-      email: form.email || user.email || null,
       phone: form.phone || null,
       has_ticket: true,
       updated_at: new Date().toISOString(),
@@ -57,6 +72,7 @@ const LeadForm = ({ onLoginClick, locale }) => {
 
     setStatus('success');
     setLoading(false);
+    museum();
   };
 
   const ticketCode = useMemo(() => `VIP-${Math.random().toString(36).substring(2, 7).toUpperCase()}`, []);
@@ -275,6 +291,7 @@ const LeadForm = ({ onLoginClick, locale }) => {
 
                     {/* Ô check đồng ý điều khoản */}
                     <motion.label
+                      htmlFor="lead-agree"
                       className="flex items-start gap-3 mb-5 cursor-pointer text-left"
                       initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
                       transition={{ delay: 0.55 }}
@@ -284,7 +301,6 @@ const LeadForm = ({ onLoginClick, locale }) => {
                           onChange={(e) => { setAgreed(e.target.checked); setErrorMsg(''); }}
                           className="sr-only" />
                         <div
-                          onClick={() => { setAgreed(!agreed); setErrorMsg(''); }}
                           className="w-5 h-5 rounded border cursor-pointer flex items-center justify-center transition-all duration-200"
                           style={{
                             background: agreed ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'transparent',
