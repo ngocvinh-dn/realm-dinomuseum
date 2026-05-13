@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 import { useSiteAssets } from '../../hooks/useSiteAssets';
 
@@ -10,7 +9,6 @@ const LeadForm = ({ onLoginClick, locale }) => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
   const [agreed, setAgreed] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
   const { assets } = useSiteAssets();
@@ -37,7 +35,7 @@ const LeadForm = ({ onLoginClick, locale }) => {
   };
 
   // Xử lý submit form đặt vé tham quan
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     // Kiểm tra đăng nhập: nếu chưa đăng nhập thì mở modal auth
@@ -46,32 +44,8 @@ const LeadForm = ({ onLoginClick, locale }) => {
       return;
     }
 
-    if (!agreed) {
-      setErrorMsg(locale === 'vi' ? 'Vui lòng đồng ý với điều khoản để mở cổng bảo tàng.' : 'Please agree to the terms to open the museum gates.');
-      return;
-    }
-    setLoading(true);
     setErrorMsg('');
-
-    const profilePayload = {
-      full_name: form.name || user.user_metadata?.full_name || null,
-      phone: form.phone || null,
-      has_ticket: true,
-      updated_at: new Date().toISOString(),
-    };
-
-    const { error } = await supabase
-      .from('profiles')
-      .upsert({ id: user.id, ...profilePayload }, { onConflict: 'id' });
-
-    if (error) {
-      setErrorMsg(error.message || (locale === 'vi' ? 'Đã xảy ra lỗi khi mở cổng. Vui lòng thử lại.' : 'An error occurred while opening the gates. Please try again.'));
-      setLoading(false);
-      return;
-    }
-
-    setStatus('success');
-    setLoading(false);
+    setStatus(null);
     museum();
   };
 
@@ -331,7 +305,6 @@ const LeadForm = ({ onLoginClick, locale }) => {
                     <motion.button
                       type="submit"
                       id="lead-submit-btn"
-                      disabled={loading}
                       className="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-2xl font-bold text-base transition-all duration-300"
                       style={{
                         background: user
@@ -349,15 +322,10 @@ const LeadForm = ({ onLoginClick, locale }) => {
                       }}
                       whileTap={{ scale: 0.97 }}
                     >
-                      {loading ? (
-                        <>
-                          <span className="inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                          {locale === 'vi' ? 'Đang xử lý...' : 'Processing...'}
-                        </>
-                      ) : !user ? (
+                      {!user ? (
                         <>{locale === 'vi' ? 'ĐĂNG NHẬP ĐỂ TIẾP TỤC' : 'SIGN IN TO ENTER'}</>
                       ) : (
-                        <>{locale === 'vi' ? 'MỞ CỔNG BẢO TÀNG' : 'OPEN MUSEUM GATES'}</>
+                        <>{locale === 'vi' ? 'ĐĂNG NHẬP ĐỂ TIẾP TỤC' : 'SIGN IN TO ENTER'}</>
                       )}
                     </motion.button>
 

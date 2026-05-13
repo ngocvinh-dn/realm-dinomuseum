@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import HeroSection from '../components/home/HeroSection';
 import GeoTimeline from '../components/home/GeoTimeline';
@@ -12,6 +13,7 @@ import AmbientAudio from '../components/home/AmbientAudio';
 const sectionIds = ['hero', 'timeline', 'specimens', 'dang-ky'];
 
 const Home = () => {
+  const navigate = useNavigate();
   const [authOpen, setAuthOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const [locale, setLocale] = useState('vi');
@@ -37,6 +39,9 @@ const Home = () => {
 
   const toggleTheme = () => setDarkMode(prev => !prev);
   const toggleLocale = () => setLocale(prev => (prev === 'vi' ? 'en' : 'vi'));
+  const enterMuseum = () => {
+    navigate('/museum');
+  };
 
   const copy = useMemo(() => ({
     vi: {
@@ -66,7 +71,12 @@ const Home = () => {
   return (
     <div className="relative w-full grain-overlay" style={{ background: 'var(--theme-bg)', color: 'var(--theme-text)' }}>
       <AmbientAudio locale={locale} />
-      <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} locale={locale} />
+      <AuthModal
+        isOpen={authOpen}
+        onClose={() => setAuthOpen(false)}
+        onLoginSuccess={enterMuseum}
+        locale={locale}
+      />
       <Navbar
         locale={locale}
         copy={copy[locale]}
