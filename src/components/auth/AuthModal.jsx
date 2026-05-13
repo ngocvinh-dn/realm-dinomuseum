@@ -20,7 +20,7 @@ const inputVariants = {
 // Kiểm tra định dạng số điện thoại Việt Nam
 const isValidPhone = (phone) => /^(0[3|5|7|8|9])[0-9]{8}$/.test(phone.replace(/\s/g, ''));
 
-const AuthModal = ({ isOpen, onClose, locale = 'vi' }) => {
+const AuthModal = ({ isOpen, onClose, onLoginSuccess, locale = 'vi' }) => {
   const isVi = locale === 'vi';
   const [tab, setTab] = useState(TAB_LOGIN);
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
@@ -72,7 +72,10 @@ const AuthModal = ({ isOpen, onClose, locale = 'vi' }) => {
       setCaptchaToken(null);
     } else {
       setSuccess('Đăng nhập thành công! Cổng bảo tàng đã mở.');
-      setTimeout(() => onClose(), 1400);
+      setTimeout(() => {
+        onClose();
+        onLoginSuccess?.();
+      }, 1400);
     }
     setLoading(false);
   };
