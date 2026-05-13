@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { supabase } from '../../lib/supabaseClient';
@@ -20,7 +20,14 @@ const inputVariants = {
 // Kiểm tra định dạng số điện thoại Việt Nam
 const isValidPhone = (phone) => /^(0[3|5|7|8|9])[0-9]{8}$/.test(phone.replace(/\s/g, ''));
 
-const AuthModal = ({ isOpen, onClose, onLoginSuccess, locale = 'vi' }) => {
+const AuthModal = ({
+  isOpen,
+  onClose,
+  onLoginSuccess,
+  initialTab = TAB_LOGIN,
+  initialMessage = '',
+  locale = 'vi',
+}) => {
   const isVi = locale === 'vi';
   const [tab, setTab] = useState(TAB_LOGIN);
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
@@ -29,6 +36,18 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess, locale = 'vi' }) => {
   const [success, setSuccess] = useState('');
   const [captchaToken, setCaptchaToken] = useState(null);
   const captchaRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setTab(initialTab);
+    setForm({ name: '', email: '', password: '', phone: '' });
+    setError('');
+    setSuccess(initialMessage);
+    setLoading(false);
+    setCaptchaToken(null);
+    captchaRef.current?.resetCaptcha();
+  }, [initialMessage, initialTab, isOpen]);
 
   // Reset form về trạng thái ban đầu
   const reset = () => {
@@ -87,8 +106,8 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess, locale = 'vi' }) => {
     setError('');
 
     // Kiểm tra độ dài mật khẩu
-    if (form.password.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự.');
+    if (form.password.length <= 9) {
+      setError('Mật khẩu phải có ít nhất 9 ký tự.');
       setLoading(false);
       return;
     }
@@ -113,7 +132,7 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess, locale = 'vi' }) => {
       password: form.password,
       options: {
         // Chuyển hướng về trang hiện tại sau khi xác nhận email (sửa lỗi chuyển hướng localhost)
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: `${window.location.origin}/?auth=login&confirmed=1`,
         captchaToken,
         data: {
           full_name: form.name,
@@ -149,7 +168,7 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess, locale = 'vi' }) => {
     { name: 'name', label: isVi ? 'Họ và tên' : 'Full name', type: 'text', placeholder: isVi ? 'Nguyễn Văn A' : 'John Doe' },
     { name: 'email', label: 'Email', type: 'email', placeholder: isVi ? 'email@cua-ban.com' : 'your@email.com' },
     { name: 'phone', label: isVi ? 'Số điện thoại' : 'Phone number', type: 'tel', placeholder: isVi ? '0912 345 678' : '+84 912 345 678' },
-    { name: 'password', label: isVi ? 'Mật khẩu' : 'Password', type: 'password', placeholder: isVi ? 'Ít nhất 6 ký tự' : 'At least 6 characters' },
+    { name: 'password', label: isVi ? 'Mật khẩu' : 'Password', type: 'password', placeholder: isVi ? 'Ít nhất 9 ký tự' : 'At least 9 characters' },
   ];
 
   const fields = tab === TAB_LOGIN ? loginFields : registerFields;

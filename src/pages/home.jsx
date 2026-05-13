@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import HeroSection from '../components/home/HeroSection';
 import GeoTimeline from '../components/home/GeoTimeline';
@@ -9,12 +9,17 @@ import FinalCTA from '../components/home/FinalCTA';
 import Footer from '../components/home/Footer';
 import AuthModal from '../components/auth/AuthModal';
 import AmbientAudio from '../components/home/AmbientAudio';
+import { useAuth } from '../context/AuthContext';
 
 const sectionIds = ['hero', 'timeline', 'specimens', 'dang-ky'];
 
 const Home = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
+  const [authInitialTab, setAuthInitialTab] = useState('login');
+  const [authInitialMessage, setAuthInitialMessage] = useState('');
   const [darkMode, setDarkMode] = useState(true);
   const [locale, setLocale] = useState('vi');
   const [activeSection, setActiveSection] = useState('hero');
@@ -37,10 +42,65 @@ const Home = () => {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const shouldOpenLogin = params.get('auth') === 'login';
+    const isConfirmed = params.get('confirmed') === '1';
+
+    if (!shouldOpenLogin && !isConfirmed) return;
+
+    let cancelled = false;
+
+    const handleAuthRedirect = async () => {
+      if (isConfirmed && user) {
+        await signOut();
+      }
+
+      if (cancelled) return;
+
+      setAuthInitialTab('login');
+      setAuthInitialMessage(
+        isConfirmed
+          ? (locale === 'vi'
+              ? 'Email đã được xác nhận. Vui lòng đăng nhập.'
+              : 'Your email has been confirmed. Please sign in.')
+          : ''
+      );
+      setAuthOpen(true);
+
+      const nextParams = new URLSearchParams(location.search);
+      nextParams.delete('auth');
+      nextParams.delete('confirmed');
+
+      navigate(
+        {
+          pathname: location.pathname,
+          search: nextParams.toString() ? `?${nextParams.toString()}` : '',
+        },
+        { replace: true }
+      );
+    };
+
+    handleAuthRedirect();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [location.pathname, location.search, locale, navigate, signOut, user]);
+
   const toggleTheme = () => setDarkMode(prev => !prev);
   const toggleLocale = () => setLocale(prev => (prev === 'vi' ? 'en' : 'vi'));
   const enterMuseum = () => {
     navigate('/museum');
+  };
+  const openLoginModal = () => {
+    setAuthInitialTab('login');
+    setAuthInitialMessage('');
+    setAuthOpen(true);
+  };
+  const closeAuthModal = () => {
+    setAuthOpen(false);
+    setAuthInitialMessage('');
   };
 
   const copy = useMemo(() => ({
@@ -73,15 +133,17 @@ const Home = () => {
       <AmbientAudio locale={locale} />
       <AuthModal
         isOpen={authOpen}
-        onClose={() => setAuthOpen(false)}
+        onClose={closeAuthModal}
         onLoginSuccess={enterMuseum}
+        initialTab={authInitialTab}
+        initialMessage={authInitialMessage}
         locale={locale}
       />
       <Navbar
         locale={locale}
         copy={copy[locale]}
         onLocaleToggle={toggleLocale}
-        onLoginClick={() => setAuthOpen(true)}
+        onLoginClick={openLoginModal}
         darkMode={darkMode}
         onThemeToggle={toggleTheme}
         onSectionChange={setActiveSection}
@@ -91,8 +153,8 @@ const Home = () => {
         <HeroSection copy={copy[locale]} />
         <GeoTimeline locale={locale} copy={copy[locale]} />
         <SpecimenShowcase locale={locale} copy={copy[locale]} />
-        <LeadForm locale={locale} copy={copy[locale]} onLoginClick={() => setAuthOpen(true)} />
-        <FinalCTA locale={locale} copy={copy[locale]} onLoginClick={() => setAuthOpen(true)} />
+        <LeadForm locale={locale} copy={copy[locale]} onLoginClick={openLoginModal} />
+        <FinalCTA locale={locale} copy={copy[locale]} onLoginClick={openLoginModal} />
       </main>
       <Footer locale={locale} copy={copy[locale]} />
     </div>
