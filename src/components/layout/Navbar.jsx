@@ -23,7 +23,7 @@ const scrollToSection = (href, offset = -80) => {
   }
 };
 
-const Navbar = ({ onLoginClick, darkMode, onThemeToggle, onLocaleToggle, locale, onSectionChange, activeSection }) => {
+const Navbar = ({ onLoginClick, onLocaleToggle, locale, onSectionChange, activeSection }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hoveredTab, setHoveredTab] = useState(null);
@@ -172,9 +172,6 @@ const Navbar = ({ onLoginClick, darkMode, onThemeToggle, onLocaleToggle, locale,
             <motion.button onClick={onLocaleToggle} className="px-3 py-2 rounded-full text-xs font-semibold" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', color: 'var(--theme-accent)' }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               {locale === 'vi' ? 'VI' : 'EN'}
             </motion.button>
-            <motion.button onClick={onThemeToggle} className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', color: 'var(--theme-accent)', fontSize: '16px' }} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.93 }} title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}>
-              {darkMode ? '☀️' : '🌙'}
-            </motion.button>
             {user ? (
               <button onClick={signOut} className="btn-amber-outline text-xs py-2 px-4" style={{ fontFamily: 'var(--font-body)' }}>
                 {locale === 'vi' ? 'Đăng xuất' : 'Sign Out'}
@@ -188,7 +185,6 @@ const Navbar = ({ onLoginClick, darkMode, onThemeToggle, onLocaleToggle, locale,
 
           <div className="md:hidden flex items-center gap-2">
             <motion.button onClick={onLocaleToggle} className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }} whileTap={{ scale: 0.93 }}>{locale === 'vi' ? 'VI' : 'EN'}</motion.button>
-            <motion.button onClick={onThemeToggle} className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }} whileTap={{ scale: 0.93 }}>{darkMode ? '☀️' : '🌙'}</motion.button>
             <button className="flex flex-col gap-1.5 p-2" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
               {[0, 1, 2].map((i) => <motion.span key={i} className="block h-0.5 w-6 rounded-full" style={{ background: '#f59e0b' }} animate={{ rotate: mobileOpen ? (i === 0 ? 45 : i === 2 ? -45 : 0) : 0, y: mobileOpen ? (i === 0 ? 8 : i === 2 ? -8 : 0) : 0, opacity: mobileOpen && i === 1 ? 0 : 1 }} transition={{ duration: 0.25 }} />)}
             </button>
