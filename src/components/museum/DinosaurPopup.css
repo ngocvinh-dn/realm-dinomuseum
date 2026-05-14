@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&family=Montserrat:wght@500;600;700&display=swap");
 
 .dinosaur-popup,
 .dinosaur-popup * {
@@ -46,7 +46,7 @@
 
   backdrop-filter: blur(18px);
   overflow: hidden;
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: var(--font-body, "Hind", sans-serif);
 
   transform-origin: right center;
   animation: dinosaurPopupEnter 0.56s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -237,18 +237,18 @@
 
 .dinosaur-popup__title {
   margin: 16px 0 0;
-  color: var(--text-main);
-  font-family: "Inter", system-ui, sans-serif;
+  color: var(--theme-heading, #fbbf24);
+  font-family: var(--font-heading, "Montserrat", sans-serif);
   font-size: 32px;
   line-height: 1.08;
-  font-weight: 850;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 .dinosaur-popup__subtitle {
   margin: 6px 0 0;
   color: var(--text-muted);
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: var(--font-body, "Hind", sans-serif);
   font-size: 15px;
   line-height: 1.4;
   font-style: italic;
@@ -386,11 +386,11 @@
 
 .dinosaur-popup__section-title {
   margin: 0 0 10px;
-  color: var(--text-main);
-  font-family: "Inter", system-ui, sans-serif;
+  color: var(--theme-heading, #fbbf24);
+  font-family: var(--font-heading, "Montserrat", sans-serif);
   font-size: 21px;
-  font-weight: 850;
-  letter-spacing: -0.03em;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 .dinosaur-popup__meta {

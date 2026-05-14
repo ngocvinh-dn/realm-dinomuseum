@@ -101,10 +101,10 @@ const GalleriesPreview = ({ locale = 'vi' }) => {
       <div className="relative max-w-7xl mx-auto">
         <motion.div ref={headingRef} className="mb-10 md:mb-16" style={{ y: headingY }} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
           <div className="section-divider" />
-          <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
+          <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}>
             {isVi ? 'Phòng trưng bày' : 'Dinosaur Halls'}
           </p>
-          <h2 className="font-serif text-4xl md:text-6xl leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
+          <h2 className="font-serif text-4xl md:text-6xl leading-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)' }}>
             {loading ? (isVi ? 'Đang tải hiện vật...' : 'Loading exhibits...') : (isVi ? '3 card đầu tiên theo dòng thời gian' : 'First 3 cards in the timeline')}
           </h2>
         </motion.div>
@@ -138,10 +138,10 @@ const GalleriesPreview = ({ locale = 'vi' }) => {
                     </div>
                   </div>
                   <div className="p-5 pt-4">
-                    <h3 className="font-serif font-bold text-lg leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>{gallery.title}</h3>
-                    <p className="text-xs font-semibold mt-0.5" style={{ color: gallery.dot, fontFamily: 'DM Sans, sans-serif' }}>{gallery.subtitle}</p>
-                    <p className="text-sm leading-relaxed mt-3 mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif' }}>{gallery.desc}</p>
-                    <span className="btn-amber-outline text-xs py-2 px-4 w-full inline-flex justify-center" style={{ fontFamily: 'DM Sans, sans-serif', borderColor: isActive ? gallery.dot : undefined, boxShadow: isActive ? `0 0 20px ${gallery.glow}` : 'none' }}>{isVi ? 'Card đang chọn' : 'Selected card'}</span>
+                    <h3 className="font-serif font-bold text-lg leading-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)' }}>{gallery.title}</h3>
+                    <p className="text-xs font-semibold mt-0.5" style={{ color: gallery.dot, fontFamily: 'var(--font-body)' }}>{gallery.subtitle}</p>
+                    <p className="text-sm leading-relaxed mt-3 mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)' }}>{gallery.desc}</p>
+                    <span className="btn-amber-outline text-xs py-2 px-4 w-full inline-flex justify-center" style={{ fontFamily: 'var(--font-body)', borderColor: isActive ? gallery.dot : undefined, boxShadow: isActive ? `0 0 20px ${gallery.glow}` : 'none' }}>{isVi ? 'Card đang chọn' : 'Selected card'}</span>
                   </div>
                 </motion.button>
               );
@@ -151,8 +151,8 @@ const GalleriesPreview = ({ locale = 'vi' }) => {
           <motion.div className="glass-card p-6 md:p-8 sticky top-24" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35 }} style={{ borderColor: activeGallery?.border, boxShadow: `0 0 36px ${activeGallery?.glow || 'rgba(245,158,11,0.14)'}` }}>
             <div className="flex items-center justify-between gap-4 mb-4">
               <div>
-                <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: activeGallery?.dot || '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>{isVi ? 'Thông tin đang chọn' : 'Selected details'}</p>
-                <h3 className="font-serif text-3xl md:text-4xl" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>{activeGallery?.title}</h3>
+                <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: activeGallery?.dot || '#f59e0b', fontFamily: 'var(--font-body)' }}>{isVi ? 'Thông tin đang chọn' : 'Selected details'}</p>
+                <h3 className="font-serif text-3xl md:text-4xl" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)' }}>{activeGallery?.title}</h3>
                 <p className="mt-1 text-sm" style={{ color: 'var(--theme-text-muted)' }}>{activeGallery?.subtitle}</p>
               </div>
               <div className="px-3 py-2 rounded-xl text-right" style={{ background: 'rgba(245,158,11,0.08)', border: `1px solid ${activeGallery?.border || 'rgba(245,158,11,0.18)'}` }}>
@@ -167,7 +167,7 @@ const GalleriesPreview = ({ locale = 'vi' }) => {
                 <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(10,8,4,0.7)', color: activeGallery?.dot || '#fbbf24', border: `1px solid ${activeGallery?.border || 'rgba(245,158,11,0.2)'}` }}>{isVi ? 'Card được chọn' : 'Selected'}</span>
               </div>
             </div>
-            <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif' }}>{activeGallery?.desc}</p>
+            <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)' }}>{activeGallery?.desc}</p>
           </motion.div>
         </div>
       </div>

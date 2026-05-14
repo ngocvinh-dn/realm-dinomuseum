@@ -108,7 +108,7 @@ const AmbientAudio = () => {
           <div className="flex items-center gap-0.5 h-4">
             {isPlaying ? bars.map((h, i) => (<motion.div key={i} className="w-0.5 rounded-full" style={{ background: '#f59e0b' }} animate={{ height: [`${h * 2}px`, `${h * 3.5}px`, `${h * 2}px`] }} transition={{ duration: 0.6 + i * 0.07, repeat: Infinity, ease: 'easeInOut', delay: i * 0.05 }} />)) : <span style={{ color: 'rgba(245,158,11,0.7)', fontSize: '14px', lineHeight: 1 }}>🎵</span>}
           </div>
-          <span className="text-xs font-medium" style={{ color: isPlaying ? '#fbbf24' : 'rgba(245,158,11,0.6)', fontFamily: 'DM Sans, sans-serif' }}>
+          <span className="text-xs font-medium" style={{ color: isPlaying ? '#fbbf24' : 'rgba(245,158,11,0.6)', fontFamily: 'var(--font-body)' }}>
             {isPlaying ? playlist[trackIndex]?.label : 'Dino Music'}
           </span>
         </motion.button>

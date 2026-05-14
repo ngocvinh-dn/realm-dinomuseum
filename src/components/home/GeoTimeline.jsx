@@ -133,14 +133,14 @@ const GeoTimeline = ({ locale = 'vi' }) => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="text-xs font-semibold tracking-[0.28em] uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
+          <p className="text-xs font-semibold tracking-[0.28em] uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}>
             {isVi ? 'DÒNG THỜI GIAN ĐỊA CHẤT' : 'GEOLOGICAL TIMELINE'}
           </p>
-          <h2 className="font-serif text-4xl md:text-6xl leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
+          <h2 className="font-serif text-4xl md:text-6xl leading-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)' }}>
             {isVi ? 'Kỷ Mesozoi — ' : 'Mesozoic Era — '}
             <span className="text-gradient-amber">{isVi ? 'Thời đại của khủng long' : 'The Age of Dinosaurs'}</span>
           </h2>
-          <p className="mt-4 text-sm md:text-base italic" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Lora, serif' }}>
+          <p className="mt-4 text-sm md:text-base italic" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)' }}>
             {isVi
               ? '252 – 66 triệu năm trước • Nhấn vào từng kỷ để khám phá chi tiết'
               : '252 – 66 million years ago • Click each period to explore in detail'}
@@ -181,10 +181,10 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                       </div>
                     </div>
 
-                    <h3 className="font-serif text-2xl md:text-[1.75rem] leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
+                    <h3 className="font-serif text-2xl md:text-[1.75rem] leading-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)' }}>
                       {isVi ? eon.nameVi : eon.nameEn}
                     </h3>
-                    <p className="mt-1 text-xs italic" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif' }}>
+                    <p className="mt-1 text-xs italic" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)' }}>
                       {isVi ? 'Bấm để xem chi tiết theo từng kỷ' : 'Tap to view details for this period'}
                     </p>
 
@@ -276,10 +276,10 @@ const GeoTimeline = ({ locale = 'vi' }) => {
               <div className="p-6 md:p-8">
                 <div className="flex items-start justify-between gap-4 mb-5">
                   <div>
-                    <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: active?.dot || '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
+                    <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: active?.dot || '#f59e0b', fontFamily: 'var(--font-body)' }}>
                       {isVi ? 'Thông tin đang chọn' : 'Selected details'}
                     </p>
-                    <h3 className="font-serif text-3xl md:text-4xl leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
+                    <h3 className="font-serif text-3xl md:text-4xl leading-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)' }}>
                       {isVi ? active?.nameVi : active?.nameEn}
                     </h3>
                     <p className="mt-1 text-sm" style={{ color: 'var(--theme-text-muted)' }}>
@@ -311,7 +311,7 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                   ✦ {active?.event}
                 </div>
 
-                <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Lora, serif' }}>
+                <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)' }}>
                   {active?.desc}
                 </p>
 
