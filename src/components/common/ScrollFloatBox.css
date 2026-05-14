@@ -1,0 +1,10 @@
+.scroll-float-box {
+  display: block;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+.scroll-float-box > * {
+  height: 100%;
+}

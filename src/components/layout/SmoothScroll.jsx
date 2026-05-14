@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import Lenis from 'lenis';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 /**
  * SmoothScroll component — wraps the entire app with Lenis smooth scrolling.
@@ -24,6 +25,7 @@ const SmoothScroll = ({ children }) => {
 
     // Expose lenis to window for navbar anchor clicks
     window.__lenis = lenis;
+    lenis.on('scroll', ScrollTrigger.update);
 
     // Animation loop — runs every frame to update Lenis scroll position
     let animFrameId;
@@ -47,8 +49,8 @@ const SmoothScroll = ({ children }) => {
       e.preventDefault();
       lenis.scrollTo(target, {
         offset: -80,       // Offset for fixed navbar height
-        duration: 1.6,     // Smooth scroll duration to target section
-        easing: (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, // Ease in-out cubic
+        duration: 2.2,     // Slower scroll so section titles and ScrollFloat animations have time to read.
+        easing: (t) => 1 - Math.pow(1 - t, 4),
       });
     };
 
@@ -58,6 +60,7 @@ const SmoothScroll = ({ children }) => {
     return () => {
       cancelAnimationFrame(animFrameId);
       document.removeEventListener('click', handleAnchorClick);
+      lenis.off('scroll', ScrollTrigger.update);
       lenis.destroy();
       window.__lenis = null;
     };

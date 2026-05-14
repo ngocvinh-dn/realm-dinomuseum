@@ -13,7 +13,11 @@ const scrollToSection = (href, offset = -80) => {
   const target = document.querySelector(href);
   if (!target) return;
   if (window.__lenis) {
-    window.__lenis.scrollTo(target, { offset, duration: 1.2 });
+    window.__lenis.scrollTo(target, {
+      offset,
+      duration: 2.2,
+      easing: (t) => 1 - Math.pow(1 - t, 4),
+    });
   } else {
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }

@@ -6,6 +6,8 @@ import {
   getDinosaurImagePosition,
   getDinosaurImagePresentation,
 } from '../../utils/dinosaurImage';
+import ScrollFloat from '../common/ScrollFloat';
+import ScrollFloatBox from '../common/ScrollFloatBox';
 
 const ERA_COLORS = ['#e07b39', '#4ade80', '#f59e0b'];
 const ERA_DOTS = ['#fb923c', '#4ade80', '#f59e0b'];
@@ -77,7 +79,7 @@ const fallbackEons = (isVi) => [
 
 const GeoTimeline = ({ locale = 'vi' }) => {
   const isVi = locale === 'vi';
-  const [activeId, setActiveId] = useState('triassic');
+  const [activeId, setActiveId] = useState(null);
   const sectionRef = useRef(null);
   const headingY = useParallax(sectionRef, ['24px', '-16px']);
   const { dinosaurs } = useDinosaurs();
@@ -105,7 +107,8 @@ const GeoTimeline = ({ locale = 'vi' }) => {
     return dinoEons.length ? dinoEons : fallbackEons(isVi);
   }, [dinosaurs, isVi]);
 
-  const active = eons.find((e) => e.id === activeId) || eons[0];
+  const active = activeId ? eons.find((e) => e.id === activeId) : null;
+
   return (
     <section
       id="timeline"
@@ -134,10 +137,30 @@ const GeoTimeline = ({ locale = 'vi' }) => {
           <p className="text-xs font-semibold tracking-[0.28em] uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}>
             {isVi ? 'DÒNG THỜI GIAN ĐỊA CHẤT' : 'GEOLOGICAL TIMELINE'}
           </p>
-          <h2 className="font-serif text-4xl md:text-6xl leading-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)' }}>
-            {isVi ? 'Kỷ Mesozoi — ' : 'Mesozoic Era — '}
-            <span className="text-gradient-amber">{isVi ? 'Thời đại của khủng long' : 'The Age of Dinosaurs'}</span>
-          </h2>
+          <div className="space-y-1">
+            <ScrollFloat
+              containerClassName="text-left"
+              textClassName="text-[var(--theme-text)]"
+              animationDuration={1}
+              ease="back.inOut(2)"
+              scrollStart="top bottom-=5%"
+              scrollEnd="center center"
+              stagger={0.02}
+            >
+              {isVi ? 'Kỷ Mesozoi' : 'Mesozoic Era'}
+            </ScrollFloat>
+            <ScrollFloat
+              containerClassName="text-left"
+              textClassName="text-gradient-amber"
+              animationDuration={1}
+              ease="back.inOut(2)"
+              scrollStart="top bottom-=5%"
+              scrollEnd="center center"
+              stagger={0.018}
+            >
+              {isVi ? 'Thời đại của khủng long' : 'The Age of Dinosaurs'}
+            </ScrollFloat>
+          </div>
           <p className="mt-4 text-sm md:text-base italic" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)' }}>
             {isVi
               ? '252 – 66 triệu năm trước • Nhấn vào từng kỷ để khám phá chi tiết'
@@ -153,11 +176,11 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                 <motion.button
                   key={eon.id}
                   type="button"
-                  onClick={() => setActiveId(eon.id)}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  onClick={() => setActiveId((currentId) => (currentId === eon.id ? null : eon.id))}
+                  initial={{ opacity: 0, y: 42, scale: 0.92, rotateX: 5 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.12, duration: 0.55, ease: 'easeOut' }}
+                  transition={{ delay: i * 0.14, duration: 1.05, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={{ y: -4 }}
                   className="text-left rounded-2xl overflow-hidden"
                   style={{
@@ -167,6 +190,7 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                       ? `0 0 0 1px ${eon.color}44, 0 0 38px ${eon.color}22, 0 18px 48px rgba(0,0,0,0.25)`
                       : '0 4px 20px rgba(0,0,0,0.1)',
                     transition: 'background 0.4s ease, border-color 0.3s ease, box-shadow 0.3s ease',
+                    transformOrigin: '50% 70%',
                   }}
                 >
                   <div className="p-5 md:p-6">
@@ -215,9 +239,20 @@ const GeoTimeline = ({ locale = 'vi' }) => {
             ))}
           </div>
 
+          {active && (
+          <ScrollFloatBox
+            key={`timeline-float-${active?.id}`}
+            className="mt-2"
+            triggerMode="mount"
+            animationDuration={1.25}
+            ease="back.out(1.15)"
+            yPercent={22}
+            scale={0.93}
+            rotateX={4}
+          >
           <motion.div
             key={active?.id}
-            className="mt-2 rounded-3xl overflow-hidden"
+            className="rounded-3xl overflow-hidden"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
@@ -319,6 +354,8 @@ const GeoTimeline = ({ locale = 'vi' }) => {
               </div>
             </div>
           </motion.div>
+          </ScrollFloatBox>
+          )}
         </div>
       </div>
     </section>
