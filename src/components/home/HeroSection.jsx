@@ -72,7 +72,7 @@ const HeroSection = ({ copy }) => {
   }, []);
 
   return (
-    <section id="hero" ref={sectionRef} className="relative w-full min-h-screen flex flex-col items-center justify-center text-center overflow-y-hidden" style={{ paddingTop: '80px', overflowX: 'visible' }}>
+    <section id="hero" ref={sectionRef} className="relative w-full min-h-screen flex flex-col items-center justify-center text-center overflow-hidden" style={{ paddingTop: '80px' }}>
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top, rgba(245,158,11,0.14), transparent 55%), linear-gradient(180deg, rgba(10,8,4,0.35) 0%, rgba(10,8,4,0.65) 100%)' }} />
 
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">

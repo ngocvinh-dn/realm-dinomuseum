@@ -106,8 +106,6 @@ const GeoTimeline = ({ locale = 'vi' }) => {
   }, [dinosaurs, isVi]);
 
   const active = eons.find((e) => e.id === activeId) || eons[0];
-  const progressWidths = ['27%', '30%', '43%'];
-
   return (
     <section
       id="timeline"
@@ -171,7 +169,6 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                     transition: 'background 0.4s ease, border-color 0.3s ease, box-shadow 0.3s ease',
                   }}
                 >
-                  <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${eon.color}, ${eon.dot})` }} />
                   <div className="p-5 md:p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className="text-3xl" style={{ color: eon.dot }}>{eon.icon}</div>
@@ -208,18 +205,6 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                 </motion.button>
               );
             })}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] items-center gap-4 md:gap-6 mt-2">
-            <span className="text-xs whitespace-nowrap" style={{ color: 'var(--theme-text-dim)' }}>252 Ma</span>
-            <div className="relative h-2 rounded-full overflow-hidden">
-              <div className="absolute inset-0 flex">
-                {eons.map((eon, i) => (
-                  <div key={eon.id} className="flex-none" style={{ width: progressWidths[i], background: eon.color, opacity: 0.55 }} />
-                ))}
-              </div>
-            </div>
-            <span className="text-xs whitespace-nowrap text-right" style={{ color: 'var(--theme-text-dim)' }}>66 Ma</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-0 md:px-9 -mt-2">

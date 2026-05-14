@@ -158,14 +158,8 @@ const LeadForm = ({ onLoginClick, locale }) => {
               boxShadow: '0 0 40px rgba(245,158,11,0.12), 0 18px 48px rgba(0,0,0,0.22), inset 0 1px 0 rgba(245,158,11,0.12)',
             }}
           >
-            {/* Đường kẻ vàng phía trên card */}
-            <div style={{
-              position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
-              background: 'linear-gradient(90deg, transparent 5%, #f59e0b 30%, #fbbf24 50%, #f59e0b 70%, transparent 95%)',
-            }} />
-
             {/* Ticket stub area (top) */}
-            <div className="p-6 pb-4" style={{ borderBottom: '2px dashed rgba(245,158,11,0.25)' }}>
+            <div className="p-6 pb-4" style={{ borderBottom: '1px solid var(--theme-border)' }}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="text-3xl">🏛️</div>
@@ -336,12 +330,6 @@ const LeadForm = ({ onLoginClick, locale }) => {
                 )}
               </AnimatePresence>
             </div>
-
-            {/* Đường kẻ vàng phía dưới card */}
-            <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px',
-              background: 'linear-gradient(90deg, transparent 5%, rgba(245,158,11,0.3) 30%, rgba(251,191,36,0.5) 50%, rgba(245,158,11,0.3) 70%, transparent 95%)',
-            }} />
           </div>
         </motion.div>
       </div>

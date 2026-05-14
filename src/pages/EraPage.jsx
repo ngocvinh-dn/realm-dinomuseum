@@ -1,15 +1,21 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
-import { PointerLockControls, Environment } from "@react-three/drei";
+import { Environment } from "@react-three/drei";
 import { Suspense, useEffect, useState } from "react";
 import InteractableModel from "../components/museum/InteractableModel";
 import PlayerController from "../components/museum/PlayerController";
 import MuseumLoader from "../components/museum/MuseumLoader";
 import { Crosshair } from "../components/museum/Crosshair";
 import DinosaurPopup from "../components/museum/DinosaurPopup";
+import MuseumEnvironment from "../components/museum/MuseumEnvironment";
+import SafePointerLockControls from "../components/museum/SafePointerLockControls";
 import { getEnvironmentBySlug } from "../services/environmentService";
 import { getExhibitsByEraId } from "../services/exhibitsService";
 import CanvasErrorBoundary from "../components/home/CanvasErrorBoundary";
+
+function isModelScene(url = "") {
+  return /\.(glb|gltf)(?:[?#].*)?$/i.test(url);
+}
 export default function EraPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -44,6 +50,8 @@ export default function EraPage() {
       : slug === "jurassic"
       ? "#4ade80"
       : "#f59e0b";
+  const environmentUrl = era?.environment_map_url || "";
+  const renderModelEnvironment = isModelScene(environmentUrl);
 
   if (error) {
     return (
@@ -99,9 +107,13 @@ export default function EraPage() {
       <Canvas style={styles.canvas} camera={{ position: [0, 2, 8], fov: 60 }}>
         <Suspense fallback={null}>
           {/* EXR làm background + lighting */}
-          {!loading && era?.environment_map_url && (
-  <Environment files={era.environment_map_url} background backgroundBlurriness={0} />
-    )}
+          {!loading && environmentUrl && (
+            renderModelEnvironment ? (
+              <MuseumEnvironment url={environmentUrl} />
+            ) : (
+              <Environment files={environmentUrl} background backgroundBlurriness={0} />
+            )
+          )}
 
           <ambientLight intensity={0.6} />
           <directionalLight position={[5, 8, 5]} intensity={1.2} />
@@ -129,7 +141,7 @@ export default function EraPage() {
 
           <PlayerController />
 
-          <PointerLockControls
+          <SafePointerLockControls
             onLock={() => setIsPointerLocked(true)}
             onUnlock={() => setIsPointerLocked(false)}
           />
