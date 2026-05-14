@@ -20,13 +20,12 @@ const Home = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const [authInitialTab, setAuthInitialTab] = useState('login');
   const [authInitialMessage, setAuthInitialMessage] = useState('');
-  const [darkMode, setDarkMode] = useState(true);
   const [locale, setLocale] = useState('vi');
   const [activeSection, setActiveSection] = useState('hero');
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
-  }, [darkMode]);
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -88,7 +87,6 @@ const Home = () => {
     };
   }, [location.pathname, location.search, locale, navigate, signOut, user]);
 
-  const toggleTheme = () => setDarkMode(prev => !prev);
   const toggleLocale = () => setLocale(prev => (prev === 'vi' ? 'en' : 'vi'));
   const enterMuseum = () => {
     navigate('/museum');
@@ -144,8 +142,6 @@ const Home = () => {
         copy={copy[locale]}
         onLocaleToggle={toggleLocale}
         onLoginClick={openLoginModal}
-        darkMode={darkMode}
-        onThemeToggle={toggleTheme}
         onSectionChange={setActiveSection}
         activeSection={activeSection}
       />
