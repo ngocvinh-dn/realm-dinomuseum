@@ -1,5 +1,4 @@
 import { Canvas } from "@react-three/fiber";
-import { PointerLockControls } from "@react-three/drei";
 import { Suspense, useEffect, useState } from "react";
 import MuseumLoader from "./MuseumLoader";
 
@@ -10,6 +9,7 @@ import DinoPopup from "./DinoPopup";
 import InteractableModel from "./InteractableModel";
 import MuseumEnvironment from "./MuseumEnvironment";
 import PlayerController from "./PlayerController";
+import SafePointerLockControls from "./SafePointerLockControls";
 import { getSceneAssets } from "../../services/sceneAssetsService";
 
 export default function MuseumScene() {
@@ -116,7 +116,7 @@ export default function MuseumScene() {
 
           <PlayerController />
 
-          <PointerLockControls
+          <SafePointerLockControls
             onLock={() => setIsPointerLocked(true)}
             onUnlock={() => setIsPointerLocked(false)}
           />

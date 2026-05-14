@@ -97,7 +97,6 @@ const Navbar = ({ onLoginClick, darkMode, onThemeToggle, onLocaleToggle, locale,
         style={{
           background: scrolled ? 'var(--theme-nav-bg)' : 'transparent',
           backdropFilter: scrolled ? 'blur(24px)' : 'none',
-          borderBottom: scrolled ? '1px solid var(--theme-border)' : 'none',
           transition: 'all 0.4s ease',
         }}
       >
