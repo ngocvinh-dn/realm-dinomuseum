@@ -50,7 +50,7 @@ const Footer = ({ locale }) => {
               <div>
                 <div
                   className="font-serif text-lg font-bold leading-none"
-                  style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-accent-bright)' }}
+                  style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-accent-bright)' }}
                 >
                   Dinosaur Museum
                 </div>

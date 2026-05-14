@@ -11,7 +11,7 @@ const allSpecimens = [
     id: 'styracosaurus',
     name:     { vi: 'Styracosaurus',       en: 'Styracosaurus' },
     fullName: 'Styracosaurus albertensis',
-    tag:      { vi: 'Mới upload',          en: 'New upload' },
+    tag:      { vi: 'Styracosaurus',          en: 'Styracosaurus' },
     dinoImage: '/images/Styracosaurus%20.png',
     objectPosition: 'center center',
     imageScale: 1.08,
@@ -30,7 +30,7 @@ const allSpecimens = [
     id: 'coelophysis',
     name:     { vi: 'Coelophysis',  en: 'Coelophysis' },
     fullName: 'Coelophysis bauri',
-    tag:      { vi: 'Mới upload',   en: 'New upload' },
+    tag:      { vi: 'Coelophysis',   en: 'Coelophysis' },
     dinoImage: '/images/Coelophysis_bauri.png',
     objectPosition: 'center center',
     imageScale: 1.08,
@@ -155,16 +155,16 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
         >
           <div className="section-divider" />
           <p className="text-xs font-semibold tracking-widest uppercase mb-4"
-            style={{ color: '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
+            style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}>
             {isVi ? 'Hiện vật nổi bật' : 'Featured Specimens'}
           </p>
           <h2 className="font-serif text-4xl md:text-6xl leading-tight"
-            style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }}>
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)' }}>
             {isVi ? 'Những ngôi sao ' : 'The Stars '}
             <span className="text-gradient-amber">{isVi ? 'của bộ sưu tập' : 'of Our Collection'}</span>
           </h2>
           <p className="mt-4 max-w-xl text-sm leading-relaxed"
-            style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif', fontStyle: 'italic' }}>
+            style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
             {isVi
               ? 'Những mẫu vật tiêu biểu nhất từ bộ sưu tập của bảo tàng — từ loài mới tải lên đến các huyền thoại cổ đại.'
               : 'The most iconic specimens from our museum collection — from newly uploaded finds to ancient legends.'}
@@ -228,12 +228,12 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                   {/* Nhãn phân loại và nổi bật */}
                   <div className="absolute top-4 left-4 flex gap-2 z-20">
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium"
-                      style={{ background: 'rgba(10,8,4,0.8)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.3)', backdropFilter: 'blur(8px)', fontFamily: 'DM Sans, sans-serif' }}>
+                      style={{ background: 'rgba(10,8,4,0.8)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.3)', backdropFilter: 'blur(8px)', fontFamily: 'var(--font-body)' }}>
                       {tag}
                     </span>
                     {s.highlight && (
                       <span className="px-2.5 py-1 rounded-full text-xs font-bold"
-                        style={{ background: 'rgba(245,158,11,0.2)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.5)', fontFamily: 'DM Sans, sans-serif' }}>
+                        style={{ background: 'rgba(245,158,11,0.2)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.5)', fontFamily: 'var(--font-body)' }}>
                         ✦ {isVi ? 'Nổi bật' : 'Featured'}
                       </span>
                     )}
@@ -242,7 +242,7 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                   {/* Nhãn kỷ địa chất góc trên phải */}
                   <div className="absolute top-4 right-4 z-20">
                     <span className="px-2.5 py-1 rounded-full text-xs"
-                      style={{ background: 'rgba(10,8,4,0.8)', color: 'rgba(245,240,232,0.7)', backdropFilter: 'blur(8px)', fontFamily: 'DM Sans, sans-serif' }}>
+                      style={{ background: 'rgba(10,8,4,0.8)', color: 'rgba(245,240,232,0.7)', backdropFilter: 'blur(8px)', fontFamily: 'var(--font-body)' }}>
                       {period}
                     </span>
                   </div>
@@ -251,11 +251,11 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                   <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
                     <div className="flex items-center gap-2 mb-0.5">
                       <h3 className="font-serif font-bold text-xl"
-                        style={{ fontFamily: 'Cormorant Garamond, serif', color: '#f5f0e8' }}>
+                        style={{ fontFamily: 'var(--font-heading)', color: '#f5f0e8' }}>
                         {name}
                       </h3>
                     </div>
-                    <p className="text-xs italic" style={{ color: 'rgba(245,240,232,0.5)', fontFamily: 'Nunito, sans-serif' }}>
+                    <p className="text-xs italic" style={{ color: 'rgba(245,240,232,0.5)', fontFamily: 'var(--font-body)' }}>
                       {s.fullName}
                     </p>
                   </div>
@@ -271,10 +271,10 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                     ].map((stat, j) => (
                       <div key={j} className="text-center p-2 rounded-lg"
                         style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.1)' }}>
-                        <div className="text-xs font-bold" style={{ color: '#fbbf24', fontSize: '11px', fontFamily: 'DM Sans, sans-serif' }}>
+                        <div className="text-xs font-bold" style={{ color: '#fbbf24', fontSize: '11px', fontFamily: 'var(--font-body)' }}>
                           {stat.value}
                         </div>
-                        <div className="text-xs mt-0.5" style={{ color: 'var(--theme-text-dim)', fontSize: '10px', fontFamily: 'DM Sans, sans-serif' }}>
+                        <div className="text-xs mt-0.5" style={{ color: 'var(--theme-text-dim)', fontSize: '10px', fontFamily: 'var(--font-body)' }}>
                           {stat.label}
                         </div>
                       </div>
@@ -284,12 +284,12 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                   {/* Panel chi tiết xuất hiện khi hover */}
                   <div className="detail-panel">
                     <p className="text-xs leading-relaxed mb-3"
-                      style={{ color: 'var(--theme-text-muted)', fontStyle: 'italic', fontFamily: 'Nunito, sans-serif' }}>
+                      style={{ color: 'var(--theme-text-muted)', fontStyle: 'italic', fontFamily: 'var(--font-body)' }}>
                       {desc}
                     </p>
                     <div className="flex items-center gap-1.5 text-xs" style={{ color: 'rgba(245,158,11,0.7)' }}>
                       <span>📍</span>
-                      <span style={{ fontFamily: 'DM Sans, sans-serif' }}>{s.location}</span>
+                      <span style={{ fontFamily: 'var(--font-body)' }}>{s.location}</span>
                     </div>
                   </div>
 

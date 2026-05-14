@@ -230,7 +230,7 @@ const AuthModal = ({
                       <span className="text-2xl">🏛️</span>
                       <h2
                         className="font-serif text-2xl font-bold"
-                        style={{ fontFamily: 'Cormorant Garamond, serif', color: '#fbbf24' }}
+                        style={{ fontFamily: 'var(--font-heading)', color: '#fbbf24' }}
 >
                         {tab === TAB_LOGIN ? (isVi ? 'Mừng trở lại' : 'Welcome back') : (isVi ? 'Tạo tài khoản' : 'Create account')}
                       </h2>
@@ -262,7 +262,7 @@ const AuthModal = ({
                       style={{
                         background: tab === t ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'transparent',
                         color: tab === t ? '#0a0804' : 'var(--theme-text-muted)',
-                        fontFamily: 'DM Sans, sans-serif',
+                        fontFamily: 'var(--font-body)',
                         letterSpacing: '0.03em',
                       }}
                     >
@@ -284,7 +284,7 @@ const AuthModal = ({
                       >
                         <label
                           className="block text-xs font-semibold mb-2 tracking-wider uppercase"
-                          style={{ color: 'rgba(245,158,11,0.8)', fontFamily: 'DM Sans, sans-serif' }}
+                          style={{ color: 'rgba(245,158,11,0.8)', fontFamily: 'var(--font-body)' }}
                         >
                           {field.label}
                           {field.name === 'phone' && (
@@ -302,7 +302,7 @@ const AuthModal = ({
                           onChange={handleChange}
                           required
                           className="input-dino"
-                          style={{ fontFamily: 'Nunito, sans-serif' }}
+                          style={{ fontFamily: 'var(--font-body)' }}
                         />
                       </motion.div>
                     ))}
@@ -353,7 +353,7 @@ const AuthModal = ({
                     className="btn-amber-primary w-full mt-6 flex items-center justify-center gap-2"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    style={{ fontFamily: 'DM Sans, sans-serif' }}
+                    style={{ fontFamily: 'var(--font-body)' }}
                   >
                     {loading ? (
                       <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -366,7 +366,7 @@ const AuthModal = ({
 
                   {/* Hướng dẫn xác nhận email sau khi đăng ký */}
                   {tab === TAB_REGISTER && (
-                    <p className="text-xs text-center mt-3" style={{ color: 'var(--theme-text-dim)', fontFamily: 'Nunito, sans-serif' }}>
+                    <p className="text-xs text-center mt-3" style={{ color: 'var(--theme-text-dim)', fontFamily: 'var(--font-body)' }}>
                       Sau khi đăng ký, hãy kiểm tra email để xác nhận tài khoản (bao gồm cả thư mục rác).
                     </p>
                   )}

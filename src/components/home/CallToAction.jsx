@@ -28,12 +28,12 @@ const CallToAction = ({ onLoginClick }) => {
         >
           <div className="text-5xl mb-6">🏛️</div>
           <h2 className="font-serif text-3xl md:text-5xl leading-tight mb-5"
-            style={{ fontFamily: 'Playfair Display, serif' }}>
+            style={{ fontFamily: 'var(--font-heading)' }}>
             The Museum Doors
             <br />
             <span className="text-gradient-amber italic">Are Open For You.</span>
           </h2>
-          <p className="text-base mb-10 max-w-xl mx-auto" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Lora, serif', fontStyle: 'italic' }}>
+          <p className="text-base mb-10 max-w-xl mx-auto" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
             Over 12,000 visitors have already stepped into this virtual dinosaur world.
             Now it’s your turn to explore 66 million years of history.
           </p>

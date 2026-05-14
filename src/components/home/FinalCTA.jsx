@@ -39,7 +39,7 @@ const FinalCTA = ({ locale = 'vi' }) => {
             {isVi ? 'Một bảo tàng. Vô hạn khám phá.' : 'One Museum. Infinite Discovery.'}
           </p>
           <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-tight mb-8"
-            style={{ fontFamily: 'Playfair Display, serif', color: 'var(--theme-text)', transition: 'color 0.4s ease' }}>
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)', transition: 'color 0.4s ease' }}>
             {isVi ? 'Bộ xương khổng lồ' : 'The Giant Skeleton'}
             <br />
             <span className="text-gradient-gold">{isVi ? 'Đang chờ bạn' : 'Is Waiting For You'}</span>

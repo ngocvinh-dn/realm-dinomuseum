@@ -102,14 +102,14 @@ const LeadForm = ({ onLoginClick, locale }) => {
           className="mb-12"
         >
           <div className="section-divider mx-auto" style={{ margin: '0 auto 1.5rem' }} />
-          <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'DM Sans, sans-serif' }}>
+          <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}>
             {locale === 'vi' ? 'Cổng vào bảo tàng' : 'Museum Entry Portal'}
           </p>
-          <h2 className="font-serif text-3xl md:text-5xl leading-tight mb-4" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)', transition: 'color 0.4s ease' }}>
+          <h2 className="font-serif text-3xl md:text-5xl leading-tight mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)', transition: 'color 0.4s ease' }}>
             {locale === 'vi' ? 'Mở cánh cổng đến ' : 'Open the Gates to '}
             <span className="text-gradient-amber">{locale === 'vi' ? 'bảo tàng ảo' : 'the Virtual Museum'}</span>
           </h2>
-          <p className="text-sm" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif', fontStyle: 'italic' }}>
+          <p className="text-sm" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
             {locale === 'vi' ? 'Đăng ký vé — nhận liên kết tour 3D ngay lập tức. Không cần kính VR, không cần thanh toán.' : 'Book your ticket — receive a 3D tour link instantly. No VR headset, no payment.'}
           </p>
 
@@ -121,7 +121,7 @@ const LeadForm = ({ onLoginClick, locale }) => {
                 background: 'rgba(245,158,11,0.1)',
                 border: '1px solid rgba(245,158,11,0.25)',
                 color: '#fbbf24',
-                fontFamily: 'DM Sans, sans-serif',
+                fontFamily: 'var(--font-body)',
               }}
             >
               Sign in to book a ticket and manage your visits
@@ -170,16 +170,16 @@ const LeadForm = ({ onLoginClick, locale }) => {
                 <div className="flex items-center gap-3">
                   <div className="text-3xl">🏛️</div>
                   <div className="text-left">
-                    <div className="font-serif font-bold text-base" style={{ fontFamily: 'Cormorant Garamond, serif', color: '#fbbf24' }}>
+                    <div className="font-serif font-bold text-base" style={{ fontFamily: 'var(--font-heading)', color: '#fbbf24' }}>
                       DINOSAUR MUSEUM
                     </div>
-                    <div className="text-xs tracking-widest" style={{ color: 'rgba(245,158,11,0.5)', fontFamily: 'DM Sans, sans-serif' }}>
+                    <div className="text-xs tracking-widest" style={{ color: 'rgba(245,158,11,0.5)', fontFamily: 'var(--font-body)' }}>
                       VIRTUAL TICKET — 2026
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs" style={{ color: 'rgba(245,240,232,0.4)', fontFamily: 'DM Sans, sans-serif' }}>TICKET NO.</div>
+                  <div className="text-xs" style={{ color: 'rgba(245,240,232,0.4)', fontFamily: 'var(--font-body)' }}>TICKET NO.</div>
                   <div className="font-mono text-sm font-bold" style={{ color: '#f59e0b' }}>
                     {ticketCode}
                   </div>
@@ -209,17 +209,17 @@ const LeadForm = ({ onLoginClick, locale }) => {
                       transition={{ duration: 0.5, delay: 0.2 }}
                     >🎟️</motion.div>
                     <h3 className="font-serif text-2xl font-bold mb-3 text-gradient-amber"
-                      style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+                      style={{ fontFamily: 'var(--font-heading)' }}>
                       Museum Gates Open!
                     </h3>
-                    <p className="text-sm mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif' }}>
+                    <p className="text-sm mb-5" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)' }}>
                       Your virtual tour link has been sent to{' '}
                       <strong style={{ color: '#fbbf24' }}>{form.email || user?.email}</strong>.
                       <br />Please check your inbox (and spam folder).
                     </p>
                     <div className="p-4 rounded-xl mb-4 text-left"
                       style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)' }}>
-                      <p className="text-xs mb-2 uppercase tracking-wider" style={{ color: 'rgba(245,158,11,0.7)', fontFamily: 'DM Sans, sans-serif' }}>
+                      <p className="text-xs mb-2 uppercase tracking-wider" style={{ color: 'rgba(245,158,11,0.7)', fontFamily: 'var(--font-body)' }}>
                         Your Virtual Tour Link:
                       </p>
                       <code className="text-sm font-mono block" style={{ color: '#fbbf24', wordBreak: 'break-all' }}>
@@ -227,7 +227,7 @@ const LeadForm = ({ onLoginClick, locale }) => {
                       </code>
                     </div>
                     <div className="p-3 rounded-xl text-sm"
-                      style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.15)', color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif' }}>
+                      style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.15)', color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)' }}>
                       Welcome to the community of <strong style={{ color: '#fbbf24' }}>12,001 visitors</strong>!
                     </div>
                   </motion.div>
@@ -244,7 +244,7 @@ const LeadForm = ({ onLoginClick, locale }) => {
                         >
                           <label htmlFor={`lead-${field.name}`}
                             className="block text-left text-xs font-semibold mb-2 tracking-wider uppercase"
-                            style={{ color: 'rgba(245,158,11,0.75)', fontFamily: 'DM Sans, sans-serif' }}>
+                            style={{ color: 'rgba(245,158,11,0.75)', fontFamily: 'var(--font-body)' }}>
                             {field.label}{' '}
                             {!field.required && <span style={{ color: 'var(--theme-text-dim)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span>}
                           </label>
@@ -257,7 +257,7 @@ const LeadForm = ({ onLoginClick, locale }) => {
                             onChange={handleChange}
                             required={field.required}
                             className="input-dino text-left"
-                            style={{ fontFamily: 'Nunito, sans-serif' }}
+                            style={{ fontFamily: 'var(--font-body)' }}
                           />
                         </motion.div>
                       ))}
@@ -284,7 +284,7 @@ const LeadForm = ({ onLoginClick, locale }) => {
                           {agreed && <span className="text-xs font-bold text-black">✓</span>}
                         </div>
                       </div>
-                      <span className="text-xs leading-relaxed" style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif' }}>
+                      <span className="text-xs leading-relaxed" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)' }}>
                          I agree to receive updates from the Dinosaur Museum and understand I can unsubscribe at any time.
                          Personal data is protected per our{' '}
                          <a href="#" style={{ color: '#f59e0b' }} className="hover:underline">Privacy Policy</a>.
@@ -295,7 +295,7 @@ const LeadForm = ({ onLoginClick, locale }) => {
                     <AnimatePresence>
                       {errorMsg && (
                         <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                          className="text-sm text-red-400 text-center mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                          className="text-sm text-red-400 text-center mb-4" style={{ fontFamily: 'var(--font-body)' }}>
                           ⚠️ {errorMsg}
                         </motion.p>
                       )}
@@ -311,7 +311,7 @@ const LeadForm = ({ onLoginClick, locale }) => {
                           ? 'linear-gradient(135deg, #f59e0b, #d97706)'
                           : 'linear-gradient(135deg, rgba(245,158,11,0.8), rgba(217,119,6,0.9))',
                         color: '#0a0804',
-                        fontFamily: 'DM Sans, sans-serif',
+                        fontFamily: 'var(--font-body)',
                         letterSpacing: '0.08em',
                         boxShadow: '0 0 30px rgba(245,158,11,0.3), 0 4px 20px rgba(0,0,0,0.4)',
                         border: '1px solid rgba(245,158,11,0.4)',
@@ -329,7 +329,7 @@ const LeadForm = ({ onLoginClick, locale }) => {
                       )}
                     </motion.button>
 
-                    <p className="text-xs text-center mt-3" style={{ color: 'var(--theme-text-dim)', fontFamily: 'Nunito, sans-serif' }}>
+                    <p className="text-xs text-center mt-3" style={{ color: 'var(--theme-text-dim)', fontFamily: 'var(--font-body)' }}>
                       🔒 No spam · Data never sold · Instant tour link
                     </p>
                   </motion.form>

@@ -105,8 +105,8 @@ const Navbar = ({ onLoginClick, darkMode, onThemeToggle, onLocaleToggle, locale,
           <motion.a href="#hero" className="flex items-center gap-3 no-underline" whileHover={{ scale: 1.03 }} onClick={handleLogoClick}>
             <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base font-bold" style={{ background: 'linear-gradient(135deg, #f59e0b, #92400e)', boxShadow: '0 0 16px rgba(245,158,11,0.35)' }}>🏛️</div>
             <div className="flex flex-col">
-              <span className="font-serif text-lg font-bold leading-none" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-accent-bright)' }}>Dino Museum</span>
-              <span className="text-xs leading-none tracking-widest" style={{ color: 'rgba(245,158,11,0.5)', fontFamily: 'DM Sans, sans-serif' }}>PALEONTOLOGY MUSEUM</span>
+              <span className="font-serif text-lg font-bold leading-none" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-accent-bright)' }}>Dino Museum</span>
+              <span className="text-xs leading-none tracking-widest" style={{ color: 'rgba(245,158,11,0.5)', fontFamily: 'var(--font-body)' }}>PALEONTOLOGY MUSEUM</span>
             </div>
           </motion.a>
 
@@ -151,7 +151,7 @@ const Navbar = ({ onLoginClick, darkMode, onThemeToggle, onLocaleToggle, locale,
                   }}
                   transition={{ duration: 0.2, ease: 'easeOut' }}
                   style={{
-                    fontFamily: 'DM Sans, sans-serif',
+                    fontFamily: 'var(--font-body)',
                     background: 'transparent',
                     border: 'none',
                     whiteSpace: 'nowrap',
@@ -173,11 +173,11 @@ const Navbar = ({ onLoginClick, darkMode, onThemeToggle, onLocaleToggle, locale,
               {darkMode ? '☀️' : '🌙'}
             </motion.button>
             {user ? (
-              <button onClick={signOut} className="btn-amber-outline text-xs py-2 px-4" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+              <button onClick={signOut} className="btn-amber-outline text-xs py-2 px-4" style={{ fontFamily: 'var(--font-body)' }}>
                 {locale === 'vi' ? 'Đăng xuất' : 'Sign Out'}
               </button>
             ) : (
-              <motion.button onClick={onLoginClick} className="btn-amber-outline text-xs py-2 px-4" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} style={{ fontFamily: 'DM Sans, sans-serif' }}>
+              <motion.button onClick={onLoginClick} className="btn-amber-outline text-xs py-2 px-4" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} style={{ fontFamily: 'var(--font-body)' }}>
                 {locale === 'vi' ? 'Đăng nhập' : 'Sign In'}
               </motion.button>
             )}
@@ -198,14 +198,14 @@ const Navbar = ({ onLoginClick, darkMode, onThemeToggle, onLocaleToggle, locale,
           <motion.div className="fixed inset-0 z-30 md:hidden pt-20" style={{ background: 'var(--theme-nav-bg)', backdropFilter: 'blur(24px)' }} initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
             <div className="flex flex-col items-center gap-5 pt-10 px-6">
               {navLinks.map((link, i) => (
-                <motion.button key={link.id} onClick={() => handleNavClick(link.href, link.id)} className="text-xl font-serif font-semibold no-underline" style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--theme-text)' }} initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }} whileHover={{ color: '#f59e0b', x: 8 }}>
+                <motion.button key={link.id} onClick={() => handleNavClick(link.href, link.id)} className="text-xl font-serif font-semibold no-underline" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)' }} initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }} whileHover={{ color: '#f59e0b', x: 8 }}>
                   {link.label[locale]}
                 </motion.button>
               ))}
               <motion.div className="flex flex-col gap-3 w-full max-w-xs mt-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}>
                 {user
-                  ? <button onClick={() => { signOut(); setMobileOpen(false); }} className="btn-amber-outline text-center" style={{ fontFamily: 'DM Sans, sans-serif' }}>{locale === 'vi' ? 'Đăng xuất' : 'Sign Out'}</button>
-                  : <button onClick={() => { onLoginClick(); setMobileOpen(false); }} className="btn-amber-outline text-center" style={{ fontFamily: 'DM Sans, sans-serif' }}>{locale === 'vi' ? 'Đăng nhập' : 'Sign In'}</button>
+                  ? <button onClick={() => { signOut(); setMobileOpen(false); }} className="btn-amber-outline text-center" style={{ fontFamily: 'var(--font-body)' }}>{locale === 'vi' ? 'Đăng xuất' : 'Sign Out'}</button>
+                  : <button onClick={() => { onLoginClick(); setMobileOpen(false); }} className="btn-amber-outline text-center" style={{ fontFamily: 'var(--font-body)' }}>{locale === 'vi' ? 'Đăng nhập' : 'Sign In'}</button>
                 }
               </motion.div>
             </div>

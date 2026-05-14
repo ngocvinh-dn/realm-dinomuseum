@@ -8,6 +8,7 @@
   justify-content: center;
   background: linear-gradient(180deg, #0a0804 0%, #0d0b06 100%);
   color: #fff7ed;
+  font-family: var(--font-body, "Hind", sans-serif);
 }
 
 .loading-ambient {
@@ -103,6 +104,7 @@
   display: block;
   margin-top: 12px;
   color: #fbbf24;
+  font-family: var(--font-heading, "Montserrat", sans-serif);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;

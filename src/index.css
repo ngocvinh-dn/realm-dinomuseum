@@ -1,10 +1,10 @@
-          @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&family=Montserrat:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Nunito", sans-serif;
-  --font-serif: "Cormorant Garamond", serif;
-  --font-ui: "DM Sans", sans-serif;
+  --font-sans: "Hind", sans-serif;
+  --font-serif: "Montserrat", sans-serif;
+  --font-ui: "Hind", sans-serif;
 
   /* Amber/Gold Palette */
   --color-amber-50: #fffbeb;
@@ -42,7 +42,11 @@
   --theme-input-bg: rgba(30, 23, 16, 0.8);
   --theme-accent: #f59e0b;
   --theme-accent-bright: #fbbf24;
+  --theme-heading: #fbbf24;
+  --theme-heading-strong: #f59e0b;
   --theme-glass: rgba(30, 23, 16, 0.6);
+  --font-heading: "Montserrat", sans-serif;
+  --font-body: "Hind", sans-serif;
 }
 
 [data-theme="light"] {
@@ -58,6 +62,8 @@
   --theme-input-bg: rgba(243, 237, 224, 0.95);
   --theme-accent: #b45309;
   --theme-accent-bright: #d97706;
+  --theme-heading: #b45309;
+  --theme-heading-strong: #92400e;
   --theme-glass: rgba(255, 251, 240, 0.82);
 }
 
@@ -90,7 +96,7 @@ html, body {
   width: 100%;
   height: 100%;
   background-color: var(--theme-bg);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   color: var(--theme-text);
   overflow-x: hidden;
   transition: background-color 0.4s ease, color 0.4s ease;
@@ -131,10 +137,102 @@ html, body {
    TYPOGRAPHY
    ===================== */
 .font-serif {
-  font-family: var(--font-serif);
+  font-family: var(--font-heading);
 }
 .font-ui {
-  font-family: var(--font-ui);
+  font-family: var(--font-body);
+}
+
+:where(.font-medium) {
+  font-weight: 500;
+}
+
+:where(.font-semibold) {
+  font-weight: 600;
+}
+
+:where(.font-bold, strong, b) {
+  font-weight: 700;
+}
+
+:where(body, p, li, a, label, button, input, textarea, select, small, .font-ui, .input-dino) {
+  font-family: var(--font-body) !important;
+}
+
+:where(h1, h2, h3, h4, h5, h6, h1 span, h2 span, h3 span, h4 span, h5 span, h6 span, .font-serif, .font-serif *, [class*="__title"], [class*="__title"] *, [class*="section-title"], [class*="section-title"] *, [class*="heading"], [class*="heading"] *) {
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  color: var(--theme-heading) !important;
+  letter-spacing: 0 !important;
+}
+
+:where(.text-gradient-amber, .text-gradient-gold) {
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.hero-title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1em;
+  margin-bottom: clamp(1.5rem, 4vw, 2.75rem);
+  overflow: visible;
+  max-width: min(100%, calc(100vw - 3rem));
+  padding-inline: clamp(0.5rem, 1.8vw, 1rem);
+}
+
+.hero-title__main,
+.hero-title__accent {
+  display: block;
+  white-space: nowrap;
+}
+
+.hero-title__main {
+  font-size: clamp(1.7rem, 8.6vw, 5.8rem);
+  line-height: 0.98;
+}
+
+.hero-title__accent {
+  margin-top: 0;
+  font-size: clamp(1.5rem, 7vw, 4.5rem);
+  line-height: 1.0;
+  padding-bottom: 0.08em;
+  padding-right: 0.16em;
+  overflow: visible;
+}
+
+@media (max-width: 1180px) {
+  .hero-title__main {
+    font-size: clamp(1.7rem, 7.7vw, 5.2rem);
+  }
+
+  .hero-title__accent {
+    font-size: clamp(1.45rem, 6.3vw, 4.05rem);
+  }
+}
+
+@media (max-width: 960px) {
+  .hero-title__main {
+    font-size: clamp(1.6rem, 7vw, 4.4rem);
+  }
+
+  .hero-title__accent {
+    font-size: clamp(1.35rem, 5.9vw, 3.55rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-title__main {
+    font-size: clamp(1.45rem, 8.8vw, 3rem);
+  }
+
+  .hero-title__accent {
+    font-size: clamp(1.2rem, 7.8vw, 2.55rem);
+  }
 }
 
 /* =====================
