@@ -108,6 +108,7 @@ const GeoTimeline = ({ locale = 'vi' }) => {
   }, [dinosaurs, isVi]);
 
   const active = activeId ? eons.find((e) => e.id === activeId) : null;
+  const activeIndex = active ? eons.findIndex((e) => e.id === active.id) : -1;
 
   return (
     <section
@@ -172,14 +173,15 @@ const GeoTimeline = ({ locale = 'vi' }) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
             {eons.map((eon, i) => {
               const isActive = active?.id === eon.id;
+              const entryX = i % 2 === 0 ? -90 : 90;
               return (
                 <motion.button
                   key={eon.id}
                   type="button"
                   onClick={() => setActiveId((currentId) => (currentId === eon.id ? null : eon.id))}
-                  initial={{ opacity: 0, y: 42, scale: 0.92, rotateX: 5 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
-                  viewport={{ once: true }}
+                  initial={{ opacity: 0, x: entryX, y: 42, scale: 0.92, rotateX: 5 }}
+                  whileInView={{ opacity: 1, x: 0, y: 0, scale: 1, rotateX: 0 }}
+                  viewport={{ once: false, amount: 0.25 }}
                   transition={{ delay: i * 0.14, duration: 1.05, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={{ y: -4 }}
                   className="text-left rounded-2xl overflow-hidden"
@@ -246,6 +248,7 @@ const GeoTimeline = ({ locale = 'vi' }) => {
             triggerMode="mount"
             animationDuration={1.25}
             ease="back.out(1.15)"
+            xPercent={activeIndex % 2 === 0 ? -10 : 10}
             yPercent={22}
             scale={0.93}
             rotateX={4}

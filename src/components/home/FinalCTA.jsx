@@ -30,10 +30,10 @@ const FinalCTA = ({ locale = 'vi' }) => {
       {/* Nội dung chính */}
       <div className="relative max-w-4xl mx-auto text-center">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          initial={{ opacity: 0, x: 80, y: 40, scale: 0.96 }}
+          whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Khẩu hiệu phía trên tiêu đề */}
           <p className="text-xs font-semibold tracking-widest uppercase mb-6" style={{ color: 'rgba(245,158,11,0.6)' }}>

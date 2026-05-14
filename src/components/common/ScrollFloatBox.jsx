@@ -13,6 +13,7 @@ const ScrollFloatBox = ({
   ease = 'back.inOut(2)',
   scrollStart = 'top bottom-=8%',
   scrollEnd = 'center center',
+  xPercent = 0,
   yPercent = 24,
   scale = 0.92,
   rotateX = 4,
@@ -26,6 +27,7 @@ const ScrollFloatBox = ({
 
     gsap.set(el, {
       opacity: 1,
+      xPercent: 0,
       yPercent: 0,
       scale: 1,
       rotateX: 0,
@@ -40,6 +42,7 @@ const ScrollFloatBox = ({
           {
             willChange: 'opacity, transform',
             opacity: 0,
+            xPercent,
             yPercent,
             scale,
             rotateX,
@@ -49,6 +52,7 @@ const ScrollFloatBox = ({
             duration: animationDuration,
             ease,
             opacity: 1,
+            xPercent: 0,
             yPercent: 0,
             scale: 1,
             rotateX: 0,
@@ -62,6 +66,7 @@ const ScrollFloatBox = ({
         {
           willChange: 'opacity, transform',
           opacity: 0,
+          xPercent,
           yPercent,
           scale,
           rotateX,
@@ -71,6 +76,7 @@ const ScrollFloatBox = ({
           duration: animationDuration,
           ease,
           opacity: 1,
+          xPercent: 0,
           yPercent: 0,
           scale: 1,
           rotateX: 0,
@@ -85,6 +91,7 @@ const ScrollFloatBox = ({
               if (self.progress >= 1) {
                 gsap.set(el, {
                   opacity: 1,
+                  xPercent: 0,
                   yPercent: 0,
                   scale: 1,
                   rotateX: 0,
@@ -102,7 +109,7 @@ const ScrollFloatBox = ({
       cancelAnimationFrame(refreshFrame);
       ctx.revert();
     };
-  }, [animationDuration, ease, rotateX, scale, scrollEnd, scrollStart, triggerMode, yPercent]);
+  }, [animationDuration, ease, rotateX, scale, scrollEnd, scrollStart, triggerMode, xPercent, yPercent]);
 
   return (
     <div ref={boxRef} className={`scroll-float-box ${className}`}>

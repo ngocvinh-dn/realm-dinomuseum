@@ -100,6 +100,26 @@ const HeroSection = ({ copy }) => {
     };
   }, []);
 
+  const scrollToExplore = (event) => {
+    event?.preventDefault();
+    const target = document.querySelector('#dang-ky');
+    if (!target) {
+      window.location.hash = 'dang-ky';
+      return;
+    }
+
+    if (window.__lenis) {
+      window.__lenis.scrollTo(target, {
+        offset: -80,
+        duration: 2.2,
+        easing: (t) => 1 - Math.pow(1 - t, 4),
+      });
+      return;
+    }
+
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <section id="hero" ref={sectionRef} className="relative w-full min-h-screen flex flex-col items-center justify-center text-center overflow-hidden" style={{ paddingTop: '80px' }}>
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top, rgba(245,158,11,0.14), transparent 55%), linear-gradient(180deg, rgba(10,8,4,0.35) 0%, rgba(10,8,4,0.65) 100%)' }} />
@@ -162,7 +182,7 @@ const HeroSection = ({ copy }) => {
             </span>
           </motion.h1>
           <motion.div className="flex flex-col sm:flex-row items-center justify-center gap-4" style={{ x: smoothCtaX, y: ctaY, opacity: ctaOpacity }}>
-            <motion.button initial={{ opacity: 0, x: -90 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.72, duration: 0.75, ease: 'easeOut' }} className="btn-amber-primary" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} onClick={() => document.querySelector('#galleries')?.scrollIntoView({ behavior: 'smooth' })}>{copy.heroExplore}</motion.button>
+            <motion.a href="#dang-ky" initial={{ opacity: 0, x: -90 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.72, duration: 0.75, ease: 'easeOut' }} className="btn-amber-primary no-underline" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} onClick={scrollToExplore}>{copy.heroExplore}</motion.a>
           </motion.div>
         </motion.div>
       </motion.div>

@@ -209,6 +209,7 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                 className="h-full"
                 scrollStart="top bottom-=10%"
                 scrollEnd="center center+=8%"
+                xPercent={i % 2 === 0 ? -14 : 14}
                 yPercent={26}
                 scale={0.9}
                 rotateX={5}
