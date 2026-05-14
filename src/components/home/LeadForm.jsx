@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSiteAssets } from '../../hooks/useSiteAssets';
+import ScrollFloat from '../common/ScrollFloat';
 
 const LeadForm = ({ onLoginClick, locale }) => {
   const { user } = useAuth();
@@ -105,10 +106,30 @@ const LeadForm = ({ onLoginClick, locale }) => {
           <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}>
             {locale === 'vi' ? 'Cổng vào bảo tàng' : 'Museum Entry Portal'}
           </p>
-          <h2 className="font-serif text-3xl md:text-5xl leading-tight mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)', transition: 'color 0.4s ease' }}>
-            {locale === 'vi' ? 'Mở cánh cổng đến ' : 'Open the Gates to '}
-            <span className="text-gradient-amber">{locale === 'vi' ? 'bảo tàng ảo' : 'the Virtual Museum'}</span>
-          </h2>
+          <div className="mb-4 space-y-1">
+            <ScrollFloat
+              containerClassName="text-center scroll-float--sm"
+              textClassName="text-[var(--theme-text)]"
+              animationDuration={1}
+              ease="back.inOut(2)"
+              scrollStart="top bottom-=5%"
+              scrollEnd="center center"
+              stagger={0.02}
+            >
+              {locale === 'vi' ? 'Mở cánh cổng đến' : 'Open the Gates to'}
+            </ScrollFloat>
+            <ScrollFloat
+              containerClassName="text-center scroll-float--sm"
+              textClassName="text-gradient-amber"
+              animationDuration={1}
+              ease="back.inOut(2)"
+              scrollStart="top bottom-=5%"
+              scrollEnd="center center"
+              stagger={0.018}
+            >
+              {locale === 'vi' ? 'bảo tàng ảo' : 'the Virtual Museum'}
+            </ScrollFloat>
+          </div>
           <p className="text-sm" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
             {locale === 'vi' ? 'Đăng ký vé — nhận liên kết tour 3D ngay lập tức. Không cần kính VR, không cần thanh toán.' : 'Book your ticket — receive a 3D tour link instantly. No VR headset, no payment.'}
           </p>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import ScrollFloat from '../common/ScrollFloat';
 
 // Component CTA cuối trang — thông điệp mạnh mẽ thúc đẩy đăng ký
 const FinalCTA = ({ locale = 'vi' }) => {
@@ -38,14 +39,41 @@ const FinalCTA = ({ locale = 'vi' }) => {
           <p className="text-xs font-semibold tracking-widest uppercase mb-6" style={{ color: 'rgba(245,158,11,0.6)' }}>
             {isVi ? 'Một bảo tàng. Vô hạn khám phá.' : 'One Museum. Infinite Discovery.'}
           </p>
-          <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-tight mb-8"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)', transition: 'color 0.4s ease' }}>
-            {isVi ? 'Bộ xương khổng lồ' : 'The Giant Skeleton'}
-            <br />
-            <span className="text-gradient-gold">{isVi ? 'Đang chờ bạn' : 'Is Waiting For You'}</span>
-            <br />
-            {isVi ? 'Trong màn đêm.' : 'In The Dark.'}
-          </h2>
+          <div className="mb-8 space-y-1">
+            <ScrollFloat
+              containerClassName="text-center scroll-float--lg"
+              textClassName="text-[var(--theme-text)]"
+              animationDuration={1}
+              ease="back.inOut(2)"
+              scrollStart="top bottom-=5%"
+              scrollEnd="center center"
+              stagger={0.02}
+            >
+              {isVi ? 'Bộ xương khổng lồ' : 'The Giant Skeleton'}
+            </ScrollFloat>
+            <ScrollFloat
+              containerClassName="text-center scroll-float--lg"
+              textClassName="text-gradient-gold"
+              animationDuration={1}
+              ease="back.inOut(2)"
+              scrollStart="top bottom-=5%"
+              scrollEnd="center center"
+              stagger={0.018}
+            >
+              {isVi ? 'Đang chờ bạn' : 'Is Waiting For You'}
+            </ScrollFloat>
+            <ScrollFloat
+              containerClassName="text-center scroll-float--lg"
+              textClassName="text-[var(--theme-text)]"
+              animationDuration={1}
+              ease="back.inOut(2)"
+              scrollStart="top bottom-=5%"
+              scrollEnd="center center"
+              stagger={0.02}
+            >
+              {isVi ? 'Trong màn đêm.' : 'In The Dark.'}
+            </ScrollFloat>
+          </div>
 
           {/* Nút CTA lớn — đặt vé vào bảo tàng */}
           <motion.button

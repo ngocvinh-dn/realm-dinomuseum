@@ -191,6 +191,36 @@ html, body {
   white-space: nowrap;
 }
 
+.hero-title--split {
+  width: min(100%, calc(100vw - 3rem));
+  contain: layout;
+}
+
+.hero-title__line {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.28em;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.hero-title__piece {
+  display: inline-block;
+  will-change: transform;
+  white-space: nowrap;
+  transform-origin: center;
+  padding-bottom: 0.08em;
+}
+
+.hero-title__piece-inner {
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform, opacity;
+  padding-bottom: 0.02em;
+}
+
 .hero-title__main {
   font-size: clamp(1.7rem, 8.6vw, 5.8rem);
   line-height: 0.98;

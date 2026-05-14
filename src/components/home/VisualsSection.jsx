@@ -1,6 +1,8 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParallax } from '../../hooks/useParallax';
+import ScrollFloat from '../common/ScrollFloat';
+import ScrollFloatBox from '../common/ScrollFloatBox';
 
 // =====================================================
 // DỮ LIỆU THỐNG NHẤT — cùng ID, cùng ảnh cho cả vi/en
@@ -158,11 +160,30 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
             style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}>
             {isVi ? 'Hiện vật nổi bật' : 'Featured Specimens'}
           </p>
-          <h2 className="font-serif text-4xl md:text-6xl leading-tight"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)' }}>
-            {isVi ? 'Những ngôi sao ' : 'The Stars '}
-            <span className="text-gradient-amber">{isVi ? 'của bộ sưu tập' : 'of Our Collection'}</span>
-          </h2>
+          <div className="space-y-1">
+            <ScrollFloat
+              containerClassName="text-left"
+              textClassName="text-[var(--theme-text)]"
+              animationDuration={1}
+              ease="back.inOut(2)"
+              scrollStart="top bottom-=5%"
+              scrollEnd="center center"
+              stagger={0.02}
+            >
+              {isVi ? 'Những ngôi sao' : 'The Stars'}
+            </ScrollFloat>
+            <ScrollFloat
+              containerClassName="text-left"
+              textClassName="text-gradient-amber"
+              animationDuration={1}
+              ease="back.inOut(2)"
+              scrollStart="top bottom-=5%"
+              scrollEnd="center center"
+              stagger={0.018}
+            >
+              {isVi ? 'của bộ sưu tập' : 'of Our Collection'}
+            </ScrollFloat>
+          </div>
           <p className="mt-4 max-w-xl text-sm leading-relaxed"
             style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
             {isVi
@@ -183,8 +204,16 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
             const desc = s.desc[locale];
 
             return (
-              <motion.div
+              <ScrollFloatBox
                 key={s.id}
+                className="h-full"
+                scrollStart="top bottom-=10%"
+                scrollEnd="center center+=8%"
+                yPercent={26}
+                scale={0.9}
+                rotateX={5}
+              >
+              <motion.div
                 className="specimen-card group"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -298,6 +327,7 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                     style={{ background: 'linear-gradient(90deg, #f59e0b, transparent)' }} />
                 </div>
               </motion.div>
+              </ScrollFloatBox>
             );
           })}
         </div>
