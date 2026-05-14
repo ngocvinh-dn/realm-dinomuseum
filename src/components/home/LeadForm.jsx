@@ -152,10 +152,10 @@ const LeadForm = ({ onLoginClick, locale }) => {
 
         {/* CARD VÉ THAM QUAN */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.15 }}
+          initial={{ opacity: 0, x: -90, y: 30, scale: 0.96 }}
+          whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+          viewport={{ once: false, amount: 0.25 }}
+          transition={{ duration: 0.95, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="relative"
         >
           {/* Vòng phát sáng bên ngoài card vé */}
