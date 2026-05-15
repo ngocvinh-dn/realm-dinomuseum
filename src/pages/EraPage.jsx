@@ -1,21 +1,386 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { Canvas } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
-import { Suspense, useEffect, useState } from "react";
-import InteractableModel from "../components/museum/InteractableModel";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
+import { Environment, useGLTF } from "@react-three/drei";
+import { useNavigate, useParams } from "react-router-dom";
+import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+
 import PlayerController from "../components/museum/PlayerController";
 import MuseumLoader from "../components/museum/MuseumLoader";
 import { Crosshair } from "../components/museum/Crosshair";
 import DinosaurPopup from "../components/museum/DinosaurPopup";
-import MuseumEnvironment from "../components/museum/MuseumEnvironment";
 import SafePointerLockControls from "../components/museum/SafePointerLockControls";
-import { getEnvironmentBySlug } from "../services/environmentService";
-import { getExhibitsByEraId } from "../services/exhibitsService";
+import ReviveEffect from "../components/scene/effects/ReviveEffect";
 import CanvasErrorBoundary from "../components/home/CanvasErrorBoundary";
 
-function isModelScene(url = "") {
-  return /\.(glb|gltf)(?:[?#].*)?$/i.test(url);
+import { getEnvironmentBySlug } from "../services/environmentService";
+import { getExhibitsByEraSlug } from "../services/exhibitsService";
+
+function getEraColor(slug) {
+  if (slug === "triassic") return "#e07b39";
+  if (slug === "jurassic") return "#4ade80";
+  return "#f59e0b";
 }
+
+function getEraSceneConfig(slug) {
+  const configs = {
+    triassic: {
+      cameraPosition: [0, 1.75, 6.4],
+      environmentScale: 0.38,
+      environmentPosition: [0, -0.08, 0],
+      playerSpeed: 2.2,
+      bounds: { minX: -14, maxX: 14, minZ: -18, maxZ: 7 },
+    },
+    jurassic: {
+      cameraPosition: [0, 1.75, 6.8],
+      environmentScale: 0.38,
+      environmentPosition: [0, -0.08, 0],
+      playerSpeed: 2.15,
+      bounds: { minX: -15, maxX: 15, minZ: -19, maxZ: 7 },
+    },
+    cretaceous: {
+      cameraPosition: [0, 1.75, 6.8],
+      environmentScale: 0.38,
+      environmentPosition: [0, -0.08, 0],
+      playerSpeed: 2.15,
+      bounds: { minX: -15, maxX: 15, minZ: -19, maxZ: 7 },
+    },
+  };
+
+  return configs[slug] || configs.triassic;
+}
+
+function getDinosaurFromExhibit(exhibit) {
+  return exhibit?.dinosaur || exhibit?.dinosaurs || null;
+}
+
+function normalizeDinosaurForPopup(dinosaur, era) {
+  if (!dinosaur) return null;
+
+  return {
+    ...dinosaur,
+    eras: dinosaur.eras || {
+      id: era?.id,
+      slug: era?.slug,
+      name_vi: era?.name_vi,
+      name_en: era?.name_en,
+    },
+  };
+}
+
+
+async function canLoadGLB(url) {
+  if (!url) return false;
+
+  const loader = new GLTFLoader();
+
+  try {
+    await loader.loadAsync(url.trim());
+    return true;
+  } catch (error) {
+    console.error("[EraPage] Revived model load failed:", url, error);
+    return false;
+  }
+}
+
+function EnvironmentScene({
+  url,
+  era,
+  exhibits,
+  revivedMap,
+  onSelectDinosaur,
+  onRegisterFossilTransform,
+  onRegisterInteractiveObjects,
+}) {
+  const { scene } = useGLTF(url);
+
+  const clonedScene = useMemo(() => {
+    if (!scene) return null;
+
+    const clone = scene.clone(true);
+
+    clone.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    return clone;
+  }, [scene]);
+
+  useEffect(() => {
+    if (!clonedScene || !exhibits?.length) return;
+
+    clonedScene.updateMatrixWorld(true);
+
+    const clickableObjects = [];
+
+    exhibits.forEach((exhibit) => {
+      const dinosaur = normalizeDinosaurForPopup(
+        getDinosaurFromExhibit(exhibit),
+        era
+      );
+
+      const objectName = exhibit.object_name;
+
+      if (!objectName || !dinosaur) return;
+
+      const fossilObject = clonedScene.getObjectByName(objectName);
+
+      if (!fossilObject) {
+        console.warn("[EraPage] Không tìm thấy fossil object:", objectName);
+        return;
+      }
+
+      fossilObject.visible = !revivedMap[objectName];
+
+      fossilObject.userData.dinosaur = dinosaur;
+      fossilObject.userData.objectName = objectName;
+      fossilObject.userData.isFossil = true;
+
+      clickableObjects.push(fossilObject);
+
+      fossilObject.updateMatrixWorld(true);
+
+      const worldPosition = new THREE.Vector3();
+      const worldQuaternion = new THREE.Quaternion();
+      const worldScale = new THREE.Vector3();
+
+      fossilObject.getWorldPosition(worldPosition);
+      fossilObject.getWorldQuaternion(worldQuaternion);
+      fossilObject.getWorldScale(worldScale);
+
+      const fossilLocalPosition = clonedScene.worldToLocal(worldPosition.clone());
+
+      const spawnLocalPosition = new THREE.Vector3(0, -0.4, 0);
+
+      onRegisterFossilTransform(objectName, {
+        fossilPosition: fossilLocalPosition.toArray(),
+        spawnPosition: spawnLocalPosition.toArray(),
+        quaternion: worldQuaternion.toArray(),
+        scale: worldScale.toArray(),
+      });
+
+      fossilObject.traverse((child) => {
+        if (!child.isMesh) return;
+
+        child.castShadow = true;
+        child.receiveShadow = true;
+
+        child.userData.dinosaur = dinosaur;
+        child.userData.objectName = objectName;
+        child.userData.isFossil = true;
+      });
+    });
+
+    console.log(
+      "[EraPage] Clickable fossil objects:",
+      clickableObjects.map((obj) => obj.name)
+    );
+
+    onRegisterInteractiveObjects(clickableObjects);
+  }, [
+    clonedScene,
+    exhibits,
+    era,
+    revivedMap,
+    onRegisterFossilTransform,
+    onRegisterInteractiveObjects,
+  ]);
+
+  if (!clonedScene) return null;
+
+  return (
+    <primitive
+      object={clonedScene}
+      onClick={(event) => {
+        const dinosaur = event.object.userData?.dinosaur;
+
+        if (!dinosaur) return;
+
+        event.stopPropagation();
+        onSelectDinosaur(dinosaur);
+      }}
+    />
+  );
+}
+
+function RevivedDinosaur({ dinosaur, transform, onSelect }) {
+  const url = dinosaur?.revived_model_url?.trim();
+  const { scene } = useGLTF(url);
+
+  const clonedScene = useMemo(() => {
+    if (!scene) return null;
+
+    const clone = scene.clone(true);
+
+    clone.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        child.userData.dinosaur = dinosaur;
+        child.userData.isRevived = true;
+      }
+    });
+
+    return clone;
+  }, [scene, dinosaur]);
+
+  if (!url || !clonedScene || !transform) return null;
+
+  return (
+    <primitive
+      object={clonedScene}
+      position={transform.spawnPosition || transform.fossilPosition}
+      quaternion={new THREE.Quaternion(...transform.quaternion)}
+      scale={1}
+      onClick={(event) => {
+        event.stopPropagation();
+        onSelect(dinosaur);
+      }}
+    />
+  );
+}
+
+function FossilRaycastClicker({ interactiveObjects, onSelectDinosaur }) {
+  const { camera, gl } = useThree();
+
+  useEffect(() => {
+    const raycaster = new THREE.Raycaster();
+
+    function handlePointerDown(event) {
+      if (!interactiveObjects?.length) {
+        console.warn("[EraPage] Không có interactiveObjects để click.");
+        return;
+      }
+
+      const rect = gl.domElement.getBoundingClientRect();
+      const isPointerLocked = document.pointerLockElement === gl.domElement;
+
+      const pointer = isPointerLocked
+        ? new THREE.Vector2(0, 0)
+        : new THREE.Vector2(
+            ((event.clientX - rect.left) / rect.width) * 2 - 1,
+            -((event.clientY - rect.top) / rect.height) * 2 + 1
+          );
+
+      raycaster.setFromCamera(pointer, camera);
+
+      const hits = raycaster.intersectObjects(interactiveObjects, true);
+
+      console.log(
+        "[EraPage] Raycast hits:",
+        hits.map((hit) => hit.object.name)
+      );
+
+      if (!hits.length) return;
+
+      let object = hits[0].object;
+
+      while (object) {
+        if (object.userData?.dinosaur) {
+          onSelectDinosaur(object.userData.dinosaur);
+          return;
+        }
+
+        object = object.parent;
+      }
+    }
+
+    gl.domElement.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      gl.domElement.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [camera, gl, interactiveObjects, onSelectDinosaur]);
+
+  return null;
+}
+
+function EraWorld({ era, exhibits, revivedMap, setSelectedDino, sceneConfig }) {
+  const [fossilTransforms, setFossilTransforms] = useState({});
+  const [interactiveObjects, setInteractiveObjects] = useState([]);
+
+  const registerFossilTransform = useRef((objectName, transform) => {
+    setFossilTransforms((prev) => {
+      const old = prev[objectName];
+
+      if (
+        old &&
+        JSON.stringify(old.fossilPosition) ===
+          JSON.stringify(transform.fossilPosition) &&
+        JSON.stringify(old.spawnPosition) ===
+          JSON.stringify(transform.spawnPosition) &&
+        JSON.stringify(old.quaternion) === JSON.stringify(transform.quaternion)
+      ) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        [objectName]: transform,
+      };
+    });
+  }).current;
+
+  const revivedExhibits = useMemo(() => {
+    return exhibits.filter((exhibit) => revivedMap[exhibit.object_name]);
+  }, [exhibits, revivedMap]);
+
+  return (
+    <group position={sceneConfig.environmentPosition} scale={sceneConfig.environmentScale}>
+      <EnvironmentScene
+        url={era.environment_map_url}
+        era={era}
+        exhibits={exhibits}
+        revivedMap={revivedMap}
+        onSelectDinosaur={setSelectedDino}
+        onRegisterFossilTransform={registerFossilTransform}
+        onRegisterInteractiveObjects={setInteractiveObjects}
+      />
+
+      <FossilRaycastClicker
+        interactiveObjects={interactiveObjects}
+        onSelectDinosaur={setSelectedDino}
+      />
+
+      {revivedExhibits.map((exhibit) => {
+        const dinosaur = normalizeDinosaurForPopup(
+          getDinosaurFromExhibit(exhibit),
+          era
+        );
+
+        const transform = fossilTransforms[exhibit.object_name];
+
+        return (
+            <RevivedDinosaur
+              dinosaur={dinosaur}
+              transform={transform}
+              onSelect={setSelectedDino}
+            />
+        );
+      })}
+
+      {Object.entries(revivedMap).map(([objectName, isRevived]) => {
+        if (!isRevived) return null;
+
+        const transform = fossilTransforms[objectName];
+
+        if (!transform) return null;
+
+        return (
+          <ReviveEffect
+            key={`effect-${objectName}`}
+            active={true}
+            position={transform.fossilPosition || transform.spawnPosition}
+          />
+        );
+      })}
+    </group>
+  );
+}
+
 export default function EraPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -24,77 +389,181 @@ export default function EraPage() {
   const [exhibits, setExhibits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [warning, setWarning] = useState("");
   const [isPointerLocked, setIsPointerLocked] = useState(false);
   const [selectedDino, setSelectedDino] = useState(null);
+  const [revivedMap, setRevivedMap] = useState({});
 
   useEffect(() => {
+    let ignore = false;
+
     async function loadData() {
       try {
+        setLoading(true);
+        setError("");
+        setWarning("");
+
         const eraData = await getEnvironmentBySlug(slug);
-        setEra(eraData);
-        const exhibitData = await getExhibitsByEraId(eraData.id);
-        setExhibits(exhibitData);
+
+        if (!eraData) {
+          throw new Error("Era not found");
+        }
+
+        const exhibitData = await getExhibitsByEraSlug(slug);
+
+        if (!ignore) {
+          setEra(eraData);
+          setExhibits(exhibitData || []);
+          setSelectedDino(null);
+          setRevivedMap({});
+        }
       } catch (err) {
         console.error("Failed to load era:", err);
-        setError("Không thể tải môi trường này.");
+
+        if (!ignore) {
+          setError("Không thể tải môi trường này.");
+        }
       } finally {
-        setLoading(false);
+        if (!ignore) {
+          setLoading(false);
+        }
       }
     }
+
     loadData();
+
+    return () => {
+      ignore = true;
+    };
   }, [slug]);
 
-  const eraColor =
-    slug === "triassic"
-      ? "#e07b39"
-      : slug === "jurassic"
-      ? "#4ade80"
-      : "#f59e0b";
-  const environmentUrl = era?.environment_map_url || "";
-  const renderModelEnvironment = isModelScene(environmentUrl);
+  const eraColor = getEraColor(slug);
+  const sceneConfig = getEraSceneConfig(slug);
+
+async function handleToggleRevive(dinosaur) {
+  if (!dinosaur?.id) return;
+
+  const exhibit = exhibits.find((item) => {
+    const itemDino = getDinosaurFromExhibit(item);
+    return itemDino?.id === dinosaur.id;
+  });
+
+  if (!exhibit?.object_name) {
+    setWarning(
+      "Không tìm thấy object_name của hóa thạch trong exhibits."
+    );
+    return;
+  }
+
+  const objectName = exhibit.object_name;
+
+  const alreadyRevived = Boolean(
+    revivedMap[objectName]
+  );
+
+  // Tắt hồi sinh
+  if (alreadyRevived) {
+    setWarning("");
+
+    setRevivedMap((prev) => ({
+      ...prev,
+      [objectName]: false,
+    }));
+
+    return;
+  }
+
+  const revivedUrl =
+    dinosaur.revived_model_url?.trim();
+
+  if (!revivedUrl) {
+    setWarning(
+      `Thiếu revived_model_url của ${
+        dinosaur.common_name_vi ||
+        dinosaur.scientific_name
+      }.`
+    );
+
+    return;
+  }
+
+  try {
+    // Load trước để tránh trigger loading scene
+    const loader = new GLTFLoader();
+
+    await loader.loadAsync(revivedUrl);
+
+    // cache model
+    useGLTF.preload(revivedUrl);
+
+    setWarning("");
+
+    // Chỉ update state sau khi model load xong
+    setRevivedMap((prev) => ({
+      ...prev,
+      [objectName]: true,
+    }));
+  } catch (error) {
+    console.error(
+      "[Revive] Failed to load model:",
+      revivedUrl,
+      error
+    );
+
+    setWarning(
+      `Không tải được revived model của ${
+        dinosaur.common_name_vi ||
+        dinosaur.scientific_name
+      }.`
+    );
+  }
+}
 
   if (error) {
     return (
       <div style={styles.centered}>
         <p style={{ color: "#fff", marginBottom: 16 }}>{error}</p>
-        <button style={{...styles.backBtn, borderColor: eraColor, color: eraColor}} onClick={() => navigate("/museum")}>
-  ← Quay lại Bảo Tàng
-</button>
+
+        <button
+          style={{
+            ...styles.backBtn,
+            borderColor: eraColor,
+            color: eraColor,
+          }}
+          onClick={() => navigate("/museum")}
+        >
+          ← Quay lại Bảo Tàng
+        </button>
       </div>
     );
   }
 
   return (
     <div style={styles.page}>
-     {/* Nút quay lại */}
-<button
-  style={{
-    position: "absolute",
-    top: 20,
-    left: 20,
-    zIndex: 100,
-    background: `linear-gradient(135deg, ${eraColor}99, rgba(0,0,0,0.7))`,  
-    color: "#f5f0e8",
-    border: `1px solid ${eraColor}77`,
-    borderRadius: "18px",
-    padding: "12px 24px",
-    cursor: "pointer",
-    fontSize: "15px",
-    fontWeight: "800",
-    backdropFilter: "blur(8px)",
-    letterSpacing: "0.05em",
-  }}
-  onClick={() => navigate("/museum")}
->
-  ← Quay lại Bảo Tàng
-</button>
+      <button
+        style={{
+          ...styles.backBtn,
+          borderColor: `${eraColor}77`,
+          color: "#f5f0e8",
+          background: `linear-gradient(135deg, ${eraColor}99, rgba(0,0,0,0.7))`,
+        }}
+        onClick={() => navigate("/museum")}
+      >
+        ← Quay lại Bảo Tàng
+      </button>
 
-      {/* Tên kỷ */}
       {era && (
         <div style={styles.eraLabel}>
-          <span style={{ ...styles.eraName, color: eraColor, textShadow: `0 0 12px ${eraColor}88` }}>
+          <span
+            style={{
+              ...styles.eraName,
+              color: eraColor,
+              textShadow: `0 0 12px ${eraColor}88`,
+            }}
+          >
             {era.name_vi}
           </span>
+
           {era.period_start_mya && era.period_end_mya && (
             <span style={styles.eraPeriod}>
               {era.period_end_mya} – {era.period_start_mya} triệu năm trước
@@ -103,43 +572,43 @@ export default function EraPage() {
         </div>
       )}
 
-      {/* Canvas 3D */}
-      <Canvas style={styles.canvas} camera={{ position: [0, 2, 8], fov: 60 }}>
+      {warning && <div style={styles.warningBox}>{warning}</div>}
+
+      <Canvas
+        style={styles.canvas}
+        camera={{
+          position: sceneConfig.cameraPosition,
+          fov: 58,
+        }}
+        shadows
+      >
         <Suspense fallback={null}>
-          {/* EXR làm background + lighting */}
-          {!loading && environmentUrl && (
-            renderModelEnvironment ? (
-              <MuseumEnvironment url={environmentUrl} />
-            ) : (
-              <Environment files={environmentUrl} background backgroundBlurriness={0} />
-            )
+          <ambientLight intensity={0.7} />
+
+          <directionalLight position={[5, 8, 5]} intensity={1.05} castShadow />
+
+          <pointLight position={[0, 3, 2]} intensity={0.55} color={eraColor} />
+
+          <Environment preset="warehouse" />
+
+          {!loading && era?.environment_map_url && (
+            <CanvasErrorBoundary>
+              <EraWorld
+                era={era}
+                exhibits={exhibits}
+                revivedMap={revivedMap}
+                setSelectedDino={setSelectedDino}
+                sceneConfig={sceneConfig}
+              />
+            </CanvasErrorBoundary>
           )}
 
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[5, 8, 5]} intensity={1.2} />
-
-          {/* Model khủng long từ bảng exhibits */}
-          {!loading &&
-            exhibits.map((exhibit) => {
-              const modelUrl = exhibit.dinosaurs?.fossil_model_url;
-              if (!modelUrl) return null;
-              return (
-                <CanvasErrorBoundary key={exhibit.id}>
-  <InteractableModel
-    url={modelUrl}
-    position={exhibit.position}
-    rotation={exhibit.rotation}
-    scale={3}
-    normalize={true}
-    eraColor={eraColor}
-    data={exhibit.dinosaurs}
-    onInteract={setSelectedDino}
-  />
-</CanvasErrorBoundary>
-              );
-            })}
-
-          <PlayerController />
+          <PlayerController
+            moveSpeed={sceneConfig.playerSpeed}
+            runMultiplier={1.35}
+            cameraHeight={1.75}
+            bounds={sceneConfig.bounds}
+          />
 
           <SafePointerLockControls
             onLock={() => setIsPointerLocked(true)}
@@ -149,33 +618,62 @@ export default function EraPage() {
       </Canvas>
 
       <MuseumLoader isFetchingAssets={loading} />
+
       <Crosshair />
 
-      {/* Hướng dẫn */}
       {!isPointerLocked && !loading && (
         <div style={styles.guideBox}>
-          <h3 style={{ margin: "0 0 8px", fontSize: "1rem", color: eraColor }}>
+          <h3
+            style={{
+              margin: "0 0 8px",
+              fontSize: "1rem",
+              color: eraColor,
+            }}
+          >
             Hướng dẫn di chuyển
           </h3>
+
           <p style={styles.guideText}>Click vào màn hình để bắt đầu.</p>
-          <p style={styles.guideText}><b>W A S D</b> — di chuyển</p>
-          <p style={styles.guideText}><b>Chuột</b> — xoay camera</p>
-          <p style={styles.guideText}><b>Shift</b> — chạy nhanh</p>
-          <p style={styles.guideText}><b>ESC</b> — thoát điều khiển</p>
-          <p style={{ ...styles.guideText, marginTop: 8, color: eraColor }}>
-            Click vào khủng long để xem thông tin
+          <p style={styles.guideText}>
+            <b>W A S D</b> — di chuyển
+          </p>
+          <p style={styles.guideText}>
+            <b>Chuột</b> — xoay camera
+          </p>
+          <p style={styles.guideText}>
+            <b>Shift</b> — chạy nhanh
+          </p>
+          <p style={styles.guideText}>
+            <b>ESC</b> — thoát điều khiển
+          </p>
+          <p
+            style={{
+              ...styles.guideText,
+              marginTop: 8,
+              color: eraColor,
+            }}
+          >
+            Click vào hóa thạch hoặc khủng long để xem thông tin.
           </p>
         </div>
       )}
 
-      {/* Popup thông tin khủng long */}
-{selectedDino && (
-  <DinosaurPopup
-    dinosaur={selectedDino}
-    onClose={() => setSelectedDino(null)}
-    language="vi"
-  />
-)}
+      {selectedDino && (
+        <DinosaurPopup
+          dinosaur={selectedDino}
+          onClose={() => setSelectedDino(null)}
+          onRevive={handleToggleRevive}
+          isRevived={Boolean(
+            revivedMap[
+              exhibits.find((item) => {
+                const dino = getDinosaurFromExhibit(item);
+                return dino?.id === selectedDino.id;
+              })?.object_name
+            ]
+          )}
+          language="vi"
+        />
+      )}
     </div>
   );
 }
@@ -188,81 +686,99 @@ const styles = {
     position: "relative",
     overflow: "hidden",
   },
+
   canvas: {
     width: "100%",
     height: "100%",
   },
+
   centered: {
     width: "100vw",
     height: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "#0a0a0a",
+    display: "grid",
+    placeItems: "center",
+    background: "#080808",
   },
+
   backBtn: {
     position: "absolute",
     top: 20,
     left: 20,
     zIndex: 100,
-    background: "rgba(0,0,0,0.6)",
-    color: "#fff",
-    border: "1px solid rgba(255,255,255,0.2)",
-    borderRadius: "8px",
-    padding: "8px 16px",
+    border: "1px solid",
+    borderRadius: "18px",
+    padding: "12px 24px",
     cursor: "pointer",
-    fontSize: "0.9rem",
+    fontSize: "15px",
+    fontWeight: "800",
     backdropFilter: "blur(8px)",
+    letterSpacing: "0.05em",
   },
-  backBtnStatic: {
-    background: "rgba(0,0,0,0.6)",
-    color: "#fff",
-    border: "1px solid rgba(255,255,255,0.2)",
-    borderRadius: "8px",
-    padding: "8px 16px",
-    cursor: "pointer",
-    fontSize: "0.9rem",
-  },
+
   eraLabel: {
     position: "absolute",
-    top: 20,
+    top: 22,
     left: "50%",
     transform: "translateX(-50%)",
-    zIndex: 100,
+    zIndex: 80,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     gap: 4,
-    pointerEvents: "none",
+    padding: "12px 22px",
+    borderRadius: 18,
+    background: "rgba(0, 0, 0, 0.42)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    backdropFilter: "blur(10px)",
   },
+
   eraName: {
-    fontSize: "1.4rem",
-    fontWeight: "bold",
+    fontSize: "20px",
+    fontWeight: 900,
+    textTransform: "uppercase",
     letterSpacing: "0.08em",
   },
+
   eraPeriod: {
-    color: "rgba(255,255,255,0.55)",
-    fontSize: "0.8rem",
+    color: "rgba(245,240,232,0.72)",
+    fontSize: "13px",
+    fontWeight: 700,
   },
+
   guideBox: {
     position: "absolute",
-    bottom: 32,
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 100,
-    background: "rgba(0,0,0,0.75)",
-    color: "#fff",
-    borderRadius: "12px",
-    padding: "16px 24px",
-    minWidth: 220,
-    backdropFilter: "blur(8px)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    textAlign: "center",
+    left: 24,
+    bottom: 24,
+    zIndex: 60,
+    width: 280,
+    padding: 18,
+    borderRadius: 20,
+    color: "#f5f0e8",
+    background: "rgba(0,0,0,0.58)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    backdropFilter: "blur(12px)",
   },
+
   guideText: {
     margin: "4px 0",
-    fontSize: "0.85rem",
-    color: "rgba(255,255,255,0.8)",
+    color: "rgba(245,240,232,0.78)",
+    fontSize: 14,
+    fontWeight: 600,
+  },
+
+  warningBox: {
+    position: "absolute",
+    left: "50%",
+    bottom: 26,
+    transform: "translateX(-50%)",
+    zIndex: 110,
+    maxWidth: 620,
+    padding: "12px 16px",
+    borderRadius: 14,
+    color: "#fff4d6",
+    background: "rgba(75, 36, 5, 0.86)",
+    border: "1px solid rgba(245, 158, 11, 0.45)",
+    fontWeight: 700,
+    boxShadow: "0 18px 50px rgba(0,0,0,0.35)",
   },
 };
