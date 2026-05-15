@@ -404,67 +404,6 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                   {active?.desc}
                 </p>
 
-                <div>
-                  <p className="text-xs uppercase tracking-wider mb-3" style={{ color: active?.dot || '#f59e0b', fontFamily: 'var(--font-body)' }}>
-                    {isVi ? 'Loài tiêu biểu:' : 'Key Species:'}
-                  </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                    {active?.creatures?.map((c, idx) => {
-                      const img = getDinoImg(c);
-                      return (
-                        <div
-                          key={`${c}-${idx}`}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.55rem',
-                            padding: '0.35rem 0.85rem 0.35rem 0.35rem',
-                            borderRadius: '999px',
-                            background: `${active?.color || '#f59e0b'}12`,
-                            border: `1px solid ${active?.color || '#f59e0b'}30`,
-                            backdropFilter: 'blur(8px)',
-                          }}
-                        >
-                          {/* Avatar ảnh hoặc emoji fallback */}
-                          <div style={{
-                            width: 36, height: 36,
-                            borderRadius: '50%',
-                            overflow: 'hidden',
-                            flexShrink: 0,
-                            border: `1.5px solid ${active?.color || '#f59e0b'}40`,
-                            background: 'rgba(10,8,4,0.6)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          }}>
-                            {img ? (
-                              <img
-                                src={img}
-                                alt={c}
-                                style={{
-                                  width: '100%', height: '100%',
-                                  objectFit: 'cover',
-                                  objectPosition: 'center top',
-                                  filter: 'brightness(0.88) saturate(1.1)',
-                                }}
-                              />
-                            ) : (
-                              <span style={{ fontSize: '1.1rem' }}>🦕</span>
-                            )}
-                          </div>
-                          {/* Tên loài */}
-                          <span style={{
-                            fontSize: '0.72rem',
-                            fontFamily: 'var(--font-body)',
-                            fontWeight: 600,
-                            color: '#fbbf24',
-                            whiteSpace: 'nowrap',
-                          }}>
-                            {c}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
               </div>
             </div>
           </motion.div>
