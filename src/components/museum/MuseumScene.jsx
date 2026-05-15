@@ -10,30 +10,70 @@ import InteractableModel from "./InteractableModel";
 import MuseumEnvironment from "./MuseumEnvironment";
 import PlayerController from "./PlayerController";
 import SafePointerLockControls from "./SafePointerLockControls";
-import { getSceneAssets } from "../../services/sceneAssetsService";
+import {
+  getCachedMuseumAssets,
+  prefetchMuseumAssets,
+  prefetchEraAssets,
+} from "../../services/assetPreloader";
 
 export default function MuseumScene() {
-  const [sceneAssets, setSceneAssets] = useState(null);
+  const [sceneAssets, setSceneAssets] = useState(() => getCachedMuseumAssets());
   const [selectedDino, setSelectedDino] = useState(null);
   const [isPointerLocked, setIsPointerLocked] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!getCachedMuseumAssets());
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    async function loadSceneAssets() {
-      try {
-        const data = await getSceneAssets();
-        setSceneAssets(data);
-      } catch (error) {
-        console.error("Failed to load scene assets:", error);
-        setErrorMessage("Không tải được dữ liệu mô hình bảo tàng.");
-      } finally {
-        setLoading(false);
-      }
+    // Nếu đã có cache từ prefetch ở Home → không cần fetch lại
+    if (sceneAssets) {
+      setLoading(false);
+      return;
     }
 
-    loadSceneAssets();
-  }, []);
+    // Fallback: tự fetch nếu user vào thẳng /museum
+    let cancelled = false;
+    prefetchMuseumAssets()
+      .then((data) => {
+        if (cancelled) return;
+        if (data) {
+          setSceneAssets(data);
+        } else {
+          setErrorMessage("Không tải được dữ liệu mô hình bảo tàng.");
+        }
+      })
+      .catch(() => {
+        if (!cancelled)
+          setErrorMessage("Không tải được dữ liệu mô hình bảo tàng.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Khi museum đã load → warm-up cả 3 era trong background (idle time)
+  useEffect(() => {
+    if (loading) return;
+    const slugs = ["triassic", "jurassic", "cretaceous"];
+    let idx = 0;
+    // Prefetch tuần tự để không tranh băng thông với museum GLB
+    const next = () => {
+      if (idx >= slugs.length) return;
+      prefetchEraAssets(slugs[idx++]).finally(() => {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(next, { timeout: 5000 });
+        } else {
+          setTimeout(next, 1500);
+        }
+      });
+    };
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(next, { timeout: 6000 });
+    } else {
+      setTimeout(next, 2000);
+    }
+  }, [loading]);
 
   const dinoList = sceneAssets
     ? [
