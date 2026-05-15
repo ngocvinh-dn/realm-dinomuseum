@@ -193,7 +193,7 @@ html, body {
 
 .hero-title--split {
   width: min(100%, calc(100vw - 3rem));
-  contain: layout;
+  overflow: visible; /* KHÔNG dùng contain:layout — clip text khi animate */
 }
 
 .hero-title__line {
