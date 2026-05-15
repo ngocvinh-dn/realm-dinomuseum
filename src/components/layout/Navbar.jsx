@@ -100,20 +100,21 @@ const Navbar = ({ onLoginClick, onLocaleToggle, locale, onSectionChange, activeS
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
         style={{
-          background: scrolled ? 'var(--theme-nav-surface)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(24px) saturate(140%)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(24px) saturate(140%)' : 'none',
-          borderBottom: scrolled ? '1px solid var(--theme-nav-border)' : '1px solid transparent',
+          background: 'var(--theme-nav-surface)',
+          backdropFilter: 'blur(24px) saturate(140%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(140%)',
+          borderBottom: '1px solid var(--theme-nav-border)',
           boxShadow: scrolled ? 'var(--theme-nav-shadow)' : 'none',
           transition: 'all 0.4s ease',
         }}
       >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between">
           <motion.a href="#hero" className="flex items-center gap-3 no-underline" whileHover={{ scale: 1.03 }} onClick={handleLogoClick}>
-            <img src="/icons/f0062fd6-67c6-4e79-8512-6c9f2af5296c.png" alt="Dino Museum Logo" style={{ height: '40px', width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 8px rgba(245,158,11,0.4))' }} />
+            <img src="/icons/ChatGPT Image May 15, 2026, 11_17_26 PM.png" alt="Dino Museum Logo" style={{ height: '70px', width: '70px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px rgba(245,158,11,0.4))' }} />
             <div className="flex flex-col">
-              <span className="font-serif text-lg font-bold leading-none" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-accent-bright)' }}>Dino Museum</span>
-              <span className="text-xs leading-none tracking-widest" style={{ color: 'rgba(245,158,11,0.5)', fontFamily: 'var(--font-body)' }}>PALEONTOLOGY MUSEUM</span>
+              <span className="font-serif text-lg font-bold leading-none" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-accent-bright)', 'margin-bottom': '1px' }}>R.E.A.L.M</span>
+              <span className="text-xs leading-none tracking-widest" style={{ color: 'rgba(245,158,11,0.5)', fontFamily: 'var(--font-body)', 'font-size': '14px', 'letter-spacing': '1px', 'opacity': '0.6', 'margin-bottom': '1px' }}>Research Exhibition  </span>
+              <span className="text-xs leading-none tracking-widest" style={{ color: 'rgba(245,158,11,0.5)', fontFamily: 'var(--font-body)', 'letter-spacing': '1.5px', 'opacity': '0.6' }}>Of Ancient Life Models</span>
             </div>
           </motion.a>
 
