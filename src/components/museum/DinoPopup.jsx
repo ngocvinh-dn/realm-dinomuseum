@@ -1,8 +1,17 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DinoPopup.css";
+import { prefetchEraAssets } from "../../services/assetPreloader";
 
 export default function DinoPopup({ dino, onClose }) {
   const navigate = useNavigate();
+
+  // Khi popup mở → kick prefetch era ngay (non-blocking)
+  // Lúc user đọc thông tin thì GLB đã download xong
+  useEffect(() => {
+    if (!dino?.id) return;
+    prefetchEraAssets(dino.id);
+  }, [dino?.id]);
 
   if (!dino) return null;
 

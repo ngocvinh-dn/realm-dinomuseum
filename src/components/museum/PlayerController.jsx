@@ -2,8 +2,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-const DEFAULT_WALK_SPEED = 4.2;
-const DEFAULT_RUN_MULTIPLIER = 1.55;
+const DEFAULT_WALK_SPEED = 10;
+const DEFAULT_RUN_MULTIPLIER = 5;
 const DEFAULT_CAMERA_HEIGHT = 2;
 
 const EMPTY_KEYS = {

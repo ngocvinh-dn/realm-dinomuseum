@@ -11,6 +11,7 @@ import Footer from '../components/home/Footer';
 import AuthModal from '../components/auth/AuthModal';
 import AmbientAudio from '../components/home/AmbientAudio';
 import { useAuth } from '../context/AuthContext';
+import { prefetchMuseumAssets } from '../services/assetPreloader';
 
 const sectionIds = ['hero', 'timeline', 'specimens', 'explore-globe', 'dang-ky'];
 
@@ -31,6 +32,18 @@ const Home = () => {
     document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
+
+  // Prefetch museum assets khi user dang o Home
+  // Dung requestIdleCallback de khong tranh bandwidth voi hero/sequence assets
+  useEffect(() => {
+    const kick = () => prefetchMuseumAssets();
+    if ('requestIdleCallback' in window) {
+      const id = requestIdleCallback(kick, { timeout: 4000 });
+      return () => cancelIdleCallback(id);
+    }
+    const t = setTimeout(kick, 3000);
+    return () => clearTimeout(t);
+  }, []);
   // Observer để highlight Navbar
   useEffect(() => {
     const observer = new IntersectionObserver(

@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import PlayerController from "../components/museum/PlayerController";
-import MuseumLoader from "../components/museum/MuseumLoader";
+import EraTransitionLoader from "../components/museum/EraTransitionLoader";
 import { Crosshair } from "../components/museum/Crosshair";
 import DinosaurPopup from "../components/museum/DinosaurPopup";
 import SafePointerLockControls from "../components/museum/SafePointerLockControls";
@@ -15,6 +15,10 @@ import CanvasErrorBoundary from "../components/home/CanvasErrorBoundary";
 
 import { getEnvironmentBySlug } from "../services/environmentService";
 import { getExhibitsByEraSlug } from "../services/exhibitsService";
+import {
+  getCachedEraData,
+  prefetchEraAssets,
+} from "../services/assetPreloader";
 
 function getEraColor(slug) {
   if (slug === "triassic") return "#e07b39";
@@ -90,6 +94,7 @@ function EnvironmentScene({
   revivedMap,
   onSelectDinosaur,
   onRegisterFossilTransform,
+  onRegisterFossilObject,
   onRegisterInteractiveObjects,
 }) {
   const { scene } = useGLTF(url);
@@ -179,7 +184,14 @@ function EnvironmentScene({
       clickableObjects.map((obj) => obj.name)
     );
 
-    onRegisterInteractiveObjects(clickableObjects);
+      // Expose fossilObject THREE refs for ReviveEffect animation
+      clickableObjects.forEach((obj) => {
+        if (obj.userData?.objectName) {
+          onRegisterFossilObject?.(obj.userData.objectName, obj);
+        }
+      });
+
+      onRegisterInteractiveObjects(clickableObjects);
   }, [
     clonedScene,
     exhibits,
@@ -187,6 +199,7 @@ function EnvironmentScene({
     revivedMap,
     onRegisterFossilTransform,
     onRegisterInteractiveObjects,
+    onRegisterFossilObject,
   ]);
 
   if (!clonedScene) return null;
@@ -206,26 +219,31 @@ function EnvironmentScene({
   );
 }
 
-function RevivedDinosaur({ dinosaur, transform, onSelect }) {
+function RevivedDinosaur({ dinosaur, transform, onSelect, sceneRef }) {
   const url = dinosaur?.revived_model_url?.trim();
   const { scene } = useGLTF(url);
 
   const clonedScene = useMemo(() => {
-    if (!scene) return null;
+  if (!scene) return null;
 
-    const clone = scene.clone(true);
+  const clone = scene.clone(true);
 
-    clone.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-        child.userData.dinosaur = dinosaur;
-        child.userData.isRevived = true;
-      }
-    });
+  clone.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+      child.userData.dinosaur = dinosaur;
+      child.userData.isRevived = true;
+    }
+  });
 
-    return clone;
-  }, [scene, dinosaur]);
+  // lưu ref của revived model
+  if (sceneRef) {
+    sceneRef.current = clone;
+  }
+
+  return clone;
+  }, [scene, dinosaur, sceneRef]);
 
   if (!url || !clonedScene || !transform) return null;
 
@@ -298,29 +316,28 @@ function FossilRaycastClicker({ interactiveObjects, onSelectDinosaur }) {
   return null;
 }
 
-function EraWorld({ era, exhibits, revivedMap, setSelectedDino, sceneConfig }) {
+function EraWorld({ era, exhibits, revivedMap, fossilObjectsRef, setSelectedDino, sceneConfig }) {
   const [fossilTransforms, setFossilTransforms] = useState({});
   const [interactiveObjects, setInteractiveObjects] = useState([]);
+
+  // objectName → ref holding the cloned revived THREE.Object3D (set by RevivedDinosaur)
+  const revivedSceneRefs = useRef({});
+
+  // Internal fossil objects map (populated by EnvironmentScene callback)
+  if (!fossilObjectsRef.current) fossilObjectsRef.current = {};
 
   const registerFossilTransform = useRef((objectName, transform) => {
     setFossilTransforms((prev) => {
       const old = prev[objectName];
-
       if (
         old &&
-        JSON.stringify(old.fossilPosition) ===
-          JSON.stringify(transform.fossilPosition) &&
-        JSON.stringify(old.spawnPosition) ===
-          JSON.stringify(transform.spawnPosition) &&
-        JSON.stringify(old.quaternion) === JSON.stringify(transform.quaternion)
+        JSON.stringify(old.fossilPosition) === JSON.stringify(transform.fossilPosition) &&
+        JSON.stringify(old.spawnPosition)  === JSON.stringify(transform.spawnPosition) &&
+        JSON.stringify(old.quaternion)     === JSON.stringify(transform.quaternion)
       ) {
         return prev;
       }
-
-      return {
-        ...prev,
-        [objectName]: transform,
-      };
+      return { ...prev, [objectName]: transform };
     });
   }).current;
 
@@ -337,6 +354,7 @@ function EraWorld({ era, exhibits, revivedMap, setSelectedDino, sceneConfig }) {
         revivedMap={revivedMap}
         onSelectDinosaur={setSelectedDino}
         onRegisterFossilTransform={registerFossilTransform}
+        onRegisterFossilObject={(name, obj) => { fossilObjectsRef.current[name] = obj; }}
         onRegisterInteractiveObjects={setInteractiveObjects}
       />
 
@@ -345,34 +363,53 @@ function EraWorld({ era, exhibits, revivedMap, setSelectedDino, sceneConfig }) {
         onSelectDinosaur={setSelectedDino}
       />
 
+      {/* Always mount revived dinosaurs for ALL exhibits so GLB stays cached,
+          but they start invisible; ReviveEffect animates them into view */}
       {revivedExhibits.map((exhibit) => {
-        const dinosaur = normalizeDinosaurForPopup(
-          getDinosaurFromExhibit(exhibit),
-          era
-        );
-
-        const transform = fossilTransforms[exhibit.object_name];
-
-        return (
-            <RevivedDinosaur
-              dinosaur={dinosaur}
-              transform={transform}
-              onSelect={setSelectedDino}
-            />
-        );
+      const dinosaur = normalizeDinosaurForPopup(
+        getDinosaurFromExhibit(exhibit),
+        era
+      );
+    
+      if (!dinosaur?.revived_model_url) return null;
+    
+      const objectName = exhibit.object_name;
+      const transform = fossilTransforms[objectName];
+    
+      if (!transform) return null;
+    
+      if (!revivedSceneRefs.current[objectName]) {
+        revivedSceneRefs.current[objectName] = { current: null };
+      }
+    
+      const sceneRef = revivedSceneRefs.current[objectName];
+    
+      return (
+        <RevivedDinosaur
+          key={`revived-${objectName}`}
+          dinosaur={dinosaur}
+          transform={transform}
+          onSelect={setSelectedDino}
+          sceneRef={sceneRef}
+        />
+      );
       })}
 
+      {/* ReviveEffect gets direct refs to both THREE objects for animation */}
       {Object.entries(revivedMap).map(([objectName, isRevived]) => {
-        if (!isRevived) return null;
-
         const transform = fossilTransforms[objectName];
-
         if (!transform) return null;
+
+        const fossilObj  = fossilObjectsRef?.current?.[objectName] ?? null;
+        const revivedRef = revivedSceneRefs.current[objectName];
+        const revivedObj = revivedRef?.current ?? null;
 
         return (
           <ReviveEffect
             key={`effect-${objectName}`}
-            active={true}
+            active={isRevived}
+            fossilObject={fossilObj}
+            revivedScene={revivedObj}
             position={transform.fossilPosition || transform.spawnPosition}
           />
         );
@@ -393,6 +430,8 @@ export default function EraPage() {
   const [isPointerLocked, setIsPointerLocked] = useState(false);
   const [selectedDino, setSelectedDino] = useState(null);
   const [revivedMap, setRevivedMap] = useState({});
+  // Stores THREE.Object3D refs for fossil meshes – populated by EnvironmentScene
+  const fossilObjectsRef = useRef({});
 
   useEffect(() => {
     let ignore = false;
@@ -402,45 +441,45 @@ export default function EraPage() {
         setLoading(true);
         setError("");
         setWarning("");
+        setSelectedDino(null);
+        setRevivedMap({});
 
-        const eraData = await getEnvironmentBySlug(slug);
-
-        if (!eraData) {
-          throw new Error("Era not found");
+        // Thử cache trước – nếu user đã prefetch từ DinoPopup/hover thì instant
+        const cached = getCachedEraData(slug);
+        if (cached) {
+          if (!ignore) {
+            setEra(cached.eraData);
+            setExhibits(cached.exhibitData);
+            setLoading(false);
+          }
+          return;
         }
 
-        const exhibitData = await getExhibitsByEraSlug(slug);
+        // Cache miss → fetch, nhưng dùng prefetchEraAssets để đồng thời preload GLB
+        const result = await prefetchEraAssets(slug);
+        if (!result) throw new Error("Era not found");
 
         if (!ignore) {
-          setEra(eraData);
-          setExhibits(exhibitData || []);
-          setSelectedDino(null);
-          setRevivedMap({});
+          setEra(result.eraData);
+          setExhibits(result.exhibitData);
         }
       } catch (err) {
         console.error("Failed to load era:", err);
-
-        if (!ignore) {
-          setError("Không thể tải môi trường này.");
-        }
+        if (!ignore) setError("Không thể tải môi trường này.");
       } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
+        if (!ignore) setLoading(false);
       }
     }
 
     loadData();
 
-    return () => {
-      ignore = true;
-    };
+    return () => { ignore = true; };
   }, [slug]);
 
   const eraColor = getEraColor(slug);
   const sceneConfig = getEraSceneConfig(slug);
 
-async function handleToggleRevive(dinosaur) {
+function handleToggleRevive(dinosaur) {
   if (!dinosaur?.id) return;
 
   const exhibit = exhibits.find((item) => {
@@ -449,73 +488,25 @@ async function handleToggleRevive(dinosaur) {
   });
 
   if (!exhibit?.object_name) {
-    setWarning(
-      "Không tìm thấy object_name của hóa thạch trong exhibits."
-    );
+    setWarning("Không tìm thấy object_name của hóa thạch trong exhibits.");
     return;
   }
 
   const objectName = exhibit.object_name;
+  const alreadyRevived = Boolean(revivedMap[objectName]);
 
-  const alreadyRevived = Boolean(
-    revivedMap[objectName]
-  );
+  setWarning("");
 
-  // Tắt hồi sinh
-  if (alreadyRevived) {
-    setWarning("");
+  // Toggle: nếu đã revived thì tắt lại
+  setRevivedMap((prev) => ({
+    ...prev,
+    [objectName]: !alreadyRevived,
+  }));
 
-    setRevivedMap((prev) => ({
-      ...prev,
-      [objectName]: false,
-    }));
-
-    return;
-  }
-
-  const revivedUrl =
-    dinosaur.revived_model_url?.trim();
-
-  if (!revivedUrl) {
-    setWarning(
-      `Thiếu revived_model_url của ${
-        dinosaur.common_name_vi ||
-        dinosaur.scientific_name
-      }.`
-    );
-
-    return;
-  }
-
-  try {
-    // Load trước để tránh trigger loading scene
-    const loader = new GLTFLoader();
-
-    await loader.loadAsync(revivedUrl);
-
-    // cache model
-    useGLTF.preload(revivedUrl);
-
-    setWarning("");
-
-    // Chỉ update state sau khi model load xong
-    setRevivedMap((prev) => ({
-      ...prev,
-      [objectName]: true,
-    }));
-  } catch (error) {
-    console.error(
-      "[Revive] Failed to load model:",
-      revivedUrl,
-      error
-    );
-
-    setWarning(
-      `Không tải được revived model của ${
-        dinosaur.common_name_vi ||
-        dinosaur.scientific_name
-      }.`
-    );
+  // Preload revived model URL vào drei cache (non-blocking, không trigger useProgress)
+  // Model sẽ được prefetch service xử lý khi popup mở, nhưng preload thêm lần nữa an toàn
+  if (!alreadyRevived && dinosaur.revived_model_url) {
+    useGLTF.preload(dinosaur.revived_model_url.trim());
   }
 }
 
@@ -597,6 +588,7 @@ async function handleToggleRevive(dinosaur) {
                 era={era}
                 exhibits={exhibits}
                 revivedMap={revivedMap}
+                fossilObjectsRef={fossilObjectsRef}
                 setSelectedDino={setSelectedDino}
                 sceneConfig={sceneConfig}
               />
@@ -617,7 +609,7 @@ async function handleToggleRevive(dinosaur) {
         </Suspense>
       </Canvas>
 
-      <MuseumLoader isFetchingAssets={loading} />
+      <EraTransitionLoader slug={slug} isFetchingData={loading} />
 
       <Crosshair />
 
