@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import RealmBrand from './RealmBrand';
 
 const navLinks = [
   { id: 'hero', label: { vi: 'Trang chủ', en: 'Home' }, href: '#hero' },
@@ -110,12 +111,7 @@ const Navbar = ({ onLoginClick, onLocaleToggle, locale, onSectionChange, activeS
       >
         <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between">
           <motion.a href="#hero" className="flex items-center gap-3 no-underline" whileHover={{ scale: 1.03 }} onClick={handleLogoClick}>
-            <img src="/icons/ChatGPT Image May 15, 2026, 11_17_26 PM.png" alt="Dino Museum Logo" style={{ height: '70px', width: '70px', objectFit: 'contain', filter: 'drop-shadow(0 0 8px rgba(245,158,11,0.4))' }} />
-            <div className="flex flex-col">
-              <span className="font-serif text-lg font-bold leading-none" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-accent-bright)', 'margin-bottom': '1px' }}>R.E.A.L.M</span>
-              <span className="text-xs leading-none tracking-widest" style={{ color: 'rgba(245,158,11,0.5)', fontFamily: 'var(--font-body)', 'font-size': '14px', 'letter-spacing': '1px', 'opacity': '0.6', 'margin-bottom': '1px' }}>Research Exhibition  </span>
-              <span className="text-xs leading-none tracking-widest" style={{ color: 'rgba(245,158,11,0.5)', fontFamily: 'var(--font-body)', 'letter-spacing': '1.5px', 'opacity': '0.6' }}>Of Ancient Life Models</span>
-            </div>
+            <RealmBrand />
           </motion.a>
 
           <div
