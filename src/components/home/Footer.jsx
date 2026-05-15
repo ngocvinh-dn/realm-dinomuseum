@@ -52,10 +52,10 @@ const Footer = ({ locale }) => {
                   className="font-serif text-lg font-bold leading-none"
                   style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-accent-bright)' }}
                 >
-                  Dinosaur Museum
+                  R.E.A.L.M
                 </div>
                 <div className="text-[11px] tracking-widest mt-1" style={{ color: 'rgba(245,158,11,0.42)' }}>
-                  PALEONTOLOGY MUSEUM
+                  Research Exhibition <br></br>Of Ancient Life Models
                 </div>
               </div>
             </div>
@@ -112,7 +112,7 @@ const Footer = ({ locale }) => {
 
         <div className="h-px mt-8 mb-4" style={{ background: 'linear-gradient(to right, transparent, var(--theme-border), transparent)' }} />
         <div className="text-center text-xs" style={{ color: 'var(--theme-text-dim)' }}>
-          © {currentYear} Dinosaur Museum. All rights reserved.
+          © {currentYear} R.E.A.L.M. All rights reserved.
         </div>
       </div>
     </footer>
