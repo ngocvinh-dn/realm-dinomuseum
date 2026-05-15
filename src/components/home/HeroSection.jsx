@@ -146,16 +146,32 @@ const HeroSection = ({ copy }) => {
     };
   }, [isReady, drawFrame]);
 
-  // ─── GSAP: Entrance animation chữ từ 2 bên vào giữa ─────
+  // ─── GSAP: Entrance animation chữ từ 2 bên vào giữa ─────────────────────────────
   useEffect(() => {
     if (!isReady) return;
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    tl.fromTo(badgeRef.current,  { y: -24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, 0.1)
-      .fromTo(titleLRef.current,  { x: -140, opacity: 0 }, { x: 0, opacity: 1, duration: 1 },  0.25)
-      .fromTo(titleRRef.current,  { x:  140, opacity: 0 }, { x: 0, opacity: 1, duration: 1 },  0.30)
-      .fromTo(subLRef.current,    { x: -100, opacity: 0 }, { x: 0, opacity: 1, duration: 0.9 }, 0.40)
-      .fromTo(subRRef.current,    { x:  100, opacity: 0 }, { x: 0, opacity: 1, duration: 0.9 }, 0.44)
-      .fromTo(ctaRef.current,     { y:  20,  opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, 0.60);
+    // khởi tạo trạng thái ẩn ban đầu ngay lập tức (trước khi animate)
+    gsap.set([titleLRef.current, subLRef.current], { x: '-120%', opacity: 0 });
+    gsap.set([titleRRef.current, subRRef.current], { x:  '120%', opacity: 0 });
+    gsap.set(badgeRef.current,  { y: -28, opacity: 0 });
+    gsap.set(ctaRef.current,    { y:  22, opacity: 0 });
+
+    const tl = gsap.timeline({
+      defaults: { ease: 'expo.out', duration: 1.1 },
+      delay: 0.05,
+    });
+
+    tl
+      // badge từ trên xuống
+      .to(badgeRef.current, { y: 0, opacity: 1, duration: 0.75, ease: 'back.out(1.4)' }, 0)
+      // dòng 1: 2 từ trái / phải vào giữa cùng lúc
+      .to(titleLRef.current, { x: '0%', opacity: 1 }, 0.15)
+      .to(titleRRef.current, { x: '0%', opacity: 1 }, 0.20)
+      // dòng 2: subtitle 20ms trễ hơn
+      .to(subLRef.current,   { x: '0%', opacity: 1, duration: 1.0 }, 0.30)
+      .to(subRRef.current,   { x: '0%', opacity: 1, duration: 1.0 }, 0.35)
+      // button fade-up
+      .to(ctaRef.current,    { y: 0, opacity: 1, duration: 0.8, ease: 'back.out(1.2)' }, 0.55);
+
     return () => tl.kill();
   }, [isReady]);
 
@@ -185,33 +201,41 @@ const HeroSection = ({ copy }) => {
 
   // ─── Render ────────────────────────────────────────────────
   return (
+    // Section KHÔNG overflow:hidden — để chữ slide ra ngoài không bị cắt
     <section
       id="hero"
       ref={sectionRef}
-      style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden', background: '#0a0804' }}
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100vh',
+        overflow: 'visible',
+        background: '#0a0804',
+      }}
     >
-      {/* ── Canvas nền (image sequence) ── */}
-      <canvas
-        ref={canvasRef}
-        style={{
-          display:    'block',
-          position:   'absolute',
-          inset:       0,
-          width:      '100%',
-          height:     '100%',
-          opacity:    isReady ? 1 : 0,
-          transition: 'opacity 0.8s ease',
-          zIndex:      0,
-        }}
-      />
-
-      {/* ── Gradient overlays ── */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse at center, transparent 40%, rgba(10,8,4,0.65) 100%)' }} />
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-        background: 'linear-gradient(180deg, rgba(10,8,4,0.55) 0%, rgba(10,8,4,0.05) 35%, rgba(10,8,4,0.05) 65%, rgba(10,8,4,0.7) 100%)' }} />
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse at center top, rgba(245,158,11,0.1) 0%, transparent 55%)' }} />
+      {/* ── Canvas + overlays — wrapper riêng có clip ── */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        overflow: 'hidden',
+        zIndex: 0,
+      }}>
+        <canvas
+          ref={canvasRef}
+          style={{
+            display: 'block',
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            opacity: isReady ? 1 : 0,
+            transition: 'opacity 0.8s ease',
+          }}
+        />
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(10,8,4,0.65) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'linear-gradient(180deg, rgba(10,8,4,0.55) 0%, rgba(10,8,4,0.05) 35%, rgba(10,8,4,0.05) 65%, rgba(10,8,4,0.7) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'radial-gradient(ellipse at center top, rgba(245,158,11,0.1) 0%, transparent 55%)' }} />
+      </div>
 
       {/* ── Audio ── */}
       <audio ref={audioRef} src={heroAudio} preload="auto" loop />
@@ -241,10 +265,12 @@ const HeroSection = ({ copy }) => {
       )}
 
       {/* ── Content overlay (title + button) ── */}
+      {/* overflow:visible để chữ slide ra ngoài viền không bị cắt */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 10,
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         paddingTop: '80px', textAlign: 'center',
+        overflow: 'visible',              // ← quan trọng: không clip text
         pointerEvents: isReady ? 'auto' : 'none',
       }}>
         {/* Badge */}
@@ -267,10 +293,17 @@ const HeroSection = ({ copy }) => {
           </div>
         </div>
 
-        {/* Title — split từ 2 bên */}
-        <h1 className="hero-title hero-title--split font-serif"
-          style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-heading)',
-            gap: '0.16em', marginBottom: 'clamp(0.6rem,2vw,1.2rem)' }}>
+        {/* Title — split từ 2 bên, overflow:visible để không cắt */}
+        <h1
+          className="hero-title hero-title--split font-serif"
+          style={{
+            fontFamily: 'var(--font-heading)',
+            color: 'var(--theme-heading)',
+            gap: '0.16em',
+            marginBottom: 'clamp(0.6rem,2vw,1.2rem)',
+            overflow: 'visible',          // ← fix: không cắt chữ khi slide
+          }}
+        >
           <span className="hero-title__line hero-title__main" aria-label={copy.heroTitle}>
             <span ref={titleLRef} className="hero-title__piece" style={{ opacity: 0 }}>
               <span className="hero-title__piece-inner">{mainTitle.left}</span>

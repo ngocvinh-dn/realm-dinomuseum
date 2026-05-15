@@ -33,6 +33,43 @@ const ERA_DOTS = ['#fb923c', '#4ade80', '#f59e0b'];
 const ERA_ICONS = ['🦕', '🦖', '🦕'];
 const PERIOD_ORDER = ['triassic', 'jurassic', 'cretaceous'];
 
+// Mapping tên loài → ảnh local
+// Key: tên viết thường (có thể là tên khoa học, tên thường, tên Việt)
+const DINO_IMAGES = {
+  // Tiếng Anh / tên khoa học
+  coelophysis:           '/images/Coelophysis_bauri.png',
+  'coelophysis bauri':   '/images/Coelophysis_bauri.png',
+  plateosaurus:          '/images/Plateosaurus.png',
+  'plateosaurus engelhardti': '/images/Plateosaurus.png',
+  eoraptor:              '/images/Eoraptor_lunensis.png',
+  'eoraptor lunensis':   '/images/Eoraptor_lunensis.png',
+  camarasaurus:          '/images/Camarasaurus.png',
+  tyrannosaurus:         '/images/Tyrannosaurus_rex.png',
+  'tyrannosaurus rex':   '/images/Tyrannosaurus_rex.png',
+  't-rex':               '/images/Tyrannosaurus_rex.png',
+  triceratops:           '/images/Triceratops.png',
+  'triceratops horridus': '/images/Triceratops.png',
+  styracosaurus:         '/images/Styracosaurus .png',
+  'styracosaurus albertensis': '/images/Styracosaurus .png',
+  velociraptor:          '/images/dino_velociraptor.png',
+  // Tên tiếng Việt thường gặp (từ Supabase common_name_vi)
+  'khủng long bao chúa': '/images/Tyrannosaurus_rex.png',
+  'bạo long':            '/images/Tyrannosaurus_rex.png',
+  'ba sừng':             '/images/Triceratops.png',
+  'khủng long ba sừng':  '/images/Triceratops.png',
+  'khủng long cổ dài':   '/images/Camarasaurus.png',
+};
+
+/** Lấy ảnh từ tên loài (normalize về lowercase, bỏ dấu tiếng Việt nếu cần) */
+const getDinoImg = (name = '') => {
+  const key = name.trim().toLowerCase();
+  // Tìm khớp chính xác trước
+  if (DINO_IMAGES[key]) return DINO_IMAGES[key];
+  // Tìm khớp từ đầu (partial match cho tên khoa học)
+  const partialKey = Object.keys(DINO_IMAGES).find((k) => key.startsWith(k) || k.startsWith(key));
+  return partialKey ? DINO_IMAGES[partialKey] : null;
+};
+
 const fallbackEons = (isVi) => [
   {
     id: 'triassic',
@@ -48,7 +85,7 @@ const fallbackEons = (isVi) => [
     color: ERA_COLORS[0],
     dot: ERA_DOTS[0],
     icon: ERA_ICONS[0],
-    creatures: ['Coelophysis', 'Plateosaurus'],
+    creatures: ['Coelophysis', 'Plateosaurus', 'Eoraptor'],
     image: '/images/Coelophysis_bauri.png',
     objectPosition: '18% center',
     imageCredit: 'Coelophysis bauri',
@@ -68,7 +105,7 @@ const fallbackEons = (isVi) => [
     color: ERA_COLORS[1],
     dot: ERA_DOTS[1],
     icon: ERA_ICONS[1],
-    creatures: ['Camarasaurus', 'Giraffatitan'],
+    creatures: ['Camarasaurus'],
     image: '/images/Camarasaurus.png',
     objectPosition: 'center center',
     imageCredit: 'Camarasaurus',
@@ -88,7 +125,7 @@ const fallbackEons = (isVi) => [
     color: ERA_COLORS[2],
     dot: ERA_DOTS[2],
     icon: ERA_ICONS[2],
-    creatures: ['Tyrannosaurus', 'Triceratops'],
+    creatures: ['Tyrannosaurus', 'Triceratops', 'Styracosaurus'],
     image: '/images/Tyrannosaurus_rex.png',
     objectPosition: 'center 15%',
     imageCredit: 'Tyrannosaurus rex',
@@ -368,19 +405,64 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                 </p>
 
                 <div>
-                  <p className="text-xs uppercase tracking-wider mb-2" style={{ color: active?.dot || '#f59e0b' }}>
+                  <p className="text-xs uppercase tracking-wider mb-3" style={{ color: active?.dot || '#f59e0b', fontFamily: 'var(--font-body)' }}>
                     {isVi ? 'Loài tiêu biểu:' : 'Key Species:'}
                   </p>
-                  <div className="flex flex-wrap gap-2">
-                    {active?.creatures?.map((c, idx) => (
-                      <span
-                        key={`${c}-${idx}`}
-                        className="px-2.5 py-1 rounded-full text-xs"
-                        style={{ background: 'rgba(245,158,11,0.08)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.2)' }}
-                      >
-                        {c}
-                      </span>
-                    ))}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                    {active?.creatures?.map((c, idx) => {
+                      const img = getDinoImg(c);
+                      return (
+                        <div
+                          key={`${c}-${idx}`}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.55rem',
+                            padding: '0.35rem 0.85rem 0.35rem 0.35rem',
+                            borderRadius: '999px',
+                            background: `${active?.color || '#f59e0b'}12`,
+                            border: `1px solid ${active?.color || '#f59e0b'}30`,
+                            backdropFilter: 'blur(8px)',
+                          }}
+                        >
+                          {/* Avatar ảnh hoặc emoji fallback */}
+                          <div style={{
+                            width: 36, height: 36,
+                            borderRadius: '50%',
+                            overflow: 'hidden',
+                            flexShrink: 0,
+                            border: `1.5px solid ${active?.color || '#f59e0b'}40`,
+                            background: 'rgba(10,8,4,0.6)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>
+                            {img ? (
+                              <img
+                                src={img}
+                                alt={c}
+                                style={{
+                                  width: '100%', height: '100%',
+                                  objectFit: 'cover',
+                                  objectPosition: 'center top',
+                                  filter: 'brightness(0.88) saturate(1.1)',
+                                }}
+                              />
+                            ) : (
+                              <span style={{ fontSize: '1.1rem' }}>🦕</span>
+                            )}
+                          </div>
+                          {/* Tên loài */}
+                          <span style={{
+                            fontSize: '0.72rem',
+                            fontFamily: 'var(--font-body)',
+                            fontWeight: 600,
+                            color: '#fbbf24',
+                            whiteSpace: 'nowrap',
+                          }}>
+                            {c}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
