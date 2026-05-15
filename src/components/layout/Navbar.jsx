@@ -6,6 +6,7 @@ const navLinks = [
   { id: 'hero', label: { vi: 'Trang chủ', en: 'Home' }, href: '#hero' },
   { id: 'timeline', label: { vi: 'Dòng thời gian', en: 'Timeline' }, href: '#timeline' },
   { id: 'specimens', label: { vi: 'Hiện vật', en: 'Specimens' }, href: '#specimens' },
+  { id: 'explore-globe', label: { vi: 'Khám phá hóa thạch globe', en: 'Explore' }, href: '#explore-globe', isExplore: true },
   { id: 'dang-ky', label: { vi: 'Đăng ký vé', en: 'Tickets' }, href: '#dang-ky' },
 ];
 
