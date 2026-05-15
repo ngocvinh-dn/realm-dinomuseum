@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import HCaptcha from '@hcaptcha/react-hcaptcha';
+
 import { supabase } from '../../lib/supabaseClient';
 
 // Hằng số cho tab đăng nhập và đăng ký
@@ -34,8 +34,8 @@ const AuthModal = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [captchaToken, setCaptchaToken] = useState(null);
-  const captchaRef = useRef(null);
+  const [showPassword, setShowPassword] = useState(false);
+
 
   useEffect(() => {
     if (!isOpen) return;
@@ -45,8 +45,7 @@ const AuthModal = ({
     setError('');
     setSuccess(initialMessage);
     setLoading(false);
-    setCaptchaToken(null);
-    captchaRef.current?.resetCaptcha();
+
   }, [initialMessage, initialTab, isOpen]);
 
   // Reset form về trạng thái ban đầu
@@ -55,8 +54,6 @@ const AuthModal = ({
     setError('');
     setSuccess('');
     setLoading(false);
-    setCaptchaToken(null);
-    captchaRef.current?.resetCaptcha();
   };
 
   // Chuyển đổi giữa tab đăng nhập và đăng ký
@@ -74,21 +71,14 @@ const AuthModal = ({
   // Xử lý đăng nhập bằng Supabase Auth
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!captchaToken) {
-      setError('Vui lòng hoàn thành xác minh CAPTCHA.');
-      return;
-    }
     setLoading(true);
     setError('');
     const { error } = await supabase.auth.signInWithPassword({
       email: form.email,
       password: form.password,
-      options: { captchaToken },
     });
     if (error) {
       setError('Email hoặc mật khẩu không chính xác. Vui lòng thử lại.');
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
     } else {
       setSuccess('Đăng nhập thành công! Cổng bảo tàng đã mở.');
       setTimeout(() => {
@@ -119,12 +109,6 @@ const AuthModal = ({
       return;
     }
 
-    // Bắt buộc phải hoàn thành captcha trước khi đăng ký
-    if (!captchaToken) {
-      setError('Vui lòng hoàn thành xác minh CAPTCHA.');
-      setLoading(false);
-      return;
-    }
 
     // Gọi API đăng ký của Supabase với emailRedirectTo để sửa lỗi chuyển hướng liên kết xác nhận
     const { error } = await supabase.auth.signUp({
@@ -133,7 +117,6 @@ const AuthModal = ({
       options: {
         // Chuyển hướng về trang hiện tại sau khi xác nhận email (sửa lỗi chuyển hướng localhost)
         emailRedirectTo: `${window.location.origin}/?auth=login&confirmed=1`,
-        captchaToken,
         data: {
           full_name: form.name,
           phone: form.phone.replace(/\s/g, ''),
@@ -148,9 +131,7 @@ const AuthModal = ({
       } else {
         setError('Đăng ký thất bại: ' + error.message);
       }
-      // Reset captcha khi có lỗi để người dùng giải lại
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
+
     } else {
       // Thông báo thành công kèm hướng dẫn xác thực email
       setSuccess('Đăng ký thành công! Vui lòng kiểm tra hộp thư email của bạn để xác nhận tài khoản (bao gồm cả thư mục rác).');
@@ -293,36 +274,65 @@ const AuthModal = ({
                             </span>
                           )}
                         </label>
-                        <input
-                          id={`auth-${field.name}`}
-                          name={field.name}
-                          type={field.type}
-                          placeholder={field.placeholder}
-                          value={form[field.name]}
-                          onChange={handleChange}
-                          required
-                          className="input-dino"
-                          style={{ fontFamily: 'var(--font-body)' }}
-                        />
+                        {field.name === 'password' ? (
+                          <div style={{ position: 'relative' }}>
+                            <input
+                              id={`auth-${field.name}`}
+                              name={field.name}
+                              type={showPassword ? 'text' : 'password'}
+                              placeholder={field.placeholder}
+                              value={form[field.name]}
+                              onChange={handleChange}
+                              required
+                              className="input-dino"
+                              style={{ fontFamily: 'var(--font-body)', paddingRight: '44px' }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(v => !v)}
+                              style={{
+                                position: 'absolute', right: '12px', top: '50%',
+                                transform: 'translateY(-50%)',
+                                background: 'none', border: 'none', cursor: 'pointer',
+                                color: 'rgba(245,158,11,0.6)', padding: '4px',
+                                lineHeight: 1, display: 'flex', alignItems: 'center',
+                              }}
+                              aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                            >
+                              {showPassword ? (
+                                /* Eye-off icon */
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                                  <line x1="1" y1="1" x2="23" y2="23"/>
+                                </svg>
+                              ) : (
+                                /* Eye icon */
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                  <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                        ) : (
+                          <input
+                            id={`auth-${field.name}`}
+                            name={field.name}
+                            type={field.type}
+                            placeholder={field.placeholder}
+                            value={form[field.name]}
+                            onChange={handleChange}
+                            required
+                            className="input-dino"
+                            style={{ fontFamily: 'var(--font-body)' }}
+                          />
+                        )}
                       </motion.div>
                     ))}
                   </div>
 
-                  {/* hCaptcha — hiển thị cho cả Login và Register */}
-                  <motion.div
-                    className="mt-5 flex justify-center"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <HCaptcha
-                      sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY}
-                      onVerify={(token) => setCaptchaToken(token)}
-                      onExpire={() => setCaptchaToken(null)}
-                      theme="dark"
-                      ref={captchaRef}
-                    />
-                  </motion.div>
+
 
                   {/* Hiển thị thông báo lỗi hoặc thành công */}
                   <AnimatePresence mode="wait">
