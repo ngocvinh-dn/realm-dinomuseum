@@ -9,10 +9,29 @@ import {
 import ScrollFloat from '../common/ScrollFloat';
 import ScrollFloatBox from '../common/ScrollFloatBox';
 
+const FEATURED_DINOSAUR_SLUGS = {
+  jurassic: ['camarasaurus'],
+};
+
+function prioritizeDinosaurs(periodDinosaurs, eraId) {
+  const preferredSlugs = FEATURED_DINOSAUR_SLUGS[eraId] || [];
+  if (!preferredSlugs.length) return periodDinosaurs;
+
+  const prioritized = preferredSlugs
+    .map((slug) => periodDinosaurs.find((dino) => dino.slug === slug))
+    .filter(Boolean);
+
+  const remaining = periodDinosaurs.filter(
+    (dino) => !preferredSlugs.includes(dino.slug)
+  );
+
+  return [...prioritized, ...remaining];
+}
+
 const ERA_COLORS = ['#e07b39', '#4ade80', '#f59e0b'];
 const ERA_DOTS = ['#fb923c', '#4ade80', '#f59e0b'];
 const ERA_ICONS = ['🦕', '🦖', '🦕'];
-const ERA_RANGES = ['252 – 201', '201 – 145', '145 – 66'];
+const PERIOD_ORDER = ['triassic', 'jurassic', 'cretaceous'];
 
 const fallbackEons = (isVi) => [
   {
@@ -42,17 +61,17 @@ const fallbackEons = (isVi) => [
     mya: '201 – 145',
     duration: isVi ? '56 triệu năm' : '56 million years',
     climate: isVi ? 'Ấm và ẩm' : 'Warm and humid',
-    event: isVi ? 'Thời kỳ thống trị của sauropod' : 'Sauropod dominance',
+    event: isVi ? 'Sauropod khổng lồ phát triển mạnh' : 'Giant sauropods flourish',
     desc: isVi
-      ? 'Các loài sauropod khổng lồ thống trị những vùng đất rộng lớn với thảm thực vật phong phú.'
-      : 'Large sauropods dominated vast landscapes with rich vegetation.',
+      ? 'Kỷ Jura là giai đoạn giữa của Mesozoi, khi khí hậu ấm ẩm tạo điều kiện cho rừng cây lan rộng, sauropod khổng lồ phát triển mạnh và những loài chim đầu tiên xuất hiện.'
+      : 'The Jurassic was the middle Mesozoic period, when warm humid climates supported broad forests, giant sauropods flourished, and the first birds appeared.',
     color: ERA_COLORS[1],
     dot: ERA_DOTS[1],
     icon: ERA_ICONS[1],
-    creatures: ['Plateosaurus', 'Camarasaurus'],
-    image: '/images/Plateosaurus.png',
-    objectPosition: 'left center',
-    imageCredit: 'Plateosaurus engelhardti',
+    creatures: ['Camarasaurus', 'Giraffatitan'],
+    image: '/images/Camarasaurus.png',
+    objectPosition: 'center center',
+    imageCredit: 'Camarasaurus',
     tag: isVi ? 'Kỷ 56 triệu năm' : '56 Myr era',
   },
   {
@@ -85,26 +104,36 @@ const GeoTimeline = ({ locale = 'vi' }) => {
   const { dinosaurs } = useDinosaurs();
 
   const eons = useMemo(() => {
-    const dinoEons = (dinosaurs || []).slice(0, 3).map((dino, index) => ({
-      id: dino.id || `era-${index}`,
-      nameVi: dino.eras?.name_vi || dino.common_name_vi || dino.scientific_name,
-      nameEn: dino.eras?.name_en || dino.common_name_en || dino.scientific_name,
-      mya: dino.eras?.mya || ERA_RANGES[index],
-      duration: dino.eras?.duration_label || (isVi ? 'Mesozoic Era' : 'Mesozoic Era'),
-      climate: isVi ? (dino.habitat_vi || dino.habitat_en || 'Môi trường kỷ Mesozoi') : (dino.habitat_en || dino.habitat_vi || 'Mesozoic environment'),
-      event: isVi ? (dino.eras?.name_vi || 'Kỷ Mesozoi') : (dino.eras?.name_en || 'Mesozoic era'),
-      desc: isVi ? (dino.description_vi || dino.description_en || '') : (dino.description_en || dino.description_vi || ''),
-      color: ERA_COLORS[index] || ERA_COLORS[2],
-      dot: ERA_DOTS[index] || ERA_DOTS[2],
-      icon: ERA_ICONS[index] || ERA_ICONS[2],
-      creatures: [isVi ? (dino.common_name_vi || dino.scientific_name) : (dino.common_name_en || dino.scientific_name)],
-      image: dino.image_url,
-      objectPosition: getDinosaurImagePosition(dino, index === 0 ? '18% center' : 'center center'),
-      imagePresentation: getDinosaurImagePresentation(dino),
-      imageCredit: dino.common_name_en || dino.scientific_name,
-      tag: dino.eras?.duration_label || (isVi ? 'Kỷ' : 'Era'),
-    }));
-    return dinoEons.length ? dinoEons : fallbackEons(isVi);
+    const baseEons = fallbackEons(isVi);
+    const dinosaursByPeriod = (dinosaurs || []).reduce((groups, dino) => {
+      const periodSlug = dino.eras?.slug;
+      if (!PERIOD_ORDER.includes(periodSlug)) return groups;
+      groups[periodSlug] = [...(groups[periodSlug] || []), dino];
+      return groups;
+    }, {});
+
+    return baseEons.map((era, index) => {
+      const periodDinosaurs = prioritizeDinosaurs(
+        dinosaursByPeriod[era.id] || [],
+        era.id
+      );
+      const featuredDino = periodDinosaurs[0];
+      const creatures = periodDinosaurs
+        .map((dino) => (isVi ? (dino.common_name_vi || dino.scientific_name) : (dino.common_name_en || dino.scientific_name)))
+        .filter(Boolean)
+        .slice(0, 3);
+
+      if (!featuredDino) return era;
+
+      return {
+        ...era,
+        creatures: creatures.length ? creatures : era.creatures,
+        image: featuredDino.image_url || era.image,
+        objectPosition: getDinosaurImagePosition(featuredDino, era.objectPosition || (index === 0 ? '18% center' : 'center center')),
+        imagePresentation: getDinosaurImagePresentation(featuredDino),
+        imageCredit: featuredDino.common_name_en || featuredDino.scientific_name || era.imageCredit,
+      };
+    });
   }, [dinosaurs, isVi]);
 
   const active = activeId ? eons.find((e) => e.id === activeId) : null;
