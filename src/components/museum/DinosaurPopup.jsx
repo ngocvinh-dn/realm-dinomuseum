@@ -89,6 +89,7 @@ export default function DinosaurPopup({
   dinosaur,
   onClose,
   onRevive,
+  isRevived = false,
   language = "vi",
 }) {
   const [isClosing, setIsClosing] = useState(false);
@@ -218,7 +219,9 @@ export default function DinosaurPopup({
 
         <div className="dinosaur-popup__revive">
           <GlowButton onClick={() => onRevive?.(dinosaur)}>
-            {getText(language, "Hồi sinh", "Revive")}
+            {isRevived
+              ? getText(language, "Hoàn nguyên hóa thạch", "Restore fossil")
+              : getText(language, "Hồi sinh", "Revive")}
           </GlowButton>
         </div>
       </div>
