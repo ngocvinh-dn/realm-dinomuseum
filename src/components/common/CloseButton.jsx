@@ -12,7 +12,7 @@ export default function CloseButton({
       onClick={onClick}
       aria-label={ariaLabel}
     >
-      <span className="close-button__symbol">×</span>
+      <span className="close-button__symbol"></span>
     </button>
   );
 }
