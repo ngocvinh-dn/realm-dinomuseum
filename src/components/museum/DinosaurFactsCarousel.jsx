@@ -98,14 +98,17 @@ export default function DinosaurFactsCarousel({ facts = [], language = "vi" }) {
   useEffect(() => {
     if (!viewportRef.current) return undefined;
 
+    const element = viewportRef.current;
+
     const updateWidth = () => {
-      setViewportWidth(viewportRef.current.offsetWidth);
+      if (!element) return;
+      setViewportWidth(element.offsetWidth || 0);
     };
 
     updateWidth();
 
     const resizeObserver = new ResizeObserver(updateWidth);
-    resizeObserver.observe(viewportRef.current);
+    resizeObserver.observe(element);
 
     return () => resizeObserver.disconnect();
   }, []);
