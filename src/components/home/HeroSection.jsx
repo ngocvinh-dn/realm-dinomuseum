@@ -50,6 +50,15 @@ const HeroSection = ({ copy }) => {
 
   const mainTitle = splitWords(copy.heroTitle);
   const subtitle  = splitWords(copy.heroSubtitle);
+  const controlsProgress = Math.min(scrollFrac / 0.18, 1);
+  const textProgress = Math.min(scrollFrac / 0.22, 1);
+  const badgeOffset = (1 - controlsProgress) * 90;
+  const ctaOffset = (1 - controlsProgress) * 90;
+  const controlsOpacity = isReady ? Math.min(controlsProgress * 1.4, 1) : 0;
+  const titleOffset = (1 - textProgress) * 112;
+  const subtitleOffset = (1 - textProgress) * 128;
+  const titleOpacity = isReady ? Math.min(textProgress * 1.35, 1) : 0;
+  const subtitleOpacity = isReady ? Math.min(textProgress * 1.4, 1) : 0;
 
   // ─── Vẽ frame lên canvas ─────────────────────────────────
   const drawFrame = useCallback((index) => {
@@ -148,15 +157,13 @@ const HeroSection = ({ copy }) => {
 
   // ─── GSAP: Entrance animation chữ từ 2 bên vào giữa ─────────────────────────────
   useEffect(() => {
-    if (!isReady) return;
+    return undefined;
     // khởi tạo trạng thái ẩn ban đầu ngay lập tức (trước khi animate)
-    gsap.set([titleLRef.current, subLRef.current], { x: '-120%', opacity: 0 });
-    gsap.set([titleRRef.current, subRRef.current], { x:  '120%', opacity: 0 });
     gsap.set(badgeRef.current,  { y: -28, opacity: 0 });
     gsap.set(ctaRef.current,    { y:  22, opacity: 0 });
 
     const tl = gsap.timeline({
-      defaults: { ease: 'expo.out', duration: 1.1 },
+      defaults: { ease: 'power4.out', duration: 1.2 },
       delay: 0.05,
     });
 
@@ -164,13 +171,9 @@ const HeroSection = ({ copy }) => {
       // badge từ trên xuống
       .to(badgeRef.current, { y: 0, opacity: 1, duration: 0.75, ease: 'back.out(1.4)' }, 0)
       // dòng 1: 2 từ trái / phải vào giữa cùng lúc
-      .to(titleLRef.current, { x: '0%', opacity: 1 }, 0.15)
-      .to(titleRRef.current, { x: '0%', opacity: 1 }, 0.20)
       // dòng 2: subtitle 20ms trễ hơn
-      .to(subLRef.current,   { x: '0%', opacity: 1, duration: 1.0 }, 0.30)
-      .to(subRRef.current,   { x: '0%', opacity: 1, duration: 1.0 }, 0.35)
       // button fade-up
-      .to(ctaRef.current,    { y: 0, opacity: 1, duration: 0.8, ease: 'back.out(1.2)' }, 0.55);
+      .to(ctaRef.current,    { y: 0, opacity: 1, duration: 0.8, ease: 'back.out(1.2)' }, 0.18);
 
     return () => tl.kill();
   }, [isReady]);
@@ -215,7 +218,7 @@ const HeroSection = ({ copy }) => {
     >
       {/* ── Canvas + overlays — wrapper riêng có clip ── */}
       <div style={{
-        position: 'absolute', inset: 0,
+        position: 'absolute', inset: '-2px 0 0 0',
         overflow: 'hidden',
         zIndex: 0,
       }}>
@@ -224,7 +227,7 @@ const HeroSection = ({ copy }) => {
           style={{
             display: 'block',
             position: 'absolute', inset: 0,
-            width: '100%', height: '100%',
+            width: '100%', height: 'calc(100% + 2px)',
             opacity: isReady ? 1 : 0,
             transition: 'opacity 0.8s ease',
           }}
@@ -274,7 +277,14 @@ const HeroSection = ({ copy }) => {
         pointerEvents: isReady ? 'auto' : 'none',
       }}>
         {/* Badge */}
-        <div ref={badgeRef} style={{ opacity: 0, marginBottom: '2rem' }}>
+        <div
+          ref={badgeRef}
+          style={{
+            opacity: controlsOpacity,
+            marginBottom: '2rem',
+            transform: `translate3d(-${badgeOffset}%, 0, 0)`,
+          }}
+        >
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
             padding: '0.45rem 1.1rem', borderRadius: '999px',
@@ -305,27 +315,50 @@ const HeroSection = ({ copy }) => {
           }}
         >
           <span className="hero-title__line hero-title__main" aria-label={copy.heroTitle}>
-            <span ref={titleLRef} className="hero-title__piece" style={{ opacity: 0 }}>
+            <span
+              ref={titleLRef}
+              className="hero-title__piece"
+              style={{ opacity: titleOpacity, transform: `translate3d(-${titleOffset}%, 0, 0)` }}
+            >
               <span className="hero-title__piece-inner">{mainTitle.left}</span>
             </span>
-            <span ref={titleRRef} className="hero-title__piece" style={{ opacity: 0 }}>
+            <span
+              ref={titleRRef}
+              className="hero-title__piece"
+              style={{ opacity: titleOpacity, transform: `translate3d(${titleOffset}%, 0, 0)` }}
+            >
               <span className="hero-title__piece-inner">{mainTitle.right}</span>
             </span>
           </span>
 
           {/* Subtitle — split từ 2 bên */}
           <span className="hero-title__line hero-title__accent italic" aria-label={copy.heroSubtitle}>
-            <span ref={subLRef} className="hero-title__piece" style={{ opacity: 0 }}>
+            <span
+              ref={subLRef}
+              className="hero-title__piece"
+              style={{ opacity: subtitleOpacity, transform: `translate3d(-${subtitleOffset}%, 0, 0)` }}
+            >
               <span className="hero-title__piece-inner text-gradient-gold">{subtitle.left}</span>
             </span>
-            <span ref={subRRef} className="hero-title__piece" style={{ opacity: 0 }}>
+            <span
+              ref={subRRef}
+              className="hero-title__piece"
+              style={{ opacity: subtitleOpacity, transform: `translate3d(${subtitleOffset}%, 0, 0)` }}
+            >
               <span className="hero-title__piece-inner text-gradient-gold">{subtitle.right}</span>
             </span>
           </span>
         </h1>
 
         {/* CTA Button */}
-        <div ref={ctaRef} style={{ opacity: 0, marginTop: 'clamp(1rem,2.5vw,1.75rem)' }}>
+        <div
+          ref={ctaRef}
+          style={{
+            opacity: controlsOpacity,
+            marginTop: 'clamp(1rem,2.5vw,1.75rem)',
+            transform: `translate3d(${ctaOffset}%, 0, 0)`,
+          }}
+        >
           <motion.button
             className="btn-amber-primary"
             onClick={() => scrollTo('dang-ky')}
