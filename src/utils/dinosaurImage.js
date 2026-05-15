@@ -20,7 +20,7 @@ const DINOSAUR_IMAGE_POSITION_MAP = {
   eoraptor: "18% center",
   coelophysis: "18% center",
   plateosaurus: "24% center",
-  camarasaurus: "34% center",
+  camarasaurus: "12% center",
   styracosaurus: "center center",
   triceratops: "center center",
   tyrannosaurus: "center 22%",
