@@ -6,7 +6,6 @@ import {
   getDinosaurImagePosition,
   getDinosaurImagePresentation,
 } from '../../utils/dinosaurImage';
-import ScrollFloat from '../common/ScrollFloat';
 import ScrollFloatBox from '../common/ScrollFloatBox';
 
 const FEATURED_DINOSAUR_SLUGS = {
@@ -32,6 +31,15 @@ const ERA_COLORS = ['#e07b39', '#4ade80', '#f59e0b'];
 const ERA_DOTS = ['#fb923c', '#4ade80', '#f59e0b'];
 const ERA_ICONS = ['🦕', '🦖', '🦕'];
 const PERIOD_ORDER = ['triassic', 'jurassic', 'cretaceous'];
+const REVEAL_EASE = [0.22, 1, 0.36, 1];
+const HEADING_LINE_VARIANTS = {
+  hidden: { opacity: 0, y: 34 },
+  visible: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay, duration: 0.78, ease: REVEAL_EASE },
+  }),
+};
 
 // Mapping tên loài → ảnh local
 // Key: tên viết thường (có thể là tên khoa học, tên thường, tên Việt)
@@ -198,41 +206,53 @@ const GeoTimeline = ({ locale = 'vi' }) => {
           style={{ y: headingY }}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: true, amount: 0.45 }}
+          transition={{ duration: 0.8, ease: REVEAL_EASE }}
         >
-          <p className="text-xs font-semibold tracking-[0.28em] uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}>
+          <motion.p
+            className="text-xs font-semibold tracking-[0.28em] uppercase mb-4"
+            style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.9 }}
+            transition={{ delay: 0.08, duration: 0.45, ease: REVEAL_EASE }}
+          >
             {isVi ? 'DÒNG THỜI GIAN ĐỊA CHẤT' : 'GEOLOGICAL TIMELINE'}
-          </p>
-          <div className="space-y-1">
-            <ScrollFloat
-              containerClassName="text-left"
-              textClassName="text-[var(--theme-text)]"
-              animationDuration={1}
-              ease="back.inOut(2)"
-              scrollStart="top bottom-=5%"
-              scrollEnd="center center"
-              stagger={0.02}
+          </motion.p>
+          <motion.h2
+            className="space-y-1 font-serif font-bold leading-[1.08]"
+            style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(2rem, 6vw, 4.75rem)' }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.45 }}
+          >
+            <motion.span
+              className="block text-[var(--theme-text)]"
+              custom={0.1}
+              variants={HEADING_LINE_VARIANTS}
             >
               {isVi ? 'Kỷ Mesozoi' : 'Mesozoic Era'}
-            </ScrollFloat>
-            <ScrollFloat
-              containerClassName="text-left"
-              textClassName="text-gradient-amber"
-              animationDuration={1}
-              ease="back.inOut(2)"
-              scrollStart="top bottom-=5%"
-              scrollEnd="center center"
-              stagger={0.018}
+            </motion.span>
+            <motion.span
+              className="block text-gradient-amber"
+              custom={0.2}
+              variants={HEADING_LINE_VARIANTS}
             >
               {isVi ? 'Thời đại của khủng long' : 'The Age of Dinosaurs'}
-            </ScrollFloat>
-          </div>
-          <p className="mt-4 text-sm md:text-base italic" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)' }}>
+            </motion.span>
+          </motion.h2>
+          <motion.p
+            className="mt-4 text-sm md:text-base italic"
+            style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)' }}
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.7 }}
+            transition={{ delay: 0.18, duration: 0.65, ease: REVEAL_EASE }}
+          >
             {isVi
               ? '252 – 66 triệu năm trước • Nhấn vào từng kỷ để khám phá chi tiết'
               : '252 – 66 million years ago • Click each period to explore in detail'}
-          </p>
+          </motion.p>
         </motion.div>
 
         <div className="grid grid-cols-1 gap-8">

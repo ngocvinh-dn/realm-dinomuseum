@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useSiteAssets } from '../../hooks/useSiteAssets';
 import ScrollFloat from '../common/ScrollFloat';
 
+const REVEAL_EASE = [0.22, 1, 0.36, 1];
+
 const LeadForm = ({ onLoginClick, locale }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -98,14 +100,28 @@ const LeadForm = ({ onLoginClick, locale }) => {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          viewport={{ once: true, amount: 0.45 }}
+          transition={{ duration: 0.7, ease: REVEAL_EASE }}
           className="mb-12"
         >
-          <div className="section-divider mx-auto" style={{ margin: '0 auto 1.5rem' }} />
-          <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}>
+          <motion.div
+            className="section-divider mx-auto origin-center"
+            style={{ margin: '0 auto 1.5rem' }}
+            initial={{ scaleX: 0, opacity: 0 }}
+            whileInView={{ scaleX: 1, opacity: 1 }}
+            viewport={{ once: true, amount: 0.95 }}
+            transition={{ duration: 0.65, ease: REVEAL_EASE }}
+          />
+          <motion.p
+            className="text-xs font-semibold tracking-widest uppercase mb-4"
+            style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.9 }}
+            transition={{ delay: 0.08, duration: 0.45, ease: REVEAL_EASE }}
+          >
             {locale === 'vi' ? 'Cổng vào bảo tàng' : 'Museum Entry Portal'}
-          </p>
+          </motion.p>
           <div className="mb-4 space-y-1">
             <ScrollFloat
               containerClassName="text-center scroll-float--sm"
@@ -130,13 +146,23 @@ const LeadForm = ({ onLoginClick, locale }) => {
               {locale === 'vi' ? 'bảo tàng ảo' : 'the Virtual Museum'}
             </ScrollFloat>
           </div>
-          <p className="text-sm" style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
+          <motion.p
+            className="text-sm"
+            style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.7 }}
+            transition={{ delay: 0.18, duration: 0.65, ease: REVEAL_EASE }}
+          >
             {locale === 'vi' ? 'Đăng ký vé — nhận liên kết tour 3D ngay lập tức. Không cần kính VR, không cần thanh toán.' : 'Book your ticket — receive a 3D tour link instantly. No VR headset, no payment.'}
-          </p>
+          </motion.p>
 
           {!user && (
             <motion.p
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.9 }}
+              transition={{ delay: 0.32, duration: 0.45, ease: REVEAL_EASE }}
               className="mt-3 text-xs px-4 py-2 rounded-full inline-block"
               style={{
                 background: 'rgba(245,158,11,0.1)',

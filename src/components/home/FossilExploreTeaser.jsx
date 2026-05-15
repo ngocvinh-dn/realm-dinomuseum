@@ -17,6 +17,16 @@ const PulseDot = ({ style, delay = 0 }) => (
   />
 );
 
+const revealEase = [0.22, 1, 0.36, 1];
+const headingLineVariants = {
+  hidden: { opacity: 0, y: 34 },
+  visible: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay, duration: 0.8, ease: revealEase },
+  }),
+};
+
 const FossilExploreTeaser = ({ locale = 'vi' }) => {
   const isVi = locale === 'vi';
   const navigate = useNavigate();
@@ -94,8 +104,8 @@ const FossilExploreTeaser = ({ locale = 'vi' }) => {
           style={{ color: 'rgba(245,158,11,0.6)', fontFamily: 'DM Sans, sans-serif' }}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          viewport={{ once: true, amount: 0.9 }}
+          transition={{ duration: 0.55, ease: revealEase }}
         >
           {isVi ? 'Hóa thạch thực tế · Toàn cầu · Tương tác 3D' : 'Real Fossils · Worldwide · 3D Interactive'}
         </motion.p>
@@ -108,20 +118,32 @@ const FossilExploreTeaser = ({ locale = 'vi' }) => {
             fontSize: 'clamp(2.8rem, 6vw, 5.5rem)',
             color: 'var(--theme-text)',
           }}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.1 }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.45 }}
         >
-          {isVi ? 'Dấu vết tiền sử' : 'Prehistoric Traces'}
-          <br />
-          <span className="text-gradient-amber italic">
+          <motion.span
+            className="block"
+            custom={0.08}
+            variants={headingLineVariants}
+          >
+            {isVi ? 'Dấu vết tiền sử' : 'Prehistoric Traces'}
+          </motion.span>
+          <motion.span
+            className="block text-gradient-amber italic"
+            custom={0.18}
+            variants={headingLineVariants}
+          >
             {isVi ? 'Trên toàn thế giới' : 'Across the Globe'}
-          </span>
-          <br />
-          <span style={{ fontSize: '0.55em', opacity: 0.5, fontStyle: 'normal' }}>
+          </motion.span>
+          <motion.span
+            className="block"
+            custom={0.28}
+            variants={headingLineVariants}
+            style={{ fontSize: '0.55em', opacity: 0.5, fontStyle: 'normal' }}
+          >
             {isVi ? 'đang chờ bạn khám phá.' : 'are waiting to be explored.'}
-          </span>
+          </motion.span>
         </motion.h2>
 
         {/* Mô tả */}
@@ -130,8 +152,8 @@ const FossilExploreTeaser = ({ locale = 'vi' }) => {
           style={{ color: 'var(--theme-text-muted)', fontFamily: 'Nunito, sans-serif', fontStyle: 'italic' }}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true, amount: 0.7 }}
+          transition={{ duration: 0.65, delay: 0.22, ease: revealEase }}
         >
           {isVi
             ? 'Hơn 30 mẫu hóa thạch thực tế được đánh dấu trên quả địa cầu tương tác — từ sa mạc Gobi đến đồng bằng Bắc Mỹ. Nhấn vào từng điểm để đọc câu chuyện của loài.'
@@ -139,37 +161,41 @@ const FossilExploreTeaser = ({ locale = 'vi' }) => {
         </motion.p>
 
         {/* NÚT CTA chính — y chang btn-amber-primary của FinalCTA */}
-        <motion.button
-          onClick={() => navigate('/explore')}
-          className="btn-amber-primary inline-flex items-center gap-3 px-10 py-5 text-base"
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          whileHover={{
-            scale: 1.05,
-            boxShadow: '0 12px 40px rgba(245,158,11,0.5), 0 0 80px rgba(245,158,11,0.18)',
-          }}
-          whileTap={{ scale: 0.97 }}
-          animate={{
-            boxShadow: [
-              '0 4px 20px rgba(245,158,11,0.35)',
-              '0 8px 40px rgba(245,158,11,0.55)',
-              '0 4px 20px rgba(245,158,11,0.35)',
-            ],
-          }}
-          // @ts-ignore framer overload
-          transition={{ boxShadow: { repeat: Infinity, duration: 2.5, ease: 'easeInOut' } }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 0.5, delay: 0.32, ease: revealEase }}
         >
-          <span>🌍</span>
-          <span>{isVi ? 'Khám phá bản đồ hóa thạch' : 'Explore Fossil Map'}</span>
-          <motion.span
-            animate={{ x: [0, 5, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+          <motion.button
+            onClick={() => navigate('/explore')}
+            className="btn-amber-primary inline-flex items-center gap-3 px-10 py-5 text-base"
+            whileHover={{
+              scale: 1.05,
+              boxShadow: '0 12px 40px rgba(245,158,11,0.5), 0 0 80px rgba(245,158,11,0.18)',
+            }}
+            whileTap={{ scale: 0.97 }}
+            animate={{
+              boxShadow: [
+                '0 4px 20px rgba(245,158,11,0.35)',
+                '0 8px 40px rgba(245,158,11,0.55)',
+                '0 4px 20px rgba(245,158,11,0.35)',
+              ],
+            }}
+            transition={{
+              boxShadow: { repeat: Infinity, duration: 2.5, ease: 'easeInOut' },
+            }}
           >
-            →
-          </motion.span>
-        </motion.button>
+            <span>🌍</span>
+            <span>{isVi ? 'Khám phá bản đồ hóa thạch' : 'Explore Fossil Map'}</span>
+            <motion.span
+              animate={{ x: [0, 5, 0] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              →
+            </motion.span>
+          </motion.button>
+        </motion.div>
 
         {/* Hint nhỏ dưới nút */}
         <motion.div
@@ -177,15 +203,22 @@ const FossilExploreTeaser = ({ locale = 'vi' }) => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.46, duration: 0.45, ease: revealEase }}
         >
           {(isVi
             ? ['✓ Toàn màn hình', '✓ Tương tác 3D', '✓ 30+ hóa thạch thực tế', '✓ Miễn phí']
             : ['✓ Fullscreen', '✓ 3D Interactive', '✓ 30+ real fossils', '✓ Free']
           ).map((item, i) => (
-            <span key={i} className="text-xs" style={{ color: 'var(--theme-text-dim)', fontFamily: 'DM Sans, sans-serif' }}>
+            <motion.span
+              key={i}
+              className="text-xs"
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.9 }}
+              transition={{ delay: 0.52 + i * 0.06, duration: 0.4, ease: revealEase }}
+              style={{ color: 'var(--theme-text-dim)', fontFamily: 'DM Sans, sans-serif' }}>
               {item}
-            </span>
+            </motion.span>
           ))}
         </motion.div>
 

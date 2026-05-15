@@ -39,6 +39,9 @@
   --theme-border: rgba(245, 158, 11, 0.15);
   --theme-card-bg: rgba(17, 14, 8, 0.85);
   --theme-nav-bg: rgba(10, 8, 4, 0.95);
+  --theme-nav-surface: linear-gradient(180deg, rgba(32, 23, 14, 0.78) 0%, rgba(12, 9, 5, 0.58) 100%);
+  --theme-nav-border: rgba(245, 158, 11, 0.14);
+  --theme-nav-shadow: 0 10px 32px rgba(0, 0, 0, 0.22);
   --theme-input-bg: rgba(30, 23, 16, 0.8);
   --theme-accent: #f59e0b;
   --theme-accent-bright: #fbbf24;
@@ -59,6 +62,9 @@
   --theme-border: rgba(180, 83, 9, 0.22);
   --theme-card-bg: rgba(255, 251, 242, 0.95);
   --theme-nav-bg: rgba(250, 247, 240, 0.97);
+  --theme-nav-surface: linear-gradient(180deg, rgba(255, 250, 241, 0.88) 0%, rgba(247, 238, 220, 0.74) 100%);
+  --theme-nav-border: rgba(180, 83, 9, 0.16);
+  --theme-nav-shadow: 0 10px 28px rgba(146, 64, 14, 0.1);
   --theme-input-bg: rgba(243, 237, 224, 0.95);
   --theme-accent: #b45309;
   --theme-accent-bright: #d97706;

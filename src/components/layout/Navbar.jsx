@@ -100,8 +100,11 @@ const Navbar = ({ onLoginClick, onLocaleToggle, locale, onSectionChange, activeS
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
         style={{
-          background: scrolled ? 'var(--theme-nav-bg)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(24px)' : 'none',
+          background: scrolled ? 'var(--theme-nav-surface)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(24px) saturate(140%)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(24px) saturate(140%)' : 'none',
+          borderBottom: scrolled ? '1px solid var(--theme-nav-border)' : '1px solid transparent',
+          boxShadow: scrolled ? 'var(--theme-nav-shadow)' : 'none',
           transition: 'all 0.4s ease',
         }}
       >
@@ -195,7 +198,7 @@ const Navbar = ({ onLoginClick, onLocaleToggle, locale, onSectionChange, activeS
 
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div className="fixed inset-0 z-30 md:hidden pt-20" style={{ background: 'var(--theme-nav-bg)', backdropFilter: 'blur(24px)' }} initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+          <motion.div className="fixed inset-0 z-30 md:hidden pt-20" style={{ background: 'var(--theme-nav-surface)', backdropFilter: 'blur(24px) saturate(140%)', WebkitBackdropFilter: 'blur(24px) saturate(140%)' }} initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
             <div className="flex flex-col items-center gap-5 pt-10 px-6">
               {navLinks.map((link, i) => (
                 <motion.button key={link.id} onClick={() => handleNavClick(link.href, link.id)} className="text-xl font-serif font-semibold no-underline" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-text)' }} initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }} whileHover={{ color: '#f59e0b', x: 8 }}>

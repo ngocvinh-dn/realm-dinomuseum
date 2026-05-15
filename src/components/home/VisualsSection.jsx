@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useParallax } from '../../hooks/useParallax';
 import ScrollFloat from '../common/ScrollFloat';
 import ScrollFloatBox from '../common/ScrollFloatBox';
@@ -118,6 +118,46 @@ const SketchfabSpecimen = ({ dinoImage, emoji, objectPosition, imageScale = 1 })
   );
 };
 
+const cardViewport = { once: true, amount: 0.28 };
+
+const cardImageVariants = {
+  hidden: { opacity: 0, scale: 1.08, filter: 'blur(10px)' },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const cardChipVariants = {
+  hidden: { opacity: 0, y: -18, scale: 0.92 },
+  visible: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { delay, duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
+const cardTitleVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay, duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
+const cardStatVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
 const SpecimenShowcase = ({ locale = 'vi' }) => {
   const [activeId, setActiveId] = useState(null);
   const isVi = locale === 'vi';
@@ -155,11 +195,23 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="section-divider" />
-          <p className="text-xs font-semibold tracking-widest uppercase mb-4"
-            style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}>
+          <motion.div
+            className="section-divider origin-left"
+            initial={{ scaleX: 0, opacity: 0 }}
+            whileInView={{ scaleX: 1, opacity: 1 }}
+            viewport={{ once: true, amount: 0.9 }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          />
+          <motion.p
+            className="text-xs font-semibold tracking-widest uppercase mb-4"
+            style={{ color: '#f59e0b', fontFamily: 'var(--font-body)' }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.9 }}
+            transition={{ delay: 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
             {isVi ? 'Hiện vật nổi bật' : 'Featured Specimens'}
-          </p>
+          </motion.p>
           <div className="space-y-1">
             <ScrollFloat
               containerClassName="text-left"
@@ -184,12 +236,18 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
               {isVi ? 'của bộ sưu tập' : 'of Our Collection'}
             </ScrollFloat>
           </div>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed"
-            style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
+          <motion.p
+            className="mt-4 max-w-xl text-sm leading-relaxed"
+            style={{ color: 'var(--theme-text-muted)', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.7 }}
+            transition={{ delay: 0.18, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          >
             {isVi
               ? 'Những mẫu vật tiêu biểu nhất từ bộ sưu tập của bảo tàng — từ loài mới tải lên đến các huyền thoại cổ đại.'
               : 'The most iconic specimens from our museum collection — from newly uploaded finds to ancient legends.'}
-          </p>
+          </motion.p>
         </motion.div>
 
         {/* Lưới các card hiện vật (2 cột) */}
@@ -199,7 +257,6 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
             const name = s.name[locale];
             const period = s.period[locale];
             const age = s.age[locale];
-            const weight = s.weight[locale];
             const tag = s.tag[locale];
             const desc = s.desc[locale];
 
@@ -209,17 +266,13 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                 className="h-full"
                 scrollStart="top bottom-=10%"
                 scrollEnd="center center+=8%"
-                xPercent={i % 2 === 0 ? -14 : 14}
-                yPercent={26}
-                scale={0.9}
-                rotateX={5}
+                xPercent={i % 2 === 0 ? -18 : 18}
+                yPercent={30}
+                scale={0.92}
+                rotateX={6}
               >
               <motion.div
                 className="specimen-card group"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.12, duration: 0.6 }}
                 onMouseEnter={() => handleMouseEnter(s.id)}
                 onMouseLeave={() => setActiveId(null)}
                 style={{
@@ -228,8 +281,12 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                 }}
               >
                 {/* Vùng ảnh hiện vật */}
-                <div
+                <motion.div
                   className="specimen-image-shell relative overflow-hidden flex items-center justify-center"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={cardViewport}
+                  variants={cardImageVariants}
                   style={{
                     background: 'linear-gradient(135deg, rgba(10,8,4,0.92) 0%, rgba(30,23,16,0.85) 100%)',
                   }}
@@ -257,28 +314,53 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
 
                   {/* Nhãn phân loại và nổi bật */}
                   <div className="absolute top-4 left-4 flex gap-2 z-20">
-                    <span className="px-2.5 py-1 rounded-full text-xs font-medium"
+                    <motion.span
+                      className="px-2.5 py-1 rounded-full text-xs font-medium"
+                      custom={0.08 + i * 0.05}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={cardViewport}
+                      variants={cardChipVariants}
                       style={{ background: 'rgba(10,8,4,0.8)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.3)', backdropFilter: 'blur(8px)', fontFamily: 'var(--font-body)' }}>
                       {tag}
-                    </span>
+                    </motion.span>
                     {s.highlight && (
-                      <span className="px-2.5 py-1 rounded-full text-xs font-bold"
+                      <motion.span
+                        className="px-2.5 py-1 rounded-full text-xs font-bold"
+                        custom={0.14 + i * 0.05}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={cardViewport}
+                        variants={cardChipVariants}
                         style={{ background: 'rgba(245,158,11,0.2)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.5)', fontFamily: 'var(--font-body)' }}>
                         ✦ {isVi ? 'Nổi bật' : 'Featured'}
-                      </span>
+                      </motion.span>
                     )}
                   </div>
 
                   {/* Nhãn kỷ địa chất góc trên phải */}
                   <div className="absolute top-4 right-4 z-20">
-                    <span className="px-2.5 py-1 rounded-full text-xs"
+                    <motion.span
+                      className="px-2.5 py-1 rounded-full text-xs"
+                      custom={0.18 + i * 0.05}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={cardViewport}
+                      variants={cardChipVariants}
                       style={{ background: 'rgba(10,8,4,0.8)', color: 'rgba(245,240,232,0.7)', backdropFilter: 'blur(8px)', fontFamily: 'var(--font-body)' }}>
                       {period}
-                    </span>
+                    </motion.span>
                   </div>
 
                   {/* Tên hiện vật phía dưới ảnh */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 p-4 z-20"
+                    custom={0.22 + i * 0.05}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={cardViewport}
+                    variants={cardTitleVariants}
+                  >
                     <div className="flex items-center gap-2 mb-0.5">
                       <h3 className="font-serif font-bold text-xl"
                         style={{ fontFamily: 'var(--font-heading)', color: '#f5f0e8' }}>
@@ -288,8 +370,8 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                     <p className="text-xs italic" style={{ color: 'rgba(245,240,232,0.5)', fontFamily: 'var(--font-body)' }}>
                       {s.fullName}
                     </p>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 {/* Bảng thông số khoa học */}
                 <div className="p-5">
@@ -299,7 +381,14 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                       { label: isVi ? 'Kích thước' : 'Length', value: s.length },
                       { label: isVi ? 'Địa điểm' : 'Location', value: s.location.split(',')[0] },
                     ].map((stat, j) => (
-                      <div key={j} className="text-center p-2 rounded-lg"
+                      <motion.div
+                        key={j}
+                        className="text-center p-2 rounded-lg"
+                        custom={0.28 + i * 0.05 + j * 0.08}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={cardViewport}
+                        variants={cardStatVariants}
                         style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.1)' }}>
                         <div className="text-xs font-bold" style={{ color: '#fbbf24', fontSize: '11px', fontFamily: 'var(--font-body)' }}>
                           {stat.value}
@@ -307,7 +396,7 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
                         <div className="text-xs mt-0.5" style={{ color: 'var(--theme-text-dim)', fontSize: '10px', fontFamily: 'var(--font-body)' }}>
                           {stat.label}
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
 
