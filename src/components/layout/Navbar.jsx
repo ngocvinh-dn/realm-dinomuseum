@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import RealmBrand from './RealmBrand';
 
 const navLinks = [
   { id: 'hero', label: { vi: 'Trang chủ', en: 'Home' }, href: '#hero' },
@@ -100,21 +101,17 @@ const Navbar = ({ onLoginClick, onLocaleToggle, locale, onSectionChange, activeS
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
         style={{
-          background: scrolled ? 'var(--theme-nav-surface)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(24px) saturate(140%)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(24px) saturate(140%)' : 'none',
-          borderBottom: scrolled ? '1px solid var(--theme-nav-border)' : '1px solid transparent',
+          background: 'var(--theme-nav-surface)',
+          backdropFilter: 'blur(24px) saturate(140%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(140%)',
+          borderBottom: '1px solid var(--theme-nav-border)',
           boxShadow: scrolled ? 'var(--theme-nav-shadow)' : 'none',
           transition: 'all 0.4s ease',
         }}
       >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between">
           <motion.a href="#hero" className="flex items-center gap-3 no-underline" whileHover={{ scale: 1.03 }} onClick={handleLogoClick}>
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base font-bold" style={{ background: 'linear-gradient(135deg, #f59e0b, #92400e)', boxShadow: '0 0 16px rgba(245,158,11,0.35)' }}>🏛️</div>
-            <div className="flex flex-col">
-              <span className="font-serif text-lg font-bold leading-none" style={{ fontFamily: 'var(--font-heading)', color: 'var(--theme-accent-bright)' }}>Dino Museum</span>
-              <span className="text-xs leading-none tracking-widest" style={{ color: 'rgba(245,158,11,0.5)', fontFamily: 'var(--font-body)' }}>PALEONTOLOGY MUSEUM</span>
-            </div>
+            <RealmBrand />
           </motion.a>
 
           <div
