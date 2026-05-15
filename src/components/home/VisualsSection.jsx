@@ -177,13 +177,62 @@ const SpecimenShowcase = ({ locale = 'vi' }) => {
       className="section-pad relative overflow-hidden"
       style={{ background: 'var(--theme-bg-alt)' }}
     >
-      {/* Hoa văn chéo mờ làm texture nền */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.03]"
-        style={{
-          backgroundImage: 'repeating-linear-gradient(45deg, rgba(245,158,11,0.5) 0px, rgba(245,158,11,0.5) 1px, transparent 1px, transparent 40px)',
-        }}
-      />
+      {/* Background grid + dots kiểu fossil globe nhưng tinh gọn hơn */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute inset-0"
+          style={{ background: 'radial-gradient(ellipse at 62% 42%, rgba(245,158,11,0.08) 0%, transparent 62%)' }}
+        />
+        {[6, 32, 58, 84].map((left, i) => (
+          <div
+            key={`specimen-v-${i}`}
+            className="absolute top-0 bottom-0 w-px"
+            style={{ left: `${left}%`, background: 'rgba(245,158,11,0.04)' }}
+          />
+        ))}
+        {[14, 38, 62, 86].map((top, i) => (
+          <div
+            key={`specimen-h-${i}`}
+            className="absolute left-0 right-0 h-px"
+            style={{ top: `${top}%`, background: 'rgba(245,158,11,0.04)' }}
+          />
+        ))}
+        <div
+          className="absolute rounded-full"
+          style={{
+            top: '13%',
+            left: '13%',
+            width: 11,
+            height: 11,
+            background: '#f59e0b',
+            boxShadow: '0 0 18px rgba(245,158,11,0.65)',
+            opacity: 0.88,
+          }}
+        />
+        <div
+          className="absolute rounded-full"
+          style={{
+            top: '69%',
+            right: '16%',
+            width: 9,
+            height: 9,
+            background: '#f59e0b',
+            boxShadow: '0 0 16px rgba(245,158,11,0.58)',
+            opacity: 0.82,
+          }}
+        />
+        <div
+          className="absolute h-px"
+          style={{
+            top: '14.4%',
+            left: '13.8%',
+            width: '29%',
+            transform: 'rotate(16deg)',
+            transformOrigin: 'left center',
+            background: 'linear-gradient(90deg, rgba(245,158,11,0.12), rgba(245,158,11,0.03) 58%, transparent)',
+          }}
+        />
+      </div>
 
       <div className="relative max-w-7xl mx-auto">
         {/* Tiêu đề section — có parallax nhẹ */}
