@@ -3,6 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { supabase } from '../../lib/supabaseClient';
 
+const DEFAULT_CONFIRM_REDIRECT_ORIGIN = 'https://www.researchexhibition.space';
+
+function getEmailConfirmRedirectUrl() {
+  const configuredOrigin = import.meta.env.VITE_AUTH_CONFIRM_REDIRECT_URL;
+  const baseOrigin = configuredOrigin || DEFAULT_CONFIRM_REDIRECT_ORIGIN;
+
+  const normalizedOrigin = baseOrigin.endsWith('/')
+    ? baseOrigin.slice(0, -1)
+    : baseOrigin;
+
+  return `${normalizedOrigin}/?auth=login&confirmed=1`;
+}
+
 // Hằng số cho tab đăng nhập và đăng ký
 const TAB_LOGIN = 'login';
 const TAB_REGISTER = 'register';
@@ -116,7 +129,7 @@ const AuthModal = ({
       password: form.password,
       options: {
         // Chuyển hướng về trang hiện tại sau khi xác nhận email (sửa lỗi chuyển hướng localhost)
-        emailRedirectTo: `${window.location.origin}/?auth=login&confirmed=1`,
+        emailRedirectTo: getEmailConfirmRedirectUrl(),
         data: {
           full_name: form.name,
           phone: form.phone.replace(/\s/g, ''),
