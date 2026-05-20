@@ -10,7 +10,7 @@ const RealmBrand = ({
 }) => (
   <div className={`flex items-center gap-3 ${className}`.trim()}>
     <img
-      src="/icons/ChatGPT Image May 15, 2026, 11_17_26 PM.png"
+      src="/icons/realm-logo.png"
       alt="R.E.A.L.M logo"
       style={{
         height: `${logoSize}px`,
