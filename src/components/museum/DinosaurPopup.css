@@ -23,8 +23,11 @@
   top: 32px;
   right: 32px;
 
-  height: auto;
-  max-height: calc(100vh - 64px);
+  height: min(760px, calc(100dvh - 64px));
+  max-height: calc(100dvh - 64px);
+  min-height: 0;
+
+  overflow: hidden;
 
   width: 470px;
   max-width: calc(100vw - 64px);
@@ -197,7 +200,7 @@
 }
 
 .dinosaur-popup__content {
-  flex: 1;
+  flex: 1 1 auto;
   position: relative;
   z-index: 2;
   height: 100%;
@@ -208,9 +211,13 @@
   scrollbar-width: none;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  -ms-overflow-style: none;
 }
 
 .dinosaur-popup__content::-webkit-scrollbar {
+  width: 0;
+  height: 0;
   display: none;
 }
 
@@ -501,21 +508,22 @@
 
 @media (max-width: 768px) {
   .dinosaur-popup {
-    left: 16px;
-    right: 16px;
+    left: 12px;
+    right: 12px;
     top: auto;
-    bottom: 16px;
+    bottom: 12px;
 
     width: auto;
     min-width: 0;
     max-width: none;
-    height: 72dvh;
+    height: min(82dvh, calc(100dvh - 24px));
+    max-height: calc(100dvh - 24px);
 
-    border-radius: 28px;
+    border-radius: 24px;
   }
 
   .dinosaur-popup__content {
-    padding: 28px 20px 28px;
+    padding: 24px 18px 24px;
   }
 
   .dinosaur-popup__title {
