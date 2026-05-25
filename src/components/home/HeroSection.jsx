@@ -389,30 +389,6 @@ const HeroSection = ({ copy }) => {
         </div>
       )}
 
-      {/* ── Scroll hint ── */}
-      {isReady && (
-        <motion.div
-          style={{
-            position: 'absolute', bottom: '2.5rem', left: '50%',
-            transform: 'translateX(-50%)', zIndex: 15,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
-            pointerEvents: 'none',
-          }}
-          animate={{ opacity: 1 }}
-          initial={{ opacity: 1 }}
-        >
-          <p style={{ color: 'rgba(245,240,232,0.5)', fontFamily: 'var(--font-body)',
-            fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-            Cuộn để xem
-          </p>
-          <motion.svg width="18" height="18" viewBox="0 0 20 20"
-            animate={{ y: [0, 5, 0] }} transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}>
-            <path d="M10 3 L10 17 M5 12 L10 17 L15 12"
-              stroke="#f59e0b" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          </motion.svg>
-        </motion.div>
-      )}
-
       {/* ── Fade to next section ── */}
       <div style={{
         position: 'absolute', bottom: 0, left: 0, right: 0, height: '120px',

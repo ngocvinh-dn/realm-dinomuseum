@@ -607,6 +607,80 @@ html, body {
   animation: timeline-pulse 2s ease-in-out infinite;
 }
 
+.meso-hud-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 120px 120px;
+  mask-image: radial-gradient(circle at 50% 30%, black 48%, transparent 100%);
+}
+
+.meso-lux-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(245, 189, 87, 0.14);
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(9, 7, 5, 0.92) 100%),
+    rgba(10, 8, 4, 0.86);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 20px 64px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+}
+
+.meso-lux-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, rgba(244, 191, 90, 0.09) 0%, transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(244, 191, 90, 0.08) 0%, transparent 32%);
+}
+
+.meso-period-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(12, 10, 8, 0.96) 22%, rgba(9, 8, 6, 0.98) 100%);
+  backdrop-filter: blur(10px);
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+.meso-period-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(244, 191, 90, 0.1) 0%, transparent 22%),
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%);
+  opacity: 0.65;
+}
+
+.meso-period-card::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(244, 191, 90, 0.7), transparent);
+}
+
+.meso-period-card:hover {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(12, 10, 8, 0.95) 22%, rgba(9, 8, 6, 0.98) 100%);
+}
+
 /* =====================
    MUSEUM MAP
    ===================== */

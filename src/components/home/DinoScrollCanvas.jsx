@@ -405,37 +405,6 @@ const DinoScrollCanvas = () => {
             );
           })()}
 
-          {/* ── Scroll hint — đầu ── */}
-          <div style={{
-            position:      'absolute',
-            bottom:        '2.5rem',
-            left:          '50%',
-            transform:     'translateX(-50%)',
-            display:       'flex',
-            flexDirection: 'column',
-            alignItems:    'center',
-            gap:           '0.45rem',
-            pointerEvents: 'none',
-            opacity: currentFrame <= 6 ? 1 : 0,
-            transition:    'opacity 0.5s ease',
-          }}>
-            <p style={{
-              color:         'rgba(245,240,232,0.55)',
-              fontFamily:    'var(--font-body)',
-              fontSize:      '0.72rem',
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-            }}>
-              Cuộn để xem
-            </p>
-            <svg width="18" height="18" viewBox="0 0 20 20"
-              style={{ animation: 'float-up-down 1.5s ease-in-out infinite' }}>
-              <path d="M10 3 L10 17 M5 12 L10 17 L15 12"
-                stroke="#f59e0b" strokeWidth="1.8"
-                strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            </svg>
-          </div>
-
           {/* ── Progress bar dọc bên phải ── */}
           <div style={{
             position:    'absolute',
