@@ -127,7 +127,7 @@ export default function DinosaurPopup({
         />
       </div>
 
-      <div className="dinosaur-popup__content">
+      <div className="dinosaur-popup__content" onWheel={(e) => e.stopPropagation()} >
         <header className="dinosaur-popup__header">
           <span className="dinosaur-popup__era">
             {translate(dinosaur?.eras?.name_vi, dinosaur?.eras?.name_en, language)}
