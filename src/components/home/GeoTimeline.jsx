@@ -221,12 +221,14 @@ const COPY = {
   },
 };
 
-function TimelineArtwork({ period, isActive }) {
+function TimelineArtwork({ period, isActive, fillHeight = false }) {
   const [src, setSrc] = useState(period.primaryImage);
   const [isFallback, setIsFallback] = useState(false);
 
   return (
-    <div className="relative overflow-hidden rounded-[24px] border border-white/8 bg-black/40">
+    <div
+      className={`relative overflow-hidden rounded-[24px] border border-white/8 bg-black/40 ${fillHeight ? 'h-full min-h-[320px]' : ''}`}
+    >
       <div
         className="absolute inset-0 z-10"
         style={{
@@ -242,7 +244,7 @@ function TimelineArtwork({ period, isActive }) {
             setIsFallback(true);
           }
         }}
-        className="h-[240px] w-full transition-transform duration-700 md:h-[260px]"
+        className={`w-full transition-transform duration-700 ${fillHeight ? 'h-full min-h-[320px]' : 'h-[240px] md:h-[260px]'}`}
         style={{
           objectFit: isFallback ? period.fallbackFit || 'contain' : 'cover',
           objectPosition: 'center center',
@@ -274,16 +276,57 @@ function TimelineArtwork({ period, isActive }) {
 function PeriodIcon({ accent }) {
   return (
     <div
-      className="flex h-14 w-14 items-center justify-center rounded-[18px] border"
+      className="meso-period-icon relative flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[24px] border"
       style={{
         color: accent,
         borderColor: `${accent}42`,
         background:
-          'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(7, 8, 10, 0.72) 100%)',
-        boxShadow: `0 0 24px ${accent}18, inset 0 1px 0 rgba(255,255,255,0.04)`,
+          'radial-gradient(circle at 50% 30%, rgba(255,255,255,0.08) 0%, rgba(11, 9, 7, 0.9) 72%)',
+        boxShadow: `0 0 22px ${accent}18, inset 0 1px 0 rgba(255,255,255,0.05)`,
       }}
     >
+      <div
+        className="absolute inset-[9px] rounded-[17px] border"
+        style={{ borderColor: `${accent}26` }}
+      />
+      <div
+        className="absolute inset-x-4 top-[14px] h-px"
+        style={{ background: `linear-gradient(90deg, transparent, ${accent}cc, transparent)` }}
+      />
       <Aperture size={22} strokeWidth={1.6} />
+    </div>
+  );
+}
+
+function PeriodTimeBadge({ accent, glow, label, rangeCompact, rangeUnit, compact = false }) {
+  return (
+    <div
+      className={`meso-time-badge rounded-[22px] border ${compact ? 'min-h-[64px] w-full px-3 py-2.5' : 'min-h-[92px] w-[164px] max-w-full px-4 py-3'}`}
+      style={{
+        borderColor: `${accent}36`,
+        background:
+          'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(12,10,8,0.86) 100%)',
+        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.04), 0 0 16px ${glow}`,
+      }}
+    >
+      <div
+        className="text-[10px] font-semibold uppercase tracking-[0.22em]"
+        style={{ color: accent }}
+      >
+        {label}
+      </div>
+      <div
+        className={`${compact ? 'mt-2 text-[15px]' : 'mt-2.5 text-[18px]'} font-semibold leading-none`}
+        style={{ color: 'var(--theme-text)', fontVariantNumeric: 'tabular-nums' }}
+      >
+        {rangeCompact}
+      </div>
+      <div
+        className={`${compact ? 'mt-1 text-[11px]' : 'mt-1.5 text-[11px]'} leading-tight`}
+        style={{ color: 'var(--theme-text-dim)' }}
+      >
+        {rangeUnit}
+      </div>
     </div>
   );
 }
@@ -403,7 +446,7 @@ const GeoTimeline = ({ locale = 'vi' }) => {
               </p>
             </div>
 
-            <div className="relative mt-8 flex items-stretch justify-between gap-4">
+            <div className="relative mt-8 grid grid-cols-3 gap-3">
               {periods.map((period) => (
                 <button
                   key={period.id}
@@ -411,7 +454,7 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                   onClick={() =>
                     setActiveId((currentId) => (currentId === period.id ? null : period.id))
                   }
-                  className="relative z-10 flex flex-1 flex-col items-center gap-3 rounded-2xl border px-3 py-4 text-center transition-transform duration-300 hover:-translate-y-1"
+                  className="relative z-10 flex min-w-0 flex-col items-center gap-3 rounded-2xl border px-3 py-4 text-center transition-transform duration-300 hover:-translate-y-1"
                   style={{
                     background:
                       activePeriod?.id === period.id
@@ -430,23 +473,19 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                       boxShadow: `0 0 18px ${period.glow}`,
                     }}
                   />
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.3em]" style={{ color: period.accent }}>
+                  <span className="w-full text-[10px] font-semibold uppercase tracking-[0.2em] leading-tight" style={{ color: period.accent }}>
                     {period.englishName}
                   </span>
-                  <span
-                    className="min-h-[58px] rounded-2xl border px-3 py-2 flex flex-col items-center justify-center text-center"
-                    style={{
-                      color: activePeriod?.id === period.id ? 'var(--theme-text)' : 'rgba(245,240,232,0.8)',
-                      background: 'rgba(255,255,255,0.05)',
-                      borderColor: activePeriod?.id === period.id ? `${period.accent}40` : 'rgba(255,255,255,0.08)',
-                      boxShadow: activePeriod?.id === period.id ? `0 0 18px ${period.glow}` : 'none',
-                    }}
-                  >
-                    <span className="text-[13px] font-semibold leading-none">{period.rangeCompact}</span>
-                    <span className="mt-1 text-[11px] leading-none" style={{ color: 'var(--theme-text-dim)' }}>
-                      {period.rangeUnit}
-                    </span>
-                  </span>
+                  <div className="w-full max-w-[122px]">
+                    <PeriodTimeBadge
+                      accent={period.accent}
+                      glow={activePeriod?.id === period.id ? period.glow : 'rgba(0,0,0,0)'}
+                      label={content.timeLabel}
+                      rangeCompact={period.rangeCompact}
+                      rangeUnit={period.rangeUnit}
+                      compact
+                    />
+                  </div>
                 </button>
               ))}
             </div>
@@ -506,25 +545,15 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                 }}
               >
                 <div className="p-5 md:p-6">
-                  <div className="mb-5 flex items-start justify-between gap-4">
+                  <div className="mb-5 grid grid-cols-[72px_minmax(0,164px)] items-start justify-between gap-4">
                     <PeriodIcon accent={period.accent} />
-                    <div
-                      className="rounded-2xl border px-3 py-3 text-right min-w-[136px]"
-                      style={{
-                        borderColor: `${period.accent}3f`,
-                        background: `${period.accent}14`,
-                      }}
-                    >
-                      <div className="text-[10px] uppercase tracking-[0.22em]" style={{ color: period.accent }}>
-                        {content.timeLabel}
-                      </div>
-                      <div className="mt-2 text-[15px] font-semibold leading-none" style={{ color: 'var(--theme-text)' }}>
-                        {period.rangeCompact}
-                      </div>
-                      <div className="mt-1 text-[11px] leading-tight" style={{ color: 'var(--theme-text-dim)' }}>
-                        {period.rangeUnit}
-                      </div>
-                    </div>
+                    <PeriodTimeBadge
+                      accent={period.accent}
+                      glow={period.glow}
+                      label={content.timeLabel}
+                      rangeCompact={period.rangeCompact}
+                      rangeUnit={period.rangeUnit}
+                    />
                   </div>
 
                   <TimelineArtwork period={period} isActive={isActive} />
@@ -606,8 +635,8 @@ const GeoTimeline = ({ locale = 'vi' }) => {
             }}
           >
             <div className="grid gap-0 xl:grid-cols-[0.94fr_1.06fr]">
-              <div className="p-4 md:p-5">
-                <TimelineArtwork period={activePeriod} isActive />
+              <div className="p-4 md:p-5 xl:h-full">
+                <TimelineArtwork period={activePeriod} isActive fillHeight />
               </div>
               <div className="flex flex-col justify-between p-6 md:p-8">
                 <div>
@@ -626,19 +655,14 @@ const GeoTimeline = ({ locale = 'vi' }) => {
                         {activePeriod.range}
                       </p>
                     </div>
-                    <div
-                      className="rounded-2xl border px-4 py-3 text-right"
-                      style={{
-                        background: `${activePeriod.accent}12`,
-                        borderColor: `${activePeriod.accent}35`,
-                      }}
-                    >
-                      <div className="text-[10px] uppercase tracking-[0.28em]" style={{ color: 'var(--theme-text-dim)' }}>
-                        {content.timeLabel}
-                      </div>
-                      <div className="mt-2 text-sm font-semibold" style={{ color: activePeriod.accent }}>
-                        {activePeriod.range}
-                      </div>
+                    <div className="min-w-[272px]">
+                      <PeriodTimeBadge
+                        accent={activePeriod.accent}
+                        glow={activePeriod.glow}
+                        label={content.timeLabel}
+                        rangeCompact={activePeriod.rangeCompact}
+                        rangeUnit={activePeriod.rangeUnit}
+                      />
                     </div>
                   </div>
                   <p className="mt-5 max-w-2xl text-sm leading-7 md:text-base" style={{ color: 'var(--theme-text-muted)' }}>

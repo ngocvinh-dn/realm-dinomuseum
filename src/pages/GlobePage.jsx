@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Viewer, Entity, PointGraphics, Globe } from 'resium';
-import { Cartesian3, Color } from 'cesium';
+import { BoundingSphere, Cartesian3, Color, HeadingPitchRange } from 'cesium';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../supabase/supabaseclinet/supabase-clinet';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getFossilLocations } from '../services/fossilLocationsService';
+import { isSupabaseConfigured } from '../lib/supabaseClient';
 
 // ─── STAT CARD ────────────────────────────────────────────────────────────────
 const StatCard = ({ label, value, icon }) => (
@@ -179,20 +180,70 @@ const DinoPanel = ({ dino, total }) => {
 const GlobePage = () => {
   const [dinos, setDinos] = useState([]);
   const [selectedDino, setSelectedDino] = useState(null);
+  const [dataSource, setDataSource] = useState('loading');
   const viewerRef = useRef(null);
+  const hasCenteredOverviewRef = useRef(false);
   const navigate = useNavigate();
+
+  const focusOverview = (items) => {
+    const viewer = viewerRef.current?.cesiumElement;
+
+    if (!viewer || !items.length) {
+      return;
+    }
+
+    const points = items
+      .map((item) => {
+        const longitude = Number(item.longitude);
+        const latitude = Number(item.latitude);
+
+        if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+          return null;
+        }
+
+        return Cartesian3.fromDegrees(longitude, latitude);
+      })
+      .filter(Boolean);
+
+    if (!points.length) {
+      return;
+    }
+
+    const sphere = BoundingSphere.fromPoints(points);
+
+    viewer.camera.flyToBoundingSphere(sphere, {
+      duration: 2.2,
+      offset: new HeadingPitchRange(0.18, -0.72, Math.max(sphere.radius * 2.15, 16000000)),
+    });
+  };
 
   useEffect(() => {
     const fetchFossils = async () => {
-      const { data, error } = await supabase.from('fossil_locations').select('*');
-      if (error) {
-        console.error('Lỗi kết nối:', error.message);
-      } else {
-        setDinos(data || []);
-      }
+      const result = await getFossilLocations();
+      setDinos(result.data || []);
+      setDataSource(result.source || 'unknown');
     };
     fetchFossils();
   }, []);
+
+  useEffect(() => {
+    if (!selectedDino && dinos.length > 0) {
+      setSelectedDino(dinos[0]);
+    }
+  }, [dinos, selectedDino]);
+
+  useEffect(() => {
+    if (!dinos.length || hasCenteredOverviewRef.current) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      focusOverview(dinos);
+      hasCenteredOverviewRef.current = true;
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [dinos]);
 
   const handleSelect = (dino) => {
     setSelectedDino(dino);
@@ -212,6 +263,8 @@ const GlobePage = () => {
       });
     }
   };
+
+  const isFallbackSource = dataSource.startsWith('fallback');
 
   return (
     <div className="relative w-full h-screen bg-black flex overflow-hidden">
@@ -276,12 +329,32 @@ const GlobePage = () => {
               style={{ fontFamily: 'Cormorant Garamond, serif', color: '#f5f0e8' }}>
               Bản đồ Phát hiện
             </h2>
+            {isFallbackSource && (
+              <p
+                className="mt-1"
+                style={{ color: 'rgba(245,240,232,0.42)', fontSize: '11px', fontFamily: 'DM Sans, sans-serif' }}
+              >
+                Local đang dùng dữ liệu fallback vì chưa có env Supabase production.
+              </p>
+            )}
           </div>
-          <div className="px-2.5 py-1 rounded-full"
-            style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>
-            <span style={{ color: '#fbbf24', fontSize: '11px', fontFamily: 'DM Sans, sans-serif' }}>
-              {dinos.length > 0 ? `${dinos.length} mẫu` : '...'}
-            </span>
+          <div className="flex items-center gap-2">
+            {!isSupabaseConfigured && (
+              <div
+                className="px-2.5 py-1 rounded-full"
+                style={{ background: 'rgba(245,240,232,0.08)', border: '1px solid rgba(245,240,232,0.12)' }}
+              >
+                <span style={{ color: 'rgba(245,240,232,0.72)', fontSize: '10px', fontFamily: 'DM Sans, sans-serif' }}>
+                  No env
+                </span>
+              </div>
+            )}
+            <div className="px-2.5 py-1 rounded-full"
+              style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>
+              <span style={{ color: '#fbbf24', fontSize: '11px', fontFamily: 'DM Sans, sans-serif' }}>
+                {dinos.length > 0 ? `${dinos.length} mẫu` : '...'}
+              </span>
+            </div>
           </div>
         </div>
 

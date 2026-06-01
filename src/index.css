@@ -681,6 +681,33 @@ html, body {
     linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(12, 10, 8, 0.95) 22%, rgba(9, 8, 6, 0.98) 100%);
 }
 
+.meso-period-icon::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 30px;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  opacity: 0.7;
+}
+
+.meso-time-badge {
+  position: relative;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.meso-time-badge::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+}
+
 /* =====================
    MUSEUM MAP
    ===================== */
