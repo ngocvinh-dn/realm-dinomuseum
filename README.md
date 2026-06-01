@@ -21,6 +21,13 @@
   <img alt="Languages" src="https://skillicons.dev/icons?i=html,css,js,react,vite,three,tailwind,git,github,vercel" />
 </p>
 
+## Preview
+
+<p align="center">
+  <img src="public/images/specimen_trex.png" alt="Museum specimen preview" width="45%" />
+  <img src="public/images/mesozoic/cretaceous-image-d.png" alt="Dinosaur world preview" width="45%" />
+</p>
+
 ## Overview
 
 Realm Dino Museum is a cinematic web experience that combines:
