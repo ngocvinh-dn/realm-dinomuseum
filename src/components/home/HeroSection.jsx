@@ -5,8 +5,6 @@ import { useSiteAssets } from '../../hooks/useSiteAssets';
 const HERO_POSTER_FALLBACK = '/images/hero-poster.webp';
 const HERO_VIDEO_WEBM_FALLBACK = '/video/0514.webm';
 const HERO_VIDEO_MP4_FALLBACK = '/video/0514.mp4';
-const HERO_AUDIO_FALLBACK = 'https://cdn.pixabay.com/audio/2022/10/30/audio_946f88d5c4.mp3';
-
 const REVEAL_EASE = [0.22, 1, 0.36, 1];
 
 function splitWords(text = '') {
@@ -37,23 +35,10 @@ function uniqueVideoSources(sources) {
 }
 
 const HeroSection = ({ copy }) => {
-  const audioRef = useRef(null);
   const videoRef = useRef(null);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [videoSourceIndex, setVideoSourceIndex] = useState(0);
   const { assets } = useSiteAssets();
-
-  const heroAudio = useMemo(
-    () => pickAssetUrl(
-      assets,
-      [
-        (item) => item.asset_key === 'hero-bg-audio',
-        (item) => item.asset_key === 'hero_music',
-      ],
-      HERO_AUDIO_FALLBACK
-    ),
-    [assets]
-  );
 
   const heroPoster = useMemo(
     () => pickAssetUrl(
@@ -94,7 +79,6 @@ const HeroSection = ({ copy }) => {
   );
 
   const mainTitle = useMemo(() => splitWords(copy.heroTitle), [copy.heroTitle]);
-  const subtitle = useMemo(() => splitWords(copy.heroSubtitle), [copy.heroSubtitle]);
 
   const videoSources = useMemo(
     () => uniqueVideoSources([
@@ -126,32 +110,6 @@ const HeroSection = ({ copy }) => {
     attemptPlayback();
     return undefined;
   }, [activeVideoSource]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return undefined;
-
-    const startAudio = async () => {
-      try {
-        audio.volume = 0.4;
-        await audio.play();
-        localStorage.setItem('dino-audio-unlocked', '1');
-      } catch {}
-    };
-
-    if (localStorage.getItem('dino-audio-unlocked') === '1') {
-      startAudio();
-    }
-
-    const unlock = () => {
-      startAudio();
-      window.removeEventListener('pointerdown', unlock);
-    };
-
-    window.addEventListener('pointerdown', unlock, { passive: true });
-
-    return () => window.removeEventListener('pointerdown', unlock);
-  }, []);
 
   const scrollTo = (id) => {
     const el = document.getElementById(id);
@@ -251,9 +209,6 @@ const HeroSection = ({ copy }) => {
           }}
         />
       </div>
-
-      <audio ref={audioRef} src={heroAudio} preload="auto" loop />
-
       <div
         style={{
           position: 'relative',
@@ -336,24 +291,17 @@ const HeroSection = ({ copy }) => {
               </motion.span>
             </span>
 
-            <span className="hero-title__line hero-title__accent italic" aria-label={copy.heroSubtitle}>
-              <motion.span
-                className="hero-title__piece"
-                initial={{ opacity: 0, x: '-30%' }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.24, duration: 0.9, ease: REVEAL_EASE }}
-              >
-                <span className="hero-title__piece-inner text-gradient-gold">{subtitle.left}</span>
-              </motion.span>
-              <motion.span
-                className="hero-title__piece"
-                initial={{ opacity: 0, x: '30%' }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.24, duration: 0.9, ease: REVEAL_EASE }}
-              >
-                <span className="hero-title__piece-inner text-gradient-gold">{subtitle.right}</span>
-              </motion.span>
-            </span>
+            <motion.span
+              className="hero-title__line hero-title__accent italic"
+              aria-label={copy.heroSubtitle}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.24, duration: 0.9, ease: REVEAL_EASE }}
+            >
+              <span className="hero-title__piece">
+                <span className="hero-title__piece-inner hero-title__subtitle-text">{copy.heroSubtitle}</span>
+              </span>
+            </motion.span>
           </h1>
         </div>
 

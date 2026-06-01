@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSiteAssets } from '../../hooks/useSiteAssets';
 
 const LOCAL_TRACKS = [
-  { url: '/audio/dino-ambient.wav', label: 'Epic Museum Overture' },
+  { url: '/audio/dino-audio.wav', label: 'Dino Music' },
 ];
 
 const FALLBACK_TRACKS = [
@@ -11,6 +11,8 @@ const FALLBACK_TRACKS = [
   { url: 'https://cdn.pixabay.com/audio/2024/03/07/audio_b8d7f7d2e4.mp3', label: 'War Drums of the Ancients' },
   { url: 'https://cdn.pixabay.com/audio/2024/01/18/audio_9fdc6c9d0d.mp3', label: 'Dawn of the Titans' },
 ];
+
+const AUDIO_UNLOCK_KEY = 'dino-audio-unlocked';
 
 const AmbientAudio = () => {
   const { assets } = useSiteAssets();
@@ -26,6 +28,21 @@ const AmbientAudio = () => {
   const audioRef = useRef(null);
   const hideTimer = useRef(null);
 
+  const playAudio = useCallback(async () => {
+    const audio = audioRef.current;
+    if (!audio) return false;
+
+    try {
+      await audio.play();
+      localStorage.setItem(AUDIO_UNLOCK_KEY, '1');
+      setIsPlaying(true);
+      return true;
+    } catch {
+      setIsPlaying(false);
+      return false;
+    }
+  }, []);
+
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = Math.min(1, Math.max(0, volume));
@@ -36,9 +53,47 @@ const AmbientAudio = () => {
     if (!audioRef.current) return;
     audioRef.current.load();
     if (isPlaying) {
-      audioRef.current.play().catch(() => setIsPlaying(false));
+      playAudio();
     }
-  }, [trackIndex, isPlaying]);
+  }, [trackIndex, isPlaying, playAudio]);
+
+  useEffect(() => {
+    if (!isReady) return undefined;
+
+    let cancelled = false;
+
+    const tryAutoplay = async () => {
+      if (cancelled) return;
+      await playAudio();
+    };
+
+    if (localStorage.getItem(AUDIO_UNLOCK_KEY) === '1') {
+      tryAutoplay();
+    } else {
+      tryAutoplay();
+    }
+
+    const unlockAndPlay = async () => {
+      if (cancelled) return;
+      const started = await playAudio();
+      if (!started) return;
+
+      window.removeEventListener('pointerdown', unlockAndPlay);
+      window.removeEventListener('keydown', unlockAndPlay);
+      window.removeEventListener('touchstart', unlockAndPlay);
+    };
+
+    window.addEventListener('pointerdown', unlockAndPlay, { passive: true });
+    window.addEventListener('keydown', unlockAndPlay);
+    window.addEventListener('touchstart', unlockAndPlay, { passive: true });
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('pointerdown', unlockAndPlay);
+      window.removeEventListener('keydown', unlockAndPlay);
+      window.removeEventListener('touchstart', unlockAndPlay);
+    };
+  }, [isReady, trackIndex, playAudio]);
 
   const toggle = () => {
     const audio = audioRef.current;
@@ -47,7 +102,7 @@ const AmbientAudio = () => {
       audio.pause();
       setIsPlaying(false);
     } else {
-      audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+      playAudio();
     }
   };
 
@@ -61,6 +116,7 @@ const AmbientAudio = () => {
       <audio
         ref={audioRef}
         src={playlist[trackIndex]?.url}
+        autoPlay
         preload="auto"
         loop
         onCanPlayThrough={() => setIsReady(true)}

@@ -245,12 +245,39 @@ html, body {
   overflow: visible;
 }
 
+.hero-title__line.hero-title__accent {
+  display: inline-block;
+  gap: 0.08em;
+  max-width: none;
+  padding-inline: 0.16em 0.22em;
+  margin-inline: -0.16em -0.22em;
+  line-height: 1.14;
+}
+
 .hero-title__accent .hero-title__piece {
-  padding-inline: 0.08em 0.12em;
+  display: inline-block;
+  padding-inline: 0.02em 0.05em;
+  backface-visibility: visible;
+  overflow: visible;
 }
 
 .hero-title__accent .hero-title__piece-inner {
-  padding-inline: 0.04em 0.08em;
+  padding-inline: 0.02em 0.04em;
+  transform: none;
+  backface-visibility: visible;
+  overflow: visible;
+}
+
+.hero-title__subtitle-text {
+  display: inline-block;
+  padding-inline: 0.1em 0.14em;
+  padding-bottom: 0.06em;
+  margin-inline: -0.08em -0.12em;
+  line-height: 1.14;
+  color: #ffd15c !important;
+  -webkit-text-fill-color: currentColor !important;
+  background: none !important;
+  text-shadow: 0 2px 18px rgba(245, 158, 11, 0.18);
 }
 
 @media (max-width: 1180px) {
