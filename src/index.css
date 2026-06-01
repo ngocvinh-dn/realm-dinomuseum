@@ -241,8 +241,16 @@ html, body {
   font-size: clamp(1.5rem, 7vw, 4.5rem);
   line-height: 1.08;
   padding-bottom: 0.12em;
-  padding-right: 0.16em;
+  padding-inline: 0.14em 0.2em;
   overflow: visible;
+}
+
+.hero-title__accent .hero-title__piece {
+  padding-inline: 0.08em 0.12em;
+}
+
+.hero-title__accent .hero-title__piece-inner {
+  padding-inline: 0.04em 0.08em;
 }
 
 @media (max-width: 1180px) {
