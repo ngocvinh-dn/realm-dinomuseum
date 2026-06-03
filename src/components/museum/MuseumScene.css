@@ -22,7 +22,7 @@
 
 .museum-guide-box {
   position: absolute;
-  top: 28px;
+  bottom: 28px;
   left: 28px;
   z-index: 100;
   width: 260px;
@@ -67,4 +67,3 @@
   font-size: 14px;
   pointer-events: none;
 }
-

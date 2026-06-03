@@ -49,7 +49,9 @@ export default function MuseumScene() {
         if (!cancelled) setLoading(false);
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Khi museum đã load → warm-up cả 3 era trong background (idle time)
@@ -61,14 +63,14 @@ export default function MuseumScene() {
     const next = () => {
       if (idx >= slugs.length) return;
       prefetchEraAssets(slugs[idx++]).finally(() => {
-        if ('requestIdleCallback' in window) {
+        if ("requestIdleCallback" in window) {
           requestIdleCallback(next, { timeout: 5000 });
         } else {
           setTimeout(next, 1500);
         }
       });
     };
-    if ('requestIdleCallback' in window) {
+    if ("requestIdleCallback" in window) {
       requestIdleCallback(next, { timeout: 6000 });
     } else {
       setTimeout(next, 2000);
@@ -143,16 +145,16 @@ export default function MuseumScene() {
 
           {!loading &&
             dinoList.map((dino) => (
-            <InteractableModel
-              key={dino.id}
-              url={dino.url}
-              position={dino.position}
-              scale={dino.scale}
-              eraColor={dino.eraColor}
-              data={dino}
-              onInteract={setSelectedDino}
-            />
-          ))}
+              <InteractableModel
+                key={dino.id}
+                url={dino.url}
+                position={dino.position}
+                scale={dino.scale}
+                eraColor={dino.eraColor}
+                data={dino}
+                onInteract={setSelectedDino}
+              />
+            ))}
 
           <PlayerController />
 
@@ -175,10 +177,16 @@ export default function MuseumScene() {
             <b>W A S D:</b> di chuyển
           </p>
           <p>
+            <b>Space:</b> nhảy
+          </p>
+          <p>
             <b>Chuột:</b> xoay camera
           </p>
           <p>
             <b>Shift:</b> chạy nhanh
+          </p>
+          <p>
+            <b>Space:</b> nhảy
           </p>
           <p>
             <b>ESC:</b> thoát chế độ điều khiển
