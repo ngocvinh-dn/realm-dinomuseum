@@ -13,8 +13,8 @@ export default function MuseumLoader({ isFetchingAssets = false }) {
       progress={isFetchingAssets ? 10 : progress}
       message={
         isFetchingAssets
-          ? "Đang lấy dữ liệu bảo tàng..."
-          : "Đang tải mô hình bảo tàng..."
+          ? "Retrieving museum data..."
+          : "Loading museum model..."
       }
     />
   );

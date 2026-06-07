@@ -49,8 +49,14 @@ function updateEdgeGlow(event) {
 
   element.style.setProperty("--edge-opacity", edgeOpacity.toFixed(3));
   element.style.setProperty("--cursor-angle", `${angle.toFixed(3)}deg`);
-  element.style.setProperty("--glow-x", `${((x / rect.width) * 100).toFixed(2)}%`);
-  element.style.setProperty("--glow-y", `${((y / rect.height) * 100).toFixed(2)}%`);
+  element.style.setProperty(
+    "--glow-x",
+    `${((x / rect.width) * 100).toFixed(2)}%`,
+  );
+  element.style.setProperty(
+    "--glow-y",
+    `${((y / rect.height) * 100).toFixed(2)}%`,
+  );
 }
 
 function resetEdgeGlow(event) {
@@ -70,7 +76,7 @@ export default function DinosaurFactsCarousel({ facts = [], language = "vi" }) {
 
   const items = useMemo(() => {
     const sortedFacts = [...facts].sort(
-      (a, b) => (a.order_index || 0) - (b.order_index || 0)
+      (a, b) => (a.order_index || 0) - (b.order_index || 0),
     );
 
     if (sortedFacts.length === 0) {
@@ -88,7 +94,11 @@ export default function DinosaurFactsCarousel({ facts = [], language = "vi" }) {
 
     return sortedFacts.map((fact, index) => ({
       id: fact.id || index,
-      title: formatFactType(fact.fact_type, language),
+      // Dùng fact_type_vi/fact_type_en nếu có (sau khi tách DB), fallback về formatFactType
+      title:
+        language === "en"
+          ? fact.fact_type_en || formatFactType(fact.fact_type, "en")
+          : fact.fact_type_vi || formatFactType(fact.fact_type, "vi"),
       description: translate(fact.content_vi, fact.content_en, language),
     }));
   }, [facts, language]);

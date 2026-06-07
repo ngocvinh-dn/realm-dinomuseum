@@ -10,9 +10,21 @@ import { useEffect, useRef, useState } from "react";
 import { useProgress } from "@react-three/drei";
 
 const ERA_META = {
-  triassic: { label: "Kỷ Trias", color: "#e07b39", period: "252 – 201 triệu năm trước" },
-  jurassic: { label: "Kỷ Jura", color: "#4ade80", period: "201 – 145 triệu năm trước" },
-  cretaceous: { label: "Kỷ Phấn Trắng", color: "#f59e0b", period: "145 – 66 triệu năm trước" },
+  triassic: {
+    label: "Triassic Period",
+    color: "#e07b39",
+    period: "252 – 201 million years ago",
+  },
+  jurassic: {
+    label: "Jurassic Period",
+    color: "#4ade80",
+    period: "201 – 145 million years ago",
+  },
+  cretaceous: {
+    label: "Cretaceous Period",
+    color: "#f59e0b",
+    period: "145 – 66 million years ago",
+  },
 };
 
 export default function EraTransitionLoader({ slug, isFetchingData }) {
@@ -21,7 +33,9 @@ export default function EraTransitionLoader({ slug, isFetchingData }) {
   const color = meta.color;
 
   // Smoothed progress để tránh giật ngược
-  const [displayProgress, setDisplayProgress] = useState(isFetchingData ? 5 : progress);
+  const [displayProgress, setDisplayProgress] = useState(
+    isFetchingData ? 5 : progress,
+  );
   const targetRef = useRef(isFetchingData ? 5 : progress);
 
   useEffect(() => {
@@ -84,7 +98,14 @@ export default function EraTransitionLoader({ slug, isFetchingData }) {
       />
 
       {/* Content */}
-      <div style={{ position: "relative", zIndex: 2, textAlign: "center", width: "min(380px, 86vw)" }}>
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          textAlign: "center",
+          width: "min(380px, 86vw)",
+        }}
+      >
         {/* Spinner ring */}
         <div
           style={{
@@ -137,7 +158,9 @@ export default function EraTransitionLoader({ slug, isFetchingData }) {
             letterSpacing: "0.04em",
           }}
         >
-          {isFetchingData ? "Đang khởi tạo môi trường..." : "Đang tải mô hình 3D..."}
+          {isFetchingData
+            ? "Creating the environment..."
+            : "Loading 3D model..."}
         </p>
 
         {/* Progress bar */}

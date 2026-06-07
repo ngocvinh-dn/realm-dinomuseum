@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
 const RealmBrand = ({
-  className = '',
+  className = "",
   logoSize = 70,
-  titleClassName = 'text-lg',
+  titleClassName = "text-lg",
   subtitleFontSize = 14,
-  subtitleLetterSpacing = '1px',
+  subtitleLetterSpacing = "1px",
   subtitleOpacity = 0.6,
 }) => (
   <div className={`flex items-center gap-3 ${className}`.trim()}>
@@ -15,17 +15,17 @@ const RealmBrand = ({
       style={{
         height: `${logoSize}px`,
         width: `${logoSize}px`,
-        objectFit: 'contain',
-        filter: 'drop-shadow(0 0 8px rgba(245,158,11,0.4))',
+        objectFit: "contain",
+        filter: "drop-shadow(0 0 8px rgba(245,158,11,0.4))",
       }}
     />
     <div className="flex flex-col">
       <span
         className={`font-serif font-bold leading-none ${titleClassName}`.trim()}
         style={{
-          fontFamily: 'var(--font-heading)',
-          color: 'var(--theme-accent-bright)',
-          marginBottom: '1px',
+          fontFamily: "var(--font-heading)",
+          color: "var(--theme-accent-bright)",
+          marginBottom: "1px",
         }}
       >
         R.E.A.L.M
@@ -33,12 +33,13 @@ const RealmBrand = ({
       <span
         className="leading-none"
         style={{
-          color: 'rgba(245,158,11,0.5)',
-          fontFamily: 'var(--font-body)',
+          color: "rgba(245,158,11,0.5)",
+          fontFamily: "var(--font-body)",
           fontSize: `${subtitleFontSize}px`,
           letterSpacing: subtitleLetterSpacing,
           opacity: subtitleOpacity,
-          marginBottom: '1px',
+          marginBottom: "1px",
+          marginTop: "5px",
         }}
       >
         Research Exhibition
@@ -46,8 +47,8 @@ const RealmBrand = ({
       <span
         className="leading-none"
         style={{
-          color: 'rgba(245,158,11,0.5)',
-          fontFamily: 'var(--font-body)',
+          color: "rgba(245,158,11,0.5)",
+          fontFamily: "var(--font-body)",
           fontSize: `${subtitleFontSize}px`,
           letterSpacing: subtitleLetterSpacing,
           opacity: subtitleOpacity,

@@ -22,6 +22,7 @@ export default function MuseumScene() {
   const [isPointerLocked, setIsPointerLocked] = useState(false);
   const [loading, setLoading] = useState(!getCachedMuseumAssets());
   const [errorMessage, setErrorMessage] = useState("");
+  const [language, setLanguage] = useState("en");
 
   useEffect(() => {
     // Nếu đã có cache từ prefetch ở Home → không cần fetch lại
@@ -82,9 +83,12 @@ export default function MuseumScene() {
         {
           id: "triassic",
           era: "KỶ TRIAS",
+          eraEn: "TRIASSIC PERIOD",
           name: "Plateosaurus",
           description:
             "Đại diện cho kỷ Trias, giai đoạn đầu của kỷ nguyên khủng long. Đây sẽ là cổng dẫn vào khu trưng bày sinh vật thời Trias.",
+          descriptionEn:
+            "Representative of the Triassic, the dawn of the dinosaur age. This is the gateway to the Triassic exhibit.",
           url: sceneAssets.triassic_fossil_url,
           route: "/era/triassic",
           position: [-3, 0.95, -2],
@@ -94,9 +98,12 @@ export default function MuseumScene() {
         {
           id: "jurassic",
           era: "KỶ JURA",
+          eraEn: "JURASSIC PERIOD",
           name: "Diplodocus",
           description:
             "Đại diện cho kỷ Jura, thời kỳ khủng long phát triển mạnh mẽ với nhiều loài khổng lồ. Đây là cổng dẫn vào khu trưng bày kỷ Jura.",
+          descriptionEn:
+            "Representative of the Jurassic, when giant dinosaurs ruled the Earth. This is the gateway to the Jurassic exhibit.",
           url: sceneAssets.jurassic_fossil_url,
           route: "/era/jurassic",
           position: [0, 1.05, -2],
@@ -106,9 +113,12 @@ export default function MuseumScene() {
         {
           id: "cretaceous",
           era: "KỶ PHẤN TRẮNG",
+          eraEn: "CRETACEOUS PERIOD",
           name: "Triceratops",
           description:
             "Đại diện cho kỷ Phấn Trắng, giai đoạn cuối cùng của thời đại khủng long. Đây là cổng dẫn vào khu trưng bày kỷ Phấn Trắng.",
+          descriptionEn:
+            "Representative of the Cretaceous, the final chapter of the dinosaur era. This is the gateway to the Cretaceous exhibit.",
           url: sceneAssets.cretaceous_fossil_url,
           route: "/era/cretaceous",
           position: [3, 1, -2],
@@ -171,32 +181,65 @@ export default function MuseumScene() {
 
       {!isPointerLocked && (
         <div className="museum-guide-box">
-          <h3>Hướng dẫn di chuyển</h3>
-          <p>Click vào màn hình để bắt đầu.</p>
+          {/* Toggle VI/EN */}
+          <button
+            onClick={() => setLanguage((l) => (l === "vi" ? "en" : "vi"))}
+            style={{
+              position: "absolute",
+              top: 12,
+              right: 14,
+              border: "1px solid rgba(245,200,100,0.45)",
+              borderRadius: "14px",
+              padding: "4px 12px",
+              cursor: "pointer",
+              fontSize: "11px",
+              fontWeight: "800",
+              letterSpacing: "0.08em",
+              color: "#f5f0e8",
+              background:
+                "linear-gradient(135deg, rgba(180,120,30,0.55), rgba(0,0,0,0.65))",
+            }}
+          >
+            {language === "vi" ? "VI" : "EN"}
+          </button>
+
+          <h3>{language === "en" ? "Controls" : "Hướng dẫn"}</h3>
           <p>
-            <b>W A S D:</b> di chuyển
+            {language === "en"
+              ? "Click screen to start."
+              : "Click vào màn hình để bắt đầu."}
           </p>
           <p>
-            <b>Space:</b> nhảy
+            <b>W A S D:</b> {language === "en" ? "move" : "di chuyển"}
           </p>
           <p>
-            <b>Chuột:</b> xoay camera
+            <b>Space:</b> {language === "en" ? "jump" : "nhảy"}
           </p>
           <p>
-            <b>Shift:</b> chạy nhanh
+            <b>{language === "en" ? "Mouse" : "Chuột"}:</b>{" "}
+            {language === "en" ? "rotate camera" : "xoay camera"}
           </p>
           <p>
-            <b>Space:</b> nhảy
+            <b>Shift:</b> {language === "en" ? "run" : "chạy nhanh"}
           </p>
           <p>
-            <b>ESC:</b> thoát chế độ điều khiển
+            <b>ESC:</b>{" "}
+            {language === "en" ? "exit controls" : "thoát chế độ điều khiển"}
           </p>
-          <p>Click vào hóa thạch để chọn kỷ nguyên.</p>
+          <p>
+            {language === "en"
+              ? "Click fossils to select an era."
+              : "Click vào hóa thạch để chọn kỷ nguyên."}
+          </p>
         </div>
       )}
 
       {selectedDino && (
-        <DinoPopup dino={selectedDino} onClose={() => setSelectedDino(null)} />
+        <DinoPopup
+          dino={selectedDino}
+          language={language}
+          onClose={() => setSelectedDino(null)}
+        />
       )}
     </div>
   );

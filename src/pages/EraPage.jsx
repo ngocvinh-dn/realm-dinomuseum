@@ -444,6 +444,7 @@ export default function EraPage() {
   const [warning, setWarning] = useState("");
   const [isPointerLocked, setIsPointerLocked] = useState(false);
   const [selectedDino, setSelectedDino] = useState(null);
+  const [language, setLanguage] = useState("en");
   const [revivedMap, setRevivedMap] = useState({});
   // Stores THREE.Object3D refs for fossil meshes – populated by EnvironmentScene
   const fossilObjectsRef = useRef({});
@@ -540,7 +541,7 @@ export default function EraPage() {
           }}
           onClick={() => navigate("/museum")}
         >
-          ← Quay lại Bảo Tàng
+          ←
         </button>
       </div>
     );
@@ -557,7 +558,7 @@ export default function EraPage() {
         }}
         onClick={() => navigate("/museum")}
       >
-        ← Quay lại Bảo Tàng
+        ← {language === "en" ? "Back to Museum" : "Quay lại Bảo Tàng"}
       </button>
 
       {era && (
@@ -569,12 +570,13 @@ export default function EraPage() {
               textShadow: `0 0 12px ${eraColor}88`,
             }}
           >
-            {era.name_vi}
+            {language === "en" ? era.name_en || era.name_vi : era.name_vi}
           </span>
 
           {era.period_start_mya && era.period_end_mya && (
             <span style={styles.eraPeriod}>
-              {era.period_end_mya} – {era.period_start_mya} triệu năm trước
+              {era.period_end_mya} – {era.period_start_mya}{" "}
+              {language === "en" ? "million years ago" : "triệu năm trước"}
             </span>
           )}
         </div>
@@ -632,6 +634,27 @@ export default function EraPage() {
 
       {!isPointerLocked && !loading && (
         <div style={styles.guideBox}>
+          {/* Toggle VI/EN - góc trên phải của guide box */}
+          <button
+            onClick={() => setLanguage((l) => (l === "vi" ? "en" : "vi"))}
+            style={{
+              position: "absolute",
+              top: 12,
+              right: 14,
+              border: "1px solid rgba(245,200,100,0.45)",
+              borderRadius: "14px",
+              padding: "4px 12px",
+              cursor: "pointer",
+              fontSize: "11px",
+              fontWeight: "800",
+              letterSpacing: "0.08em",
+              color: "#f5f0e8",
+              background:
+                "linear-gradient(135deg, rgba(180,120,30,0.55), rgba(0,0,0,0.65))",
+            }}
+          >
+            {language === "vi" ? "VI" : "EN"}
+          </button>
           <h3
             style={{
               margin: "0 0 8px",
@@ -639,24 +662,30 @@ export default function EraPage() {
               color: eraColor,
             }}
           >
-            Hướng dẫn di chuyển
+            {language === "en" ? "Controls" : "Hướng dẫn di chuyển"}
           </h3>
 
-          <p style={styles.guideText}>Click vào màn hình để bắt đầu.</p>
           <p style={styles.guideText}>
-            <b>W A S D</b> — di chuyển
+            {language === "en"
+              ? "Click screen to start."
+              : "Click vào màn hình để bắt đầu."}
           </p>
           <p style={styles.guideText}>
-            <b>Space</b> — nhảy
+            <b>W A S D</b> — {language === "en" ? "move" : "di chuyển"}
           </p>
           <p style={styles.guideText}>
-            <b>Chuột</b> — xoay camera
+            <b>Space</b> — {language === "en" ? "jump" : "nhảy"}
           </p>
           <p style={styles.guideText}>
-            <b>Shift</b> — chạy nhanh
+            <b>{language === "en" ? "Mouse" : "Chuột"}</b> —{" "}
+            {language === "en" ? "rotate camera" : "xoay camera"}
           </p>
           <p style={styles.guideText}>
-            <b>ESC</b> — thoát điều khiển
+            <b>Shift</b> — {language === "en" ? "run" : "chạy nhanh"}
+          </p>
+          <p style={styles.guideText}>
+            <b>ESC</b> —{" "}
+            {language === "en" ? "exit controls" : "thoát điều khiển"}
           </p>
           <p
             style={{
@@ -665,7 +694,9 @@ export default function EraPage() {
               color: eraColor,
             }}
           >
-            Click vào hóa thạch hoặc khủng long để xem thông tin.
+            {language === "en"
+              ? "Click fossils or dinosaurs to view info."
+              : "Click vào hóa thạch hoặc khủng long để xem thông tin."}
           </p>
         </div>
       )}
@@ -683,7 +714,7 @@ export default function EraPage() {
               })?.object_name
             ],
           )}
-          language="vi"
+          language={language}
         />
       )}
     </div>
@@ -759,6 +790,8 @@ const styles = {
 
   guideBox: {
     position: "absolute",
+    // 'relative' handled via inner element
+
     left: 24,
     bottom: 24,
     zIndex: 60,

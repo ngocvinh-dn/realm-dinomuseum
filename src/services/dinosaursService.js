@@ -4,7 +4,8 @@ import { getDinosaurImage } from "../utils/dinosaurImage";
 export async function getDinosaurs() {
   const { data, error } = await supabase
     .from("dinosaurs")
-    .select(`
+    .select(
+      `
       id,
       era_id,
       scientific_name,
@@ -30,12 +31,14 @@ export async function getDinosaurs() {
       ),
       dinosaur_facts (
         id,
-        fact_type,
+        fact_type_vi,
+        fact_type_en,
         content_vi,
         content_en,
         order_index
       )
-    `)
+    `,
+    )
     .order("created_at", { ascending: true });
 
   if (error) {
@@ -48,7 +51,7 @@ export async function getDinosaurs() {
         ...dino,
         image_url: getDinosaurImage(dino),
         dinosaur_facts: [...(dino.dinosaur_facts || [])].sort(
-          (a, b) => a.order_index - b.order_index
+          (a, b) => a.order_index - b.order_index,
         ),
       }))
     : [];

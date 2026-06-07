@@ -7,7 +7,8 @@ export async function getExhibitsByEraSlug(eraSlug) {
 
   const { data, error } = await supabase
     .from("exhibits")
-    .select(`
+    .select(
+      `
       id,
       era_id,
       dinosaur_id,
@@ -38,7 +39,8 @@ export async function getExhibitsByEraSlug(eraSlug) {
         dinosaur_facts (
           id,
           dinosaur_id,
-          fact_type,
+          fact_type_vi,
+          fact_type_en,
           content_vi,
           content_en,
           order_index
@@ -59,7 +61,8 @@ export async function getExhibitsByEraSlug(eraSlug) {
         music_url,
         ambient_sound_url
       )
-    `)
+    `,
+    )
     .eq("eras.slug", eraSlug)
     .eq("is_interactive", true)
     .order("order_index", { ascending: true });
@@ -80,7 +83,7 @@ export async function getExhibitsByEraSlug(eraSlug) {
     dinosaur: {
       ...exhibit.dinosaurs,
       facts: (exhibit.dinosaurs?.dinosaur_facts || []).sort(
-        (a, b) => (a.order_index || 0) - (b.order_index || 0)
+        (a, b) => (a.order_index || 0) - (b.order_index || 0),
       ),
     },
 
@@ -95,7 +98,8 @@ export async function getExhibitByObjectName(objectName) {
 
   const { data, error } = await supabase
     .from("exhibits")
-    .select(`
+    .select(
+      `
       id,
       era_id,
       dinosaur_id,
@@ -132,7 +136,8 @@ export async function getExhibitByObjectName(objectName) {
           order_index
         )
       )
-    `)
+    `,
+    )
     .eq("object_name", objectName)
     .maybeSingle();
 
@@ -154,7 +159,7 @@ export async function getExhibitByObjectName(objectName) {
     dinosaur: {
       ...data.dinosaurs,
       facts: (data.dinosaurs?.dinosaur_facts || []).sort(
-        (a, b) => (a.order_index || 0) - (b.order_index || 0)
+        (a, b) => (a.order_index || 0) - (b.order_index || 0),
       ),
     },
   };

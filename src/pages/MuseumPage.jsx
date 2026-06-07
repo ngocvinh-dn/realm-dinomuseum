@@ -26,7 +26,7 @@ export default function MuseumPage() {
             "linear-gradient(135deg, rgba(180,120,30,0.55), rgba(0,0,0,0.65))",
         }}
       >
-        ← Trang chủ
+        ←
       </button>
 
       <MuseumScene />

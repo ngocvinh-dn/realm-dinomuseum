@@ -25,22 +25,16 @@ function formatValue(value, suffix = "", language = "vi") {
 
 function formatDiet(diet, language) {
   const dietMap = {
-    carnivore: {
-      vi: "Ăn thịt",
-      en: "Carnivore",
-    },
-    herbivore: {
-      vi: "Ăn thực vật",
-      en: "Herbivore",
-    },
-    omnivore: {
-      vi: "Ăn tạp",
-      en: "Omnivore",
-    },
+    carnivore: { vi: "Ăn thịt", en: "Carnivore" },
+    herbivore: { vi: "Ăn thực vật", en: "Herbivore" },
+    omnivore: { vi: "Ăn tạp", en: "Omnivore" },
+    // Fallback nếu DB lưu tiếng Việt
+    "Ăn thịt": { vi: "Ăn thịt", en: "Carnivore" },
+    "Ăn thực vật": { vi: "Ăn thực vật", en: "Herbivore" },
+    "Ăn tạp": { vi: "Ăn tạp", en: "Omnivore" },
   };
 
   if (!diet) return language === "en" ? "Unknown" : "Chưa rõ";
-
   return dietMap[diet]?.[language] || diet;
 }
 
@@ -73,8 +67,14 @@ function updateEdgeGlow(event) {
 
   element.style.setProperty("--edge-opacity", edgeOpacity.toFixed(3));
   element.style.setProperty("--cursor-angle", `${angle.toFixed(3)}deg`);
-  element.style.setProperty("--glow-x", `${((x / rect.width) * 100).toFixed(2)}%`);
-  element.style.setProperty("--glow-y", `${((y / rect.height) * 100).toFixed(2)}%`);
+  element.style.setProperty(
+    "--glow-x",
+    `${((x / rect.width) * 100).toFixed(2)}%`,
+  );
+  element.style.setProperty(
+    "--glow-y",
+    `${((y / rect.height) * 100).toFixed(2)}%`,
+  );
 }
 
 function resetEdgeGlow(event) {
@@ -99,7 +99,7 @@ export default function DinosaurPopup({
   const eraSlug = getEraSlug(dinosaur);
 
   const facts = [...(dinosaur.dinosaur_facts || [])].sort(
-    (a, b) => (a.order_index || 0) - (b.order_index || 0)
+    (a, b) => (a.order_index || 0) - (b.order_index || 0),
   );
 
   function handleClose() {
@@ -127,14 +127,25 @@ export default function DinosaurPopup({
         />
       </div>
 
-      <div className="dinosaur-popup__content" onWheel={(e) => e.stopPropagation()} >
+      <div
+        className="dinosaur-popup__content"
+        onWheel={(e) => e.stopPropagation()}
+      >
         <header className="dinosaur-popup__header">
           <span className="dinosaur-popup__era">
-            {translate(dinosaur?.eras?.name_vi, dinosaur?.eras?.name_en, language)}
+            {translate(
+              dinosaur?.eras?.name_vi,
+              dinosaur?.eras?.name_en,
+              language,
+            )}
           </span>
 
           <h2 className="dinosaur-popup__title">
-            {translate(dinosaur.common_name_vi, dinosaur.common_name_en, language)}
+            {translate(
+              dinosaur.common_name_vi,
+              dinosaur.common_name_en,
+              language,
+            )}
           </h2>
 
           <p className="dinosaur-popup__subtitle">
@@ -147,7 +158,7 @@ export default function DinosaurPopup({
             {translate(
               dinosaur.description_vi,
               dinosaur.description_en,
-              language
+              language,
             )}
           </p>
         </section>
