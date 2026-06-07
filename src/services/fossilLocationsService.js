@@ -597,11 +597,13 @@ function normalizeFossilLocation(row) {
     "Hóa thạch";
 
   return {
-    ...row,
+    ...row,                                          // giữ nguyên tất cả cột _en từ Supabase
     id: row.id ?? `${scientificName}-${latitude}-${longitude}`,
     name: displayName,
+    name_en: row.common_name_en || row.name_en || null,
     scientific_name: scientificName || null,
     country: row.country || row.discovery_country || null,
+    country_en: row.country_en || null,
     location_province:
       row.location_province || row.province || row.state || row.discovery_location || null,
     latitude,
@@ -609,10 +611,14 @@ function normalizeFossilLocation(row) {
     image_url: row.image_url || getDinosaurImage(row) || null,
     period: row.period || row.era || row.period_name || null,
     age: row.age || row.age_mya || null,
+    age_en: row.age_en || null,
     discovery_year: row.discovery_year || row.year_discovered || null,
     fossil_parts: row.fossil_parts || row.fossil_type || row.specimen_parts || null,
-    description: row.description || row.description_vi || row.description_en || null,
+    fossil_parts_en: row.fossil_parts_en || null,
+    description: row.description || row.description_vi || null,
+    description_en: row.description_en || null,
     fun_fact: row.fun_fact || row.fact || null,
+    fun_fact_en: row.fun_fact_en || null,
   };
 }
 
