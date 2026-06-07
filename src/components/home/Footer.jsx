@@ -57,8 +57,8 @@ const Footer = ({ locale }) => {
       />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-10 relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-8 lg:gap-10">
+          <div className="lg:col-span-2">
             <div className="mb-4">
               <RealmBrand
                 logoSize={76}
@@ -145,6 +145,32 @@ const Footer = ({ locale }) => {
             >
               {visitInfo.map((item) => (
                 <li key={item}>- {item}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="lg:col-span-2">
+            <h4
+              className="text-xs font-bold tracking-widest uppercase mb-4"
+              style={{ color: "var(--theme-accent)" }}
+            >
+              {isVi ? "Nhóm thực hiện" : "Our Team"} · TriNova
+            </h4>
+            <ul
+              className="space-y-2.5 text-sm"
+              style={{ color: "var(--theme-text-muted)" }}
+            >
+              {[
+                { name: "Nguyễn Ngọc Vinh", id: "25DS031" },
+                { name: "Nguyễn Phú Kha", id: "25DS011" },
+                { name: "Phan Ngọc Anh Khôi", id: "25DS013" },
+                { name: "Trần Đức Bá Linh", id: "25DS016" },
+              ].map(({ name, id }) => (
+                <li key={id}>
+                  {name}{" "}
+                  <span style={{ color: "var(--theme-accent)", opacity: 0.6 }}>
+                    – {id}
+                  </span>
+                </li>
               ))}
             </ul>
           </div>
