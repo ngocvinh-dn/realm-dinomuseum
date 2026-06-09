@@ -188,6 +188,26 @@ const FossilExploreTeaser = ({ locale = "vi" }) => {
           </motion.span>
         </motion.h2>
 
+        {/* Đoạn mô tả dưới heading */}
+        <motion.p
+          className="mx-auto mb-10"
+          style={{
+            maxWidth: "560px",
+            fontSize: "clamp(0.95rem, 1.8vw, 1.1rem)",
+            lineHeight: 1.85,
+            color: "var(--theme-text-dim)",
+            fontFamily: "DM Sans, sans-serif",
+          }}
+          initial={{ opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.65, delay: 0.32, ease: revealEase }}
+        >
+          {isVi
+            ? "Hàng triệu năm trước, những sinh vật khổng lồ đã in dấu lên từng lớp đất đá của Trái Đất. Ngày nay, dấu vết ấy vẫn còn đó — rải rác khắp các lục địa, chờ được tìm thấy. Hãy để R.E.A.L.M dẫn bạn qua bản đồ hóa thạch toàn cầu, nơi mỗi điểm sáng là một câu chuyện chưa kể."
+            : "Millions of years ago, ancient giants left their marks pressed deep into the earth. Today, those traces remain scattered across every continent — silent, waiting. Let R.E.A.L.M guide you through a living fossil map, where every glowing point holds a story yet to be told."}
+        </motion.p>
+
         {/* NÚT CTA chính — y chang btn-amber-primary của FinalCTA */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
