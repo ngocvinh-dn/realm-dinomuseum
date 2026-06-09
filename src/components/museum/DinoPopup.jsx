@@ -28,7 +28,6 @@ export default function DinoPopup({ dino, onClose, language = "vi" }) {
   return (
     <div className={`dino-popup dino-popup--${dino.id}`}>
       <button className="dino-popup__close" onClick={onClose}>
-        ×
       </button>
 
       <div className="dino-popup__era">{displayEra}</div>

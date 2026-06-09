@@ -78,7 +78,6 @@ const InfoRow = ({ icon, label, value }) => {
 };
 
 // ─── SIDEBAR ──────────────────────────────────────────────────────────────────
-// Lấy field đúng ngôn ngữ: EN → thử _en trước, fallback VI
 const f = (dino, field, lang) =>
   lang === 'en' ? (dino[`${field}_en`] || dino[field]) : dino[field];
 
@@ -128,22 +127,20 @@ const DinoPanel = ({ dino, total, t, lang }) => {
         )}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 20%, rgba(10,8,4,1) 100%)' }} />
 
-        {/* Badge kỷ */}
-        {dino.period && (
+        {(dino.period_en || dino.period) && (
           <div className="absolute top-3 left-3">
             <span
               className="px-2.5 py-1 rounded-full text-xs font-semibold"
               style={{ background: 'rgba(245,158,11,0.18)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.4)', backdropFilter: 'blur(8px)', fontFamily: 'DM Sans, sans-serif' }}
             >
-              {dino.period}
+              {lang === 'en' ? (dino.period_en || dino.period) : (dino.period || dino.period_en)}
             </span>
           </div>
         )}
 
-        {/* Tên + tên khoa học */}
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
           <h3 className="text-2xl font-bold leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', color: '#f5f0e8' }}>
-            {dino.name}
+            {lang === 'en' ? (dino.name_en || dino.name) : dino.name}
           </h3>
           {dino.scientific_name && (
             <p className="text-xs italic mt-0.5" style={{ color: 'rgba(245,240,232,0.4)', fontFamily: 'Nunito, sans-serif' }}>
@@ -155,8 +152,6 @@ const DinoPanel = ({ dino, total, t, lang }) => {
 
       {/* ── Nội dung ── */}
       <div className="px-4 pt-4 space-y-4">
-
-        {/* Stats grid */}
         <div className="grid grid-cols-3 gap-2">
           <StatCard icon="⏳" label={t.age}     value={f(dino, 'age', lang)} />
           <StatCard icon="🗓️" label={t.year}    value={dino.discovery_year} />
@@ -165,7 +160,6 @@ const DinoPanel = ({ dino, total, t, lang }) => {
 
         <div className="h-px" style={{ background: 'linear-gradient(90deg, rgba(245,158,11,0.35), transparent)' }} />
 
-        {/* Địa điểm phát hiện */}
         <div className="space-y-2">
           <p className="uppercase tracking-[0.25em] font-bold" style={{ color: 'rgba(245,158,11,0.6)', fontSize: '10px', fontFamily: 'DM Sans, sans-serif' }}>
             {t.locationTitle}
@@ -185,7 +179,6 @@ const DinoPanel = ({ dino, total, t, lang }) => {
           </div>
         </div>
 
-        {/* Bộ phận hóa thạch */}
         {f(dino, 'fossil_parts', lang) && (
           <div className="space-y-2">
             <p className="uppercase tracking-[0.25em] font-bold" style={{ color: 'rgba(245,158,11,0.6)', fontSize: '10px', fontFamily: 'DM Sans, sans-serif' }}>
@@ -199,7 +192,6 @@ const DinoPanel = ({ dino, total, t, lang }) => {
           </div>
         )}
 
-        {/* Mô tả / fun fact */}
         {(f(dino, 'fun_fact', lang) || f(dino, 'description', lang)) && (
           <div className="space-y-1.5">
             <p className="uppercase tracking-[0.25em] font-bold" style={{ color: 'rgba(245,158,11,0.6)', fontSize: '10px', fontFamily: 'DM Sans, sans-serif' }}>
@@ -227,19 +219,23 @@ const GlobePage = () => {
   const [dinos, setDinos] = useState([]);
   const [selectedDino, setSelectedDino] = useState(null);
   const [dataSource, setDataSource] = useState('loading');
-  const [lang, setLang] = useState('vi');
+  const [lang, setLang] = useState('en');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const viewerRef = useRef(null);
   const hasCenteredOverviewRef = useRef(false);
+  const langRef = useRef(lang);
   const navigate = useNavigate();
+
+  // ── Sync langRef khi đổi ──
+  useEffect(() => { langRef.current = lang; }, [lang]);
 
   const t = T[lang];
 
-  // ── View ban đầu ──
   const focusOverview = () => {
     const viewer = viewerRef.current?.cesiumElement;
     if (!viewer) return;
     viewer.camera.flyTo({
-      destination: Cartesian3.fromDegrees(106.6, 16.0, 28000000),
+      destination: Cartesian3.fromDegrees(106.6, 16.0, 18000000),
       orientation: { heading: 0, pitch: -Math.PI / 2, roll: 0 },
       duration: 2.5,
     });
@@ -255,12 +251,6 @@ const GlobePage = () => {
   }, []);
 
   useEffect(() => {
-    if (!selectedDino && dinos.length > 0) {
-      setSelectedDino(dinos[0]);
-    }
-  }, [dinos, selectedDino]);
-
-  useEffect(() => {
     if (!dinos.length || hasCenteredOverviewRef.current) return;
     const frameId = window.requestAnimationFrame(() => {
       focusOverview();
@@ -269,18 +259,23 @@ const GlobePage = () => {
     return () => window.cancelAnimationFrame(frameId);
   }, [dinos]);
 
-  // ── Bấm điểm vàng ──
   const handleSelect = (dino) => {
     setSelectedDino(dino);
     const viewer = viewerRef.current?.cesiumElement;
     if (!viewer) return;
-    viewer.camera.flyToBoundingSphere(
-      new BoundingSphere(Cartesian3.fromDegrees(Number(dino.longitude), Number(dino.latitude)), 15000),
-      {
-        duration: 2.6,
-        offset: new HeadingPitchRange(0.4, -0.5, 25000),
-      }
-    );
+    viewer.camera.flyTo({
+      destination: Cartesian3.fromDegrees(
+        Number(dino.longitude),
+        Number(dino.latitude),
+        8000   // 8 km — thấy rõ nhà cửa, đường xá
+      ),
+      orientation: {
+        heading: 0,
+        pitch: -Math.PI / 2,  // nhìn thẳng xuống — điểm vàng luôn hiện
+        roll: 0,
+      },
+      duration: 2.8,
+    });
   };
 
   const isFallbackSource = dataSource.startsWith('fallback');
@@ -324,88 +319,138 @@ const GlobePage = () => {
       </div>
 
       {/* ── SIDEBAR ─────────────────────────────────────────────── */}
-      <aside
-        className="flex-shrink-0 flex flex-col z-10 overflow-hidden"
-        style={{
-          width: '370px',
-          background: 'rgba(10,8,4,0.97)',
-          borderLeft: '1px solid rgba(245,158,11,0.15)',
-          backdropFilter: 'blur(12px)',
-          boxShadow: '-8px 0 40px rgba(0,0,0,0.6)',
-        }}
-      >
-        {/* Header — chứa nút VI/EN ngay trong sidebar, không đè lên Cesium */}
-        <div className="px-5 py-4 flex-shrink-0 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(245,158,11,0.1)' }}>
-          <div>
-            <p className="uppercase tracking-[0.28em] font-bold" style={{ color: 'rgba(245,158,11,0.5)', fontSize: '9px', fontFamily: 'DM Sans, sans-serif' }}>
-              {t.museumLabel}
-            </p>
-            <h2 className="text-base font-bold mt-0.5" style={{ fontFamily: 'Cormorant Garamond, serif', color: '#f5f0e8' }}>
-              {t.mapTitle}
-            </h2>
-            {isFallbackSource && (
-              <p className="mt-1" style={{ color: 'rgba(245,240,232,0.42)', fontSize: '11px', fontFamily: 'DM Sans, sans-serif' }}>
-                {t.fallbackNote}
-              </p>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* ── Nút chuyển ngôn ngữ — nằm trong header sidebar ── */}
-            <motion.button
-              onClick={() => setLang((l) => (l === 'vi' ? 'en' : 'vi'))}
-              className="flex items-center justify-center"
-              style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '8px',
-                background: 'rgba(245,158,11,0.12)',
-                border: '1px solid rgba(245,158,11,0.35)',
-                color: '#fbbf24',
-                fontFamily: 'DM Sans, sans-serif',
-                fontSize: '12px',
-                fontWeight: '700',
-                letterSpacing: '0.05em',
-                cursor: 'pointer',
-                flexShrink: 0,
-              }}
-              whileHover={{ background: 'rgba(245,158,11,0.25)', borderColor: 'rgba(245,158,11,0.7)' }}
-              whileTap={{ scale: 0.92 }}
-              title="Chuyển ngôn ngữ / Switch language"
-            >
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={lang}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  {lang === 'vi' ? 'VI' : 'EN'}
-                </motion.span>
-              </AnimatePresence>
-            </motion.button>
-
-            {!isSupabaseConfigured && (
-              <div className="px-2.5 py-1 rounded-full" style={{ background: 'rgba(245,240,232,0.08)', border: '1px solid rgba(245,240,232,0.12)' }}>
-                <span style={{ color: 'rgba(245,240,232,0.72)', fontSize: '10px', fontFamily: 'DM Sans, sans-serif' }}>No env</span>
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.aside
+            key="sidebar"
+            initial={{ x: 370, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 370, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="flex-shrink-0 flex flex-col z-10 overflow-hidden"
+            style={{
+              width: '370px',
+              background: 'rgba(10,8,4,0.97)',
+              borderLeft: '1px solid rgba(245,158,11,0.15)',
+              backdropFilter: 'blur(12px)',
+              boxShadow: '-8px 0 40px rgba(0,0,0,0.6)',
+            }}
+          >
+            {/* Header */}
+            <div className="px-5 py-4 flex-shrink-0 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(245,158,11,0.1)' }}>
+              <div>
+                <p className="uppercase tracking-[0.28em] font-bold" style={{ color: 'rgba(245,158,11,0.5)', fontSize: '9px', fontFamily: 'DM Sans, sans-serif' }}>
+                  {t.museumLabel}
+                </p>
+                <h2 className="text-base font-bold mt-0.5" style={{ fontFamily: 'Cormorant Garamond, serif', color: '#f5f0e8' }}>
+                  {t.mapTitle}
+                </h2>
+                {isFallbackSource && (
+                  <p className="mt-1" style={{ color: 'rgba(245,240,232,0.42)', fontSize: '11px', fontFamily: 'DM Sans, sans-serif' }}>
+                    {t.fallbackNote}
+                  </p>
+                )}
               </div>
-            )}
-            <div className="px-2.5 py-1 rounded-full" style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>
-              <span style={{ color: '#fbbf24', fontSize: '11px', fontFamily: 'DM Sans, sans-serif' }}>
-                {dinos.length > 0 ? t.samples(dinos.length) : t.loading}
-              </span>
-            </div>
-          </div>
-        </div>
 
-        {/* Panel nội dung — key gồm cả lang để re-render khi đổi ngôn ngữ */}
-        <div className="flex-1 overflow-hidden relative">
-          <AnimatePresence mode="wait">
-            <DinoPanel key={`${selectedDino?.id ?? 'empty'}-${lang}`} dino={selectedDino} total={dinos.length} t={t} lang={lang} />
-          </AnimatePresence>
-        </div>
-      </aside>
+              <div className="flex items-center gap-2">
+                {!isSupabaseConfigured && (
+                  <div className="px-2.5 py-1 rounded-full" style={{ background: 'rgba(245,240,232,0.08)', border: '1px solid rgba(245,240,232,0.12)' }}>
+                    <span style={{ color: 'rgba(245,240,232,0.72)', fontSize: '10px', fontFamily: 'DM Sans, sans-serif' }}>No env</span>
+                  </div>
+                )}
+                <div className="px-2.5 py-1 rounded-full" style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', whiteSpace: 'nowrap' }}>
+                  <span style={{ color: '#fbbf24', fontSize: '11px', fontFamily: 'DM Sans, sans-serif', whiteSpace: 'nowrap' }}>
+                    {dinos.length > 0 ? t.samples(dinos.length) : t.loading}
+                  </span>
+                </div>
+
+                {/* ── Nút chuyển ngôn ngữ VI/EN ── */}
+                <button
+                  onClick={() => setLang(l => l === 'vi' ? 'en' : 'vi')}
+                  title="Switch language / Chuyển ngôn ngữ"
+                  style={{
+                    padding: '4px 12px',
+                    height: '28px',
+                    background: 'rgba(245,158,11,0.12)',
+                    border: '1px solid rgba(245,158,11,0.45)',
+                    borderRadius: '9999px',
+                    color: '#fbbf24',
+                    fontSize: '13px',
+                    fontWeight: '800',
+                    fontFamily: 'DM Sans, sans-serif',
+                    letterSpacing: '0.08em',
+                    cursor: 'pointer',
+                    transition: 'background 0.15s, border-color 0.15s',
+                    flexShrink: 0,
+                    whiteSpace: 'nowrap',
+                    display: 'flex', alignItems: 'center',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.28)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.85)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.45)'; }}
+                >
+                  {lang.toUpperCase()}
+                </button>
+
+                {/* ── Nút đóng sidebar — tròn vàng như dino-popup__close ── */}
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  title="Close panel"
+                  style={{
+                    width: '28px', height: '28px',
+                    background: 'rgba(245,158,11,0.12)',
+                    border: '1px solid rgba(245,158,11,0.35)',
+                    borderRadius: '9999px',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                    transition: 'background 0.15s, border-color 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.85)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,1)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.35)'; }}
+                />
+              </div>
+            </div>
+
+            {/* Panel nội dung */}
+            <div className="flex-1 overflow-hidden relative">
+              <AnimatePresence mode="wait">
+                <DinoPanel key={`${selectedDino?.id ?? 'empty'}-${lang}`} dino={selectedDino} total={dinos.length} t={t} lang={lang} />
+              </AnimatePresence>
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* ── NÚT MỞ LẠI SIDEBAR (khi đã đóng) ──────────────────────── */}
+      <AnimatePresence>
+        {!sidebarOpen && (
+          <motion.button
+            key="reopen-btn"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 40 }}
+            transition={{ duration: 0.25 }}
+            onClick={() => setSidebarOpen(true)}
+            className="absolute right-0 z-20 flex items-center gap-2 px-3 py-2.5 rounded-l-xl"
+            style={{
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: 'rgba(10,8,4,0.88)',
+              border: '1px solid rgba(245,158,11,0.3)',
+              borderRight: 'none',
+              color: '#fbbf24',
+              backdropFilter: 'blur(10px)',
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: '11px',
+              fontWeight: '700',
+              letterSpacing: '0.08em',
+              writingMode: 'vertical-rl',
+              cursor: 'pointer',
+            }}
+          >
+            ◀ {t.mapTitle}
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* ── NÚT QUAY LẠI ─────────────────────────────────────────── */}
       <motion.button
